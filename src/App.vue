@@ -12,7 +12,6 @@
   ul, ol{list-style: none;}
   a{color: #1890ff;text-decoration: none;}
   a:hover{text-decoration: none;}
-
   #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -32,6 +31,30 @@
         color: #42b983;
       }
     }
+  }
+
+  .button {
+    border:1px solid rgba(52,239,253,1);
+    color: rgba(52,239,253,1);
+    font-family:Source Han Sans SC;
+    font-weight:bold;
+    border-radius:10px;
+    display: inline-block;
+    padding: 2px 12px;
+    cursor: pointer;
+    &.active {
+      background:rgba(52,239,253,0.9);
+      box-shadow:0px 6px 4px 0px rgba(44,165,252,0.44);
+      color:rgba(18,28,58,1);
+    }
+  }
+
+  .g2-tooltip {
+    background: rgba(255, 255, 255, 0.7)!important;
+  }
+
+  .vm--modal{
+    background-color: transparent!important
   }
 
   /* flex布局 */
