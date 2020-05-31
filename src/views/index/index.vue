@@ -10,24 +10,36 @@
         <div class="bodyItem bodyLeft">
           <!-- 任务统计 -->
           <div class="taskStatistics">
-            <p class="sectionTitle">{{ taskData.title }}</p>
+            <p class="sectionTitle">任务统计</p>
             <ul class="taskList flex_start_v">
-              <li v-for="item in taskData.list" :key="item.id">
-                <img :src="item.icon" width="100%" height="100%" />
-                <p>- {{ item.text }} -</p>
-                <p>{{ item.num }}</p>
-                <p>{{ item.unit }}</p>
+              <li>
+                <img src="../../assets/images/icon_1@2x.png" width="100%" height="100%" />
+                <p>- 数据流 -</p>
+                <p>{{ taskView.dataNum }}</p>
+                <p>次</p>
+              </li>
+              <li>
+                <img src="../../assets/images/icon_2@2x.png" width="100%" height="100%" />
+                <p>- 视频流 -</p>
+                <p>{{ taskView.videoNum }}</p>
+                <p>分钟</p>
+              </li>
+              <li>
+                <img src="../../assets/images/icon_3@2x.png" width="100%" height="100%" />
+                <p>- 图片流 -</p>
+                <p>{{ taskView.picNum }}</p>
+                <p>张</p>
               </li>
             </ul>
           </div>
           <!-- 报警统计 -->
           <div class="alarmStatistics">
-            <p class="sectionTitle">{{ alarmData.title }}</p>
+            <p class="sectionTitle">报警统计</p>
             <ul class="taskList flex_start_v">
               <li
                 class="flex_start_v"
                 :style="{ backgroundImage: `url(${item.icon})` }"
-                v-for="item in alarmData.list"
+                v-for="item in alarmMap"
                 :key="item.id"
               >
                 <div>
@@ -40,14 +52,30 @@
           </div>
           <!-- 设备统计 -->
           <div class="deviceStatistics">
-            <p class="sectionTitle">{{ deviceData.title }}</p>
+            <p class="sectionTitle">设备统计</p>
             <ul class="deviceList flex_start_v">
-              <li v-for="item in deviceData.list" :key="item.id">
-                <p class="text">{{ item.text }}</p>
-                <p class="num">{{ item.num }}</p>
+              <li>
+                <p class="text">智能前端</p>
+                <p class="num">{{ deviceCountView.webFrontTotalNum }}</p>
                 <p class="proportion">
-                  <span>{{ item.proportion.n1 }}</span> /
-                  <span>{{ item.proportion.n2 }}</span>
+                  <span>{{ deviceCountView.webFrontEnableNum }}</span> /
+                  <span>{{ deviceCountView.webFrontDisableNum }}</span>
+                </p>
+              </li>
+              <li>
+                <p class="text">安检机</p>
+                <p class="num">{{ deviceCountView.machineTotalNum }}</p>
+                <p class="proportion">
+                  <span>{{ deviceCountView.machineEnableNum }}</span> /
+                  <span>{{ deviceCountView.machineDisableNum }}</span>
+                </p>
+              </li>
+              <li>
+                <p class="text">摄像头</p>
+                <p class="num">{{ deviceCountView.cameraTotalNum }}</p>
+                <p class="proportion">
+                  <span>{{ deviceCountView.cameraEnableNum }}</span> /
+                  <span>{{ deviceCountView.cameraDisableNum }}</span>
                 </p>
               </li>
             </ul>
@@ -61,22 +89,28 @@
                 <div
                   class="number-item"
                   :key="index"
-                  v-for="(item, index) in String(entriesData.count).split('')"
-                >
-                  {{ item }}
-                </div>
+                  v-for="(item, index) in String(securityCheckTotal).split('')"
+                >{{ item }}</div>
               </span>
             </div>
             <ul class="entries-contianer">
-              <li
-                class="entries-item"
-                :key="item.id"
-                v-for="item in entriesData.list"
-              >
-                <h6 class="entries-item-title">{{ item.title }}</h6>
+              <li class="entries-item" :key="item.id" v-for="item in deviceViewsList">
+                <h6 class="entries-item-title">{{ item.name }}</h6>
                 <div class="entries-item-data">
-                  <span class="data-count">{{ item.count }}</span>
-                  <span class="data-status">{{ item.statusDesc }}</span>
+                  <span class="data-count">{{ item.securityCheckNum }}</span>
+                  <span
+                    :style="{
+                      color:
+                        deviceStatusMap[item.workStatus] &&
+                        deviceStatusMap[item.workStatus].color,
+                    }"
+                    class="data-status"
+                  >
+                    {{
+                    deviceStatusMap[item.workStatus] &&
+                    deviceStatusMap[item.workStatus].text
+                    }}
+                  </span>
                 </div>
                 <div class="entries-item-name">
                   <span class="name-count">检测人数</span>
@@ -98,12 +132,7 @@
             <div class="device-content">
               <p class="sectionTitle">安检详情</p>
               <div class="active-device-name">
-                <img
-                  src="../../assets/images/loction@2x.png"
-                  width="17"
-                  height="22"
-                  alt
-                />
+                <img src="../../assets/images/loction@2x.png" width="17" height="22" alt />
                 <span>{{ activeDevice.name }}</span>
               </div>
               <ul class="camera-list">
@@ -123,9 +152,7 @@
                   "
                   :key="item.tabKey"
                   v-for="item in videoTypeTab.subTabs"
-                >
-                  {{ item.name }}
-                </li>
+                >{{ item.name }}</li>
               </ul>
               <div class="video-container">
                 <div class="video-header">
@@ -140,13 +167,12 @@
                     v-for="item in videoList"
                     class="video-item"
                   >
-                    <span class="time">{{ item.time }}</span>
-                    <process
-                      :length="4"
-                      :value="item.process"
-                      class="process"
-                    ></process>
-                    <span class="status">{{ item.statusDesc }}</span>
+                    <span class="time">{{ item.gmtCreate }}</span>
+                    <process :length="4" :value="item.picNum" class="process"></process>
+                    <span
+                      :style="{ color: parseStatus(item).color }"
+                      class="status"
+                    >{{ parseStatus(item).text }}</span>
                   </li>
                 </ul>
               </div>
@@ -159,17 +185,14 @@
       :clickToClose="false"
       height="1200"
       width="1400"
-      pivotY="0.8"
-      pivotX="0"
+      :pivotY="0.8"
+      :pivotX="0"
       name="video-view"
     >
-      <video-view @close="$modal.hide('video-view')"></video-view>
+      <video-view @close="$modal.hide('video-view')" :activeVideoId="activeVideoId"></video-view>
     </modal>
     <modal :clickToClose="false" height="740" width="1283" name="device-manage">
-      <device-manage
-        :openAddDeviceModal="openAddDeviceModal"
-        @close="$modal.hide('device-manage')"
-      ></device-manage>
+      <device-manage :openAddDeviceModal="openAddDeviceModal" @close="$modal.hide('device-manage')"></device-manage>
     </modal>
     <modal :clickToClose="false" height="580" width="782" name="add-device">
       <add-device @close="$modal.hide('add-device')"></add-device>
@@ -187,188 +210,58 @@ import Video from "@/components/Video";
 import { Chart } from "@antv/g2";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
-const data = [
-  { month: "Jan", city: "Tokyo", temperature: 7 },
-  { month: "Jan", city: "London", temperature: 3.9 },
-  { month: "Feb", city: "Tokyo", temperature: 6.9 },
-  { month: "Feb", city: "London", temperature: 4.2 },
-  { month: "Mar", city: "Tokyo", temperature: 9.5 },
-  { month: "Mar", city: "London", temperature: 5.7 },
-  { month: "Apr", city: "Tokyo", temperature: 14.5 },
-  { month: "Apr", city: "London", temperature: 8.5 },
-  { month: "May", city: "Tokyo", temperature: 18.4 },
-  { month: "May", city: "London", temperature: 11.9 },
-  { month: "Jun", city: "Tokyo", temperature: 21.5 },
-  { month: "Jun", city: "London", temperature: 15.2 },
-  { month: "Jul", city: "Tokyo", temperature: 25.2 },
-  { month: "Jul", city: "London", temperature: 17 },
-  { month: "Aug", city: "Tokyo", temperature: 26.5 },
-  { month: "Aug", city: "London", temperature: 16.6 },
-  { month: "Sep", city: "Tokyo", temperature: 23.3 },
-  { month: "Sep", city: "London", temperature: 14.2 },
-  { month: "Oct", city: "Tokyo", temperature: 18.3 },
-  { month: "Oct", city: "London", temperature: 10.3 },
-  { month: "Nov", city: "Tokyo", temperature: 13.9 },
-  { month: "Nov", city: "London", temperature: 6.6 },
-  { month: "Dec", city: "Tokyo", temperature: 9.6 },
-  { month: "Dec", city: "London", temperature: 4.8 },
-];
-const baseUrl = "http://localhost:9527/websocket";
+import axios from "axios";
+import moment from 'moment'
+import { API_URL, WS_URL } from "@/constant.js";
+import { deviceStatusMap, alarmStatusMap, statusMap, parseStatus } from "./config";
 
 export default {
   name: "index",
   data() {
     return {
+      deviceStatusMap,
+      alarmStatusMap,
+      statusMap,
       pageHeight: window.innerHeight,
-      taskData: {
-        title: "任务统计",
-        list: [
-          {
-            id: 1,
-            icon: require("../../assets/images/icon_1@2x.png"),
-            text: "数据流",
-            num: 2648,
-            unit: "次",
-          },
-          {
-            id: 2,
-            icon: require("../../assets/images/icon_2@2x.png"),
-            text: "视频流",
-            num: 6659,
-            unit: "分钟",
-          },
-          {
-            id: 3,
-            icon: require("../../assets/images/icon_3@2x.png"),
-            text: "图片流",
-            num: 46325,
-            unit: "张",
-          },
-        ],
+      taskView: {
+        dataNum: 0,
+        picNum: 0,
+        videoNum: 0,
       },
-      alarmData: {
-        title: "报警统计",
-        list: [
-          {
-            id: 1,
-            icon: require("../../assets/images/1.png"),
-            text: "过包总数",
-            num: 2648,
-          },
-          {
-            id: 2,
-            icon: require("../../assets/images/2.png"),
-            text: "遗留包总数",
-            num: 6659,
-          },
-          {
-            id: 3,
-            icon: require("../../assets/images/3.png"),
-            text: "拿错包总数",
-            num: 46325,
-          },
-        ],
+      chartsData: [],
+      alarmMap: {
+        securityCheck: {
+          id: 1,
+          icon: require("../../assets/images/1.png"),
+          text: "过包总数",
+          num: 0,
+        },
+        lostPackage: {
+          id: 2,
+          icon: require("../../assets/images/2.png"),
+          text: "遗留包总数",
+          num: 0,
+        },
+        wrongPackage: {
+          id: 3,
+          icon: require("../../assets/images/3.png"),
+          text: "拿错包总数",
+          num: 0,
+        },
       },
-      deviceData: {
-        title: "设备统计",
-        list: [
-          {
-            id: 1,
-            text: "智能前端",
-            num: 2648,
-            proportion: { n1: "2273", n2: "635" },
-          },
-          {
-            id: 2,
-            text: "安检机",
-            num: 6659,
-            proportion: { n1: "2273", n2: "635" },
-          },
-          {
-            id: 3,
-            text: "摄像头",
-            num: 46325,
-            proportion: { n1: "2273", n2: "635" },
-          },
-        ],
+      deviceCountView: {
+        webFrontDisable: 0,
+        webFrontEnable: 0,
+        webFrontTotal: 0,
+        machineDisable: 0,
+        machineEnable: 0,
+        machineTotal: 0,
+        cameraDisable: 0,
+        cameraEnable: 0,
+        cameraTotal: 0,
       },
-      entriesData: {
-        count: 13526366666,
-        list: [
-          {
-            title: "大会堂正门口入口A",
-            count: 2000,
-            statusDesc: "空闲",
-            status: 1,
-          },
-          {
-            title: "大会堂正门口入口A",
-            count: 2000,
-            statusDesc: "空闲",
-            status: 2,
-          },
-          {
-            title: "大会堂正门口入口A",
-            count: 2000,
-            statusDesc: "空闲",
-            status: 3,
-          },
-          {
-            title: "大会堂正门口入口A",
-            count: 2000,
-            statusDesc: "空闲",
-            status: 4,
-          },
-          {
-            title: "大会堂正门口入口A",
-            count: 2000,
-            statusDesc: "空闲",
-            status: 5,
-          },
-          {
-            title: "大会堂正门口入口A",
-            count: 2000,
-            statusDesc: "空闲",
-            status: 5,
-          },
-          {
-            title: "大会堂正门口入口A",
-            count: 2000,
-            statusDesc: "空闲",
-            status: 5,
-          },
-          {
-            title: "大会堂正门口入口A",
-            count: 2000,
-            statusDesc: "空闲",
-            status: 5,
-          },
-          {
-            title: "大会堂正门口入口A",
-            count: 2000,
-            statusDesc: "空闲",
-            status: 5,
-          },
-          {
-            title: "大会堂正门口入口A",
-            count: 2000,
-            statusDesc: "空闲",
-            status: 5,
-          },
-          {
-            title: "大会堂正门口入口A",
-            count: 2000,
-            statusDesc: "空闲",
-            status: 5,
-          },
-          {
-            title: "大会堂正门口入口A",
-            count: 2000,
-            statusDesc: "空闲",
-            status: 5,
-          },
-        ],
-      },
+      securityCheckTotal: 0,
+      deviceViewsList: [],
       activeDevice: {
         name: "大会堂正门入口A",
       },
@@ -379,11 +272,11 @@ export default {
         },
         {
           name: "摄像头一号",
-          id: 1,
+          id: 2,
         },
         {
           name: "摄像头一号",
-          id: 1,
+          id: 3,
         },
       ],
       videoTypeTab: {
@@ -407,119 +300,13 @@ export default {
           },
         ],
       },
-      videoList: [
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 3,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 1,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 2,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 1,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 4,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 1,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 2,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 1,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 1,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 1,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 1,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 1,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 1,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 1,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-        {
-          id: "001",
-          time: "2020年5月19日 11:56:23",
-          process: 1,
-          statusDesc: "错拿包",
-          status: 1,
-        },
-      ],
+      videoList: [],
       activeVideoId: null,
     };
   },
   created() {},
   mounted() {
-    this.initCharts();
+    this.initPage();
     // 挂载浏览器高度获取方法
     const that = this;
     window.onresize = () => {
@@ -528,6 +315,7 @@ export default {
       })();
     };
     this.checkSocket();
+    this.initCharts()
   },
   methods: {
     setActiveVideo(item) {
@@ -551,22 +339,103 @@ export default {
       this.connection();
     },
     connection() {
-      const socket = new SockJS(baseUrl);
-      this.stompClient = Stomp.over(socket);
+      const socket = new SockJS(WS_URL);
+      this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect({}, (frame) => {
-        this.stompClient.subscribe("/alarmView", (greeting) => {
-          this.datas.push(JSON.parse(greeting.body));
+        this.stompClient.subscribe("/topic/statistics", (greeting) => {
+          const datas = JSON.parse(greeting.body);
+          if (datas) {
+            this.renderView(datas);
+          }
+        });
+        this.stompClient.subscribe("/topic/device", (greeting) => {
+          const deviceData = JSON.parse(greeting.body);
+          if (deviceData.id) {
+            const index = this.deviceViewsList.findIndex(
+              (item) => item.id === deviceData.id
+            );
+            if (index > -1) {
+              if (deviceData.status === 2) {
+                this.deviceViewsList.splice(index, 1);
+              } else {
+                this.deviceViewsList.splice(index, 1, deviceData);
+              }
+            } else {
+              this.deviceViewsList.push(deviceData);
+            }
+          } else {
+            this.deviceViewsList.push(deviceData);
+          }
+        });
+        this.stompClient.subscribe("/topic/securityCheckCount", (greeting) => {
+          const count = JSON.parse(greeting.body);
+          this.securityCheckTotal = count;
+        });
+        this.stompClient.subscribe("/topic/securityCheckDetail", (greeting) => {
+          const { securityCheckList } = JSON.parse(greeting.body) || {};
+          this.renderSecurityCheckList(securityCheckList);
         });
       });
     },
     initCharts() {
-      const chart = new Chart({
+      this.chart = new Chart({
         container: this.$refs.chartsRef,
         autoFit: true,
         height: 500,
       });
-      chart.data(data);
-      chart.scale({
+      this.chart.legend({
+        position: 'top',
+      })
+    },
+    initPage() {
+      axios.get(`${API_URL}/init`).then((res) => {
+        if (res.data) {
+          this.renderView(res.data);
+          const { deviceList, securityCheckTotal, securityCheckList } =
+            res.data || {};
+          // deviceList
+          if (Array.isArray(deviceList)) {
+            this.deviceViewsList = deviceList;
+          }
+          this.securityCheckTotal = securityCheckTotal || 0;
+          this.renderSecurityCheckList(securityCheckList);
+        }
+      });
+    },
+    renderView(viewDatas) {
+      const {
+        taskView,
+        alarmView,
+        deviceList,
+        securityCheckTotal,
+        deviceView,
+        securityCheckList,
+      } = viewDatas || {};
+      // taskView
+      if (taskView) {
+        this.taskView = taskView;
+      }
+      // alarmView
+      if (alarmView) {
+        const { lostPackageNum, securityCheckNum, wrongPackageNum, lostPackageNumGroupByHour, wrongPackageNumGroupByHour } = alarmView;
+        this.alarmMap.securityCheck.num = securityCheckNum;
+        this.alarmMap.lostPackage.num = lostPackageNum;
+        this.alarmMap.wrongPackage.num = wrongPackageNum;
+        if (Array.isArray(lostPackageNumGroupByHour) && Array.isArray(wrongPackageNumGroupByHour)) {
+          const lostPackageNumGroup = lostPackageNumGroupByHour.map(item => ({hours: moment().set('hours', item.hours).format('HH:00'), count: item.count, type: '遗留包数'}))
+          const wrongPackageNumGroup = wrongPackageNumGroupByHour.map(item => ({hours: moment().set('hours', item.hours).format('HH:00'), count: item.count, type: '错拿包数'}))
+          this.chartsData = [...lostPackageNumGroup, ...wrongPackageNumGroup]
+          this.renderCharts()
+        }
+      }
+      // deviceCountView
+      if (deviceView) {
+        this.deviceCountView = deviceView;
+      }
+    },
+    renderCharts() {
+      this.chart.data(this.chartsData);
+      this.chart.scale({
         month: {
           range: [0, 1],
         },
@@ -575,37 +444,39 @@ export default {
         },
       });
 
-      chart.tooltip({
+      this.chart.tooltip({
         showCrosshairs: true,
         shared: true,
       });
 
-      chart.axis("temperature", {
+      this.chart.axis("count", {
         grid: null,
-        label: {
-          formatter: (val) => {
-            return val + " °C";
-          },
-        },
       });
-      chart
+      this.chart
         .area()
-        .position("month*temperature")
-        .color("city", ["rgba(255,255,255,0.2)"]);
-      chart
+        .position("hours*count")
+        .color("type", ["rgba(255,255,255,0.2)"]);
+      this.chart
         .line()
-        .position("month*temperature")
-        .color("city", ["#D249FF", "#2FCCFF"])
+        .position("hours*count")
+        .color("type", ["#D249FF", "#2FCCFF"])
         .shape("smooth");
-      chart
+      this.chart
         .point()
-        .position("month*temperature")
+        .position("hours*count")
         .color("#D249FF")
         .size(2)
         .shape("square");
 
-      chart.render();
+      this.chart.render();
     },
+    renderSecurityCheckList(securityCheckList) {
+      // videoList
+      if (Array.isArray(securityCheckList)) {
+        this.videoList = securityCheckList;
+      }
+    },
+    parseStatus
   },
   destroyed() {},
   components: {
@@ -620,5 +491,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "./index.less";
+  @import "./index.less";
 </style>

@@ -10,28 +10,27 @@
 
     &::before {
       position: absolute;
-      content: '';
+      content: "";
       width: 100%;
       height: 50px;
       bottom: -8px;
       left: 0%;
       filter: blur(5px);
       box-shadow: 0 -10px 20px 20px rgba(6, 30, 60, 0.6);
-      background: url('../../assets/images/bg.png') 0 100% no-repeat;
+      background: url("../../assets/images/bg.png") 0 100% no-repeat;
       background-size: cover;
       z-index: 2;
     }
 
     &::after {
       position: absolute;
-      content: '';
+      content: "";
       width: 100%;
       height: 10px;
       bottom: 0px;
       left: 0%;
       background: rgba(6, 30, 60, 1);
     }
-
 
     .textLinearGradient {
       font-size: 25px;
@@ -40,18 +39,22 @@
       color: rgba(255, 255, 255, 1);
       text-shadow: 0px 0px 30px rgba(0, 0, 0, 0.24);
 
-      background: linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(0, 255, 255, 1) 100%);
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(0, 255, 255, 1) 100%
+      );
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    background: url('../../assets/images/bg.png') 0 0 no-repeat;
+    background: url("../../assets/images/bg.png") 0 0 no-repeat;
     background-size: cover;
 
     .head {
       height: 107px;
       width: 100%;
-      background: url('../../assets/images/to\ p.png') 0 0 no-repeat;
+      background: url("../../assets/images/to\ p.png") 0 0 no-repeat;
       background-size: cover;
 
       p {
@@ -75,7 +78,7 @@
       .device {
         font-size: 18px;
         font-weight: bold;
-        color: #5EA7F3;
+        color: #5ea7f3;
       }
     }
 
@@ -90,7 +93,7 @@
         height: 100%;
 
         .sectionTitle {
-          text-indent: 20px;
+          text-indent: 24px;
           margin: 30px 0 15px;
           font-size: 15px;
           text-align: left;
@@ -98,7 +101,7 @@
           height: 43px;
           line-height: 50px;
           box-sizing: border-box;
-          background: url('../../assets/images/小标题.png') 0 0 no-repeat;
+          background: url("../../assets/images/小标题.png") 0 0 no-repeat;
           background-size: cover;
         }
       }
@@ -159,7 +162,7 @@
               background-repeat: no-repeat;
               background-size: cover;
 
-              &+li {
+              & + li {
                 margin-left: 20px;
               }
 
@@ -180,7 +183,6 @@
                   color: rgba(177, 177, 177, 1);
                 }
               }
-
             }
           }
 
@@ -203,12 +205,13 @@
               padding: 8px;
               box-sizing: border-box;
               color: #f8f8f8;
-              background: url('../../assets/images/deviceBg@2x.png') 0 0 no-repeat;
+              background: url("../../assets/images/deviceBg@2x.png") 0 0
+                no-repeat;
               background-size: 100% 100%;
               text-align: left;
               text-indent: 16px;
 
-              &+li {
+              & + li {
                 margin-left: 20px;
               }
 
@@ -216,7 +219,7 @@
                 font-size: 14px;
                 font-family: Source Han Sans CN;
                 font-weight: 400;
-                color: rgba(255, 255, 255, 1)
+                color: rgba(255, 255, 255, 1);
               }
 
               .num {
@@ -254,7 +257,7 @@
             padding-left: 18px;
             box-sizing: border-box;
             height: 70px;
-
+            margin-bottom: 30px;
             .title {
               font-size: 30px;
               font-family: Source Han Sans CN;
@@ -265,7 +268,11 @@
               font-size: 48px;
               font-weight: bold;
               color: rgba(47, 213, 241, 1);
-              background: linear-gradient(180deg, rgba(226, 241, 255, 1) 0%, rgba(75, 255, 255, 1) 100%);
+              background: linear-gradient(
+                180deg,
+                rgba(226, 241, 255, 1) 0%,
+                rgba(75, 255, 255, 1) 100%
+              );
               -webkit-background-clip: text;
               -webkit-text-fill-color: transparent;
               margin-left: 18px;
@@ -292,8 +299,8 @@
             .entries-item {
               width: 310px;
               height: 157px;
-              margin-top: 30px;
-              background: url('../../assets/images/框.png') -6px -6px no-repeat;
+              margin-bottom: 30px;
+              background: url("../../assets/images/框.png") -6px -6px no-repeat;
 
               &.placeholder {
                 height: 0;
@@ -340,9 +347,11 @@
                 justify-content: space-around;
                 align-items: center;
 
-                .name-count {}
+                .name-count {
+                }
 
-                .name-status {}
+                .name-status {
+                }
               }
             }
           }
@@ -359,7 +368,7 @@
             width: 227px;
             height: 62px;
             float: right;
-            background: url('../../assets/images/设备管理.png') 0px 0 no-repeat;
+            background: url("../../assets/images/设备管理.png") 0px 0 no-repeat;
             margin-top: -110px;
             cursor: pointer;
           }
@@ -416,7 +425,8 @@
                   bottom: 0;
                   height: 22px;
                   line-height: 22px;
-                  background: url('../../assets/images/cameraIcon.png') 0 center no-repeat;
+                  background: url("../../assets/images/cameraIcon.png") 0 center
+                    no-repeat;
                   font-size: 13px;
                   font-family: Source Han Sans SC;
                   font-weight: bold;
@@ -480,7 +490,11 @@
                   font-size: 15px;
                   font-family: Source Han Sans SC;
                   font-weight: bold;
-                  background: linear-gradient(0deg, rgba(18, 41, 106, 0.3) 0%, rgba(37, 111, 195, 0.5) 100%);
+                  background: linear-gradient(
+                    0deg,
+                    rgba(18, 41, 106, 0.3) 0%,
+                    rgba(37, 111, 195, 0.5) 100%
+                  );
                   border-radius: 17px;
                   margin-bottom: 12px;
 
