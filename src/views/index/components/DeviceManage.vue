@@ -72,7 +72,7 @@ export default {
   .device-manage {
     height: 740px;
     width: 1283px;
-    background: url("../../../assets/images/组 175.png") 0 0 no-repeat;
+    background: url("../../../assets/images/modalBg.png") 0 0 no-repeat;
     position: relative;
     &::before {
       position: absolute;

@@ -39,13 +39,10 @@
       color: rgba(255, 255, 255, 1);
       text-shadow: 0px 0px 30px rgba(0, 0, 0, 0.24);
 
-      background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 1) 0%,
-        rgba(0, 255, 255, 1) 100%
-      );
+      background: linear-gradient(180deg,
+          rgba(255, 255, 255, 1) 0%,
+          rgba(0, 255, 255, 1) 100%);
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
 
     background: url("../../assets/images/bg.png") 0 0 no-repeat;
@@ -83,7 +80,6 @@
     }
 
     .body {
-      margin-top: 30px;
       color: white;
       display: flex;
       justify-content: space-between;
@@ -94,7 +90,7 @@
 
         .sectionTitle {
           text-indent: 24px;
-          margin: 30px 0 15px;
+          margin: 24px 0 15px;
           font-size: 15px;
           text-align: left;
           width: 510px;
@@ -109,6 +105,8 @@
       .bodyLeft {
         width: 28%;
         margin-left: 30px;
+        height: calc(~"100% - 80px");
+        overflow-y: auto;
 
         .taskStatistics {
           ul {
@@ -118,8 +116,8 @@
 
             li {
               position: relative;
-              width: 145px;
-              height: 235px;
+              width: 120px;
+              height: 180px;
               background-size: 100% 100%;
 
               p {
@@ -162,7 +160,7 @@
               background-repeat: no-repeat;
               background-size: cover;
 
-              & + li {
+              &+li {
                 margin-left: 20px;
               }
 
@@ -205,13 +203,12 @@
               padding: 8px;
               box-sizing: border-box;
               color: #f8f8f8;
-              background: url("../../assets/images/deviceBg@2x.png") 0 0
-                no-repeat;
+              background: url("../../assets/images/deviceBg@2x.png") 0 0 no-repeat;
               background-size: 100% 100%;
               text-align: left;
               text-indent: 16px;
 
-              & + li {
+              &+li {
                 margin-left: 20px;
               }
 
@@ -258,6 +255,8 @@
             box-sizing: border-box;
             height: 70px;
             margin-bottom: 30px;
+            margin-top: 30px;
+
             .title {
               font-size: 30px;
               font-family: Source Han Sans CN;
@@ -268,11 +267,9 @@
               font-size: 48px;
               font-weight: bold;
               color: rgba(47, 213, 241, 1);
-              background: linear-gradient(
-                180deg,
-                rgba(226, 241, 255, 1) 0%,
-                rgba(75, 255, 255, 1) 100%
-              );
+              background: linear-gradient(180deg,
+                  rgba(226, 241, 255, 1) 0%,
+                  rgba(75, 255, 255, 1) 100%);
               -webkit-background-clip: text;
               -webkit-text-fill-color: transparent;
               margin-left: 18px;
@@ -347,11 +344,9 @@
                 justify-content: space-around;
                 align-items: center;
 
-                .name-count {
-                }
+                .name-count {}
 
-                .name-status {
-                }
+                .name-status {}
               }
             }
           }
@@ -425,8 +420,7 @@
                   bottom: 0;
                   height: 22px;
                   line-height: 22px;
-                  background: url("../../assets/images/cameraIcon.png") 0 center
-                    no-repeat;
+                  background: url("../../assets/images/cameraIcon.png") 0 center no-repeat;
                   font-size: 13px;
                   font-family: Source Han Sans SC;
                   font-weight: bold;
@@ -490,11 +484,9 @@
                   font-size: 15px;
                   font-family: Source Han Sans SC;
                   font-weight: bold;
-                  background: linear-gradient(
-                    0deg,
-                    rgba(18, 41, 106, 0.3) 0%,
-                    rgba(37, 111, 195, 0.5) 100%
-                  );
+                  background: linear-gradient(0deg,
+                      rgba(18, 41, 106, 0.3) 0%,
+                      rgba(37, 111, 195, 0.5) 100%);
                   border-radius: 17px;
                   margin-bottom: 12px;
 

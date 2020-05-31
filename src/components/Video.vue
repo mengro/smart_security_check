@@ -1,6 +1,6 @@
 <template>
   <div class="rtmpVideo">
-    <video id="myVideo" class="video-js">
+    <video src="https://videojs.com/vjs.zencdn.net/v/oceans.mp4" id="myVideo" class="video-js">
       <!-- <source src="rtmp://58.200.131.2:1935/livetv/hunantv" type="rtmp/flv" /> -->
     </video>
   </div>
@@ -10,9 +10,7 @@
 /* eslint-disable */
 export default {
   name: "myVideo",
-  data() {
-    return {};
-  },
+  props: ['cover', 'width', 'height'],
   mounted() {
     this.initVideo();
   },
@@ -27,23 +25,25 @@ export default {
         // 建议浏览器是否应在<video>加载元素后立即开始下载视频数据。
         preload: "auto",
         // 在视频开始播放之前显示的图像的URL
-        poster: "http://imgsrc.baidu.com/forum/pic/item/024f78f0f736afc35145daddb319ebc4b7451238.jpg?v=tbs",
+        poster: this.cover,
         // 设置视频播放器的显示宽度（以像素为单位）
-        width: "560px",
+        width: this.width,
         // 设置视频播放器的显示高度（以像素为单位）
-        height: "350px",
+        height: this.height,
         sources: [{
           src: 'rtmp://58.200.131.2:1935/livetv/hunantv',
           type: 'rtmp/flv'
         },]
-      }, function onPlayerReady() {
-        console.log("播放器已准备就绪!");
-        // In this context, `this` is the player that was created by Video.js.
-        this.play();
-        // How about an event listener?
-        this.on("ended", function () {
-          console.log("啊...这么快结束了？！");
-        });
+      }, function onPlayerReady(player) {
+        if (player) {
+          console.log("播放器已准备就绪!");
+          // In this context, `this` is the player that was created by Video.js.
+          player.play();
+          // How about an event listener?
+          player.on("ended", function () {
+            console.log("啊...这么快结束了？！");
+          });
+        }
       }
       );
     }
@@ -55,13 +55,12 @@ export default {
 </script>
 
 <style lang='less' scoped>
-.rtmpVideo{
-  /deep/.video-js{
-    .vjs-big-play-button{
-      top: calc(~'50% - 22.5px');
-      left: calc(~'50% - 45px');
+  .rtmpVideo {
+    /deep/.video-js {
+      .vjs-big-play-button {
+        top: calc(~"50% - 22.5px");
+        left: calc(~"50% - 45px");
+      }
     }
   }
-}
-
 </style>

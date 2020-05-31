@@ -138,7 +138,7 @@
               <ul class="camera-list">
                 <li :key="item.id" v-for="item in cameraList">
                   <div class="video">
-                    <video></video>
+                    <my-video width="154px" height="100px"></my-video>
                   </div>
                   <div class="camera-name">{{ item.name }}</div>
                 </li>
@@ -168,7 +168,12 @@
                     class="video-item"
                   >
                     <span class="time">{{ item.gmtCreate }}</span>
-                    <process :length="4" :value="item.picNum" class="process"></process>
+                    <div
+                      class="process"
+                      :style="{visibility: item.alarmStatus <= 2 && item.status === 1 ? '' : 'hidden'}"
+                    >
+                      <process :length="4" :value="item.picNum"></process>
+                    </div>
                     <span
                       :style="{ color: parseStatus(item).color }"
                       class="status"
@@ -183,13 +188,13 @@
     </div>
     <modal
       :clickToClose="false"
-      height="1200"
-      width="1400"
-      :pivotY="0.8"
-      :pivotX="0"
-      name="video-view"
+      width="1283"
+      height="740"
+      :pivotY="0.2"
+      :pivotX="0.1"
+      name="alarm-image"
     >
-      <video-view @close="$modal.hide('video-view')" :activeVideoId="activeVideoId"></video-view>
+      <alarm-image @close="$modal.hide('alarm-image')" :activeVideoId="activeVideoId"></alarm-image>
     </modal>
     <modal :clickToClose="false" height="740" width="1283" name="device-manage">
       <device-manage :openAddDeviceModal="openAddDeviceModal" @close="$modal.hide('device-manage')"></device-manage>
@@ -201,12 +206,12 @@
 </template>
 
 <script>
-import VideoView from "./components/VideoView";
+import AlarmImage from "./components/AlarmImage";
 import DeviceManage from "./components/DeviceManage";
 import Process from "./components/Process";
 import AddDevice from "./components/AddDevice";
 import Timer from "./components/Timer";
-import Video from "@/components/Video";
+import MyVideo from "@/components/Video";
 import { Chart } from "@antv/g2";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
@@ -320,7 +325,7 @@ export default {
   methods: {
     setActiveVideo(item) {
       this.activeVideoId = item.id;
-      this.$modal.show("video-view");
+      this.$modal.show("alarm-image");
     },
     openAddDeviceModal() {
       this.$modal.show("add-device");
@@ -383,6 +388,46 @@ export default {
         autoFit: true,
         height: 500,
       });
+      this.chart.scale({
+        hours: {
+          range: [0, 1],
+        },
+        count: {
+          nice: true,
+          range: [0, 1],
+        },
+      });
+
+      this.chart.tooltip({
+        showCrosshairs: true,
+        shared: true,
+      });
+
+      this.chart.axis("count", {
+        grid: null,
+      });
+      this.chart.axis("hours", {
+        label: {
+          formatter: val => {
+            return moment().set('hours', val).format('HH:00')
+          }
+        }
+      });
+      this.chart
+        .area()
+        .position("hours*count")
+        .color("type", ["rgba(255,255,255,0.1)"]);
+      this.chart
+        .line()
+        .position("hours*count")
+        .color("type", ["#D249FF", "#2FCCFF"])
+        .shape("smooth");
+      this.chart
+        .point()
+        .position("hours*count")
+        .color("#D249FF")
+        .size(2)
+        .shape("square");
       this.chart.legend({
         position: 'top',
       })
@@ -422,8 +467,8 @@ export default {
         this.alarmMap.lostPackage.num = lostPackageNum;
         this.alarmMap.wrongPackage.num = wrongPackageNum;
         if (Array.isArray(lostPackageNumGroupByHour) && Array.isArray(wrongPackageNumGroupByHour)) {
-          const lostPackageNumGroup = lostPackageNumGroupByHour.map(item => ({hours: moment().set('hours', item.hours).format('HH:00'), count: item.count, type: '遗留包数'}))
-          const wrongPackageNumGroup = wrongPackageNumGroupByHour.map(item => ({hours: moment().set('hours', item.hours).format('HH:00'), count: item.count, type: '错拿包数'}))
+          const lostPackageNumGroup = lostPackageNumGroupByHour.map(item => ({hours: item.hours, count: item.count, type: '遗留包数'}))
+          const wrongPackageNumGroup = wrongPackageNumGroupByHour.map(item => ({hours: item.hours, count: item.count, type: '错拿包数'}))
           this.chartsData = [...lostPackageNumGroup, ...wrongPackageNumGroup]
           this.renderCharts()
         }
@@ -435,39 +480,6 @@ export default {
     },
     renderCharts() {
       this.chart.data(this.chartsData);
-      this.chart.scale({
-        month: {
-          range: [0, 1],
-        },
-        temperature: {
-          nice: true,
-        },
-      });
-
-      this.chart.tooltip({
-        showCrosshairs: true,
-        shared: true,
-      });
-
-      this.chart.axis("count", {
-        grid: null,
-      });
-      this.chart
-        .area()
-        .position("hours*count")
-        .color("type", ["rgba(255,255,255,0.2)"]);
-      this.chart
-        .line()
-        .position("hours*count")
-        .color("type", ["#D249FF", "#2FCCFF"])
-        .shape("smooth");
-      this.chart
-        .point()
-        .position("hours*count")
-        .color("#D249FF")
-        .size(2)
-        .shape("square");
-
       this.chart.render();
     },
     renderSecurityCheckList(securityCheckList) {
@@ -480,11 +492,11 @@ export default {
   },
   destroyed() {},
   components: {
-    VideoView,
+    AlarmImage,
     DeviceManage,
     Process,
     AddDevice,
-    Video,
+    MyVideo,
     Timer,
   },
 };

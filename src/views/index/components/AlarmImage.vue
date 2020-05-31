@@ -2,8 +2,10 @@
   <div class="video-view">
     <div class="content">
       <div class="status">
-        告警
-        <div @click="$emit('close')" class="close"></div>
+        <div class="status-text">告警</div>
+        <div @click="$emit('close')" class="close">
+          <img src="../../../assets/images/close.png" />
+        </div>
       </div>
       <div class="header">
         <div class="info">
@@ -18,11 +20,19 @@
       </div>
       <div class="video-content">
         <div :key="item.seq" v-for="item in videoList" class="video">
-          <img :src="`http://121.37.12.97:8000/image/${item.imgAddress}`" />
+          <img :src="`http://121.37.12.97:8000/image/${item.imgAddress}`" alt />
+        </div>
+        <div :key="item.seq" v-for="item in videoList" class="video">
+          <img :src="`http://121.37.12.97:8000/image/${item.imgAddress}`" alt />
+        </div>
+        <div :key="item.seq" v-for="item in videoList" class="video">
+          <img :src="`http://121.37.12.97:8000/image/${item.imgAddress}`" alt />
+        </div>
+        <div :key="item.seq" v-for="item in videoList" class="video">
+          <img :src="`http://121.37.12.97:8000/image/${item.imgAddress}`" alt />
         </div>
       </div>
     </div>
-    <img src="../../../assets/images/弹出框.png" alt />
   </div>
 </template>
 
@@ -49,17 +59,19 @@ export default {
         })
     },
     initView() {
-      axios.post(`${API_URL}/api/securityCheckDetail//findByBillId/${this.activeVideoId}`)
+      axios.post(`${API_URL}/api/securityCheckDetail/findByBillId/${this.activeVideoId}`)
         .then(res => {
-          if (Array.isArray(res.data)) {
-            this.videoList = res.data
+          if (Array.isArray(res.data.data)) {
+            this.videoList = res.data.data
           }
         })
     }
   },
   mounted() {
     this.initView()
-  }
+  },
+  components: {
+  },
 };
 </script>
 <style lang="less" scoped>
@@ -67,33 +79,26 @@ export default {
     position: relative;
     height: 100%;
     width: 100%;
-    background: transparent;
-    img {
-      position: absolute;
-      left: 0px;
-      top: -60px;
-      z-index: -1;
-    }
+    background: url("../../../assets/images/modalBg.png") 0 0 no-repeat;
     .content {
       position: absolute;
-      left: 100px;
-      top: 90px;
-      height: 900px;
-      width: 1160px;
+      height: 100%;
+      width: 100%;
       .status {
         position: relative;
+        height: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         .close {
-          position: absolute;
-          right: 0;
           height: 20px;
           width: 20px;
-          margin-right: -38px;
-          margin-top: -12px;
           cursor: pointer;
         }
       }
       .header {
-        margin-top: 32px;
+        width: 90%;
+        margin: 32px auto 0;
         display: flex;
         justify-content: space-between;
         .info {
@@ -114,12 +119,16 @@ export default {
       }
       .video-content {
         display: flex;
-        justify-content: space-between;
+        justify-content: space-around;
         flex-wrap: wrap;
+        height: calc(~"100% - 120px");
+        overflow-y: auto;
+        width: 90%;
+        margin: 0 auto;
         .video {
           margin-top: 24px;
-          width: 561px;
-          height: 366px;
+          width: 480px;
+          height: 280px;
           border: 2px solid rgba(255, 255, 255, 1);
           position: relative;
           img {
@@ -127,6 +136,8 @@ export default {
             height: 100%;
             width: 100%;
             top: 0;
+            left: 0;
+            z-index: 1;
           }
         }
       }
