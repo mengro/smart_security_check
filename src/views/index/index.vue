@@ -13,19 +13,31 @@
             <p class="sectionTitle">任务统计</p>
             <ul class="taskList flex_start_v">
               <li>
-                <img src="../../assets/images/icon_1@2x.png" width="100%" height="100%" />
+                <img
+                  src="../../assets/images/icon_1@2x.png"
+                  width="100%"
+                  height="100%"
+                />
                 <p>- 数据流 -</p>
                 <p>{{ taskView.dataNum }}</p>
                 <p>次</p>
               </li>
               <li>
-                <img src="../../assets/images/icon_2@2x.png" width="100%" height="100%" />
+                <img
+                  src="../../assets/images/icon_2@2x.png"
+                  width="100%"
+                  height="100%"
+                />
                 <p>- 视频流 -</p>
                 <p>{{ taskView.videoNum }}</p>
                 <p>分钟</p>
               </li>
               <li>
-                <img src="../../assets/images/icon_3@2x.png" width="100%" height="100%" />
+                <img
+                  src="../../assets/images/icon_3@2x.png"
+                  width="100%"
+                  height="100%"
+                />
                 <p>- 图片流 -</p>
                 <p>{{ taskView.picNum }}</p>
                 <p>张</p>
@@ -90,11 +102,17 @@
                   class="number-item"
                   :key="index"
                   v-for="(item, index) in String(securityCheckTotal).split('')"
-                >{{ item }}</div>
+                >
+                  {{ item }}
+                </div>
               </span>
             </div>
             <ul class="entries-contianer">
-              <li class="entries-item" :key="item.id" v-for="item in deviceViewsList">
+              <li
+                class="entries-item"
+                :key="item.id"
+                v-for="item in deviceViewsList"
+              >
                 <h6 class="entries-item-title">{{ item.name }}</h6>
                 <div class="entries-item-data">
                   <span class="data-count">{{ item.securityCheckNum }}</span>
@@ -107,8 +125,8 @@
                     class="data-status"
                   >
                     {{
-                    deviceStatusMap[item.workStatus] &&
-                    deviceStatusMap[item.workStatus].text
+                      deviceStatusMap[item.workStatus] &&
+                      deviceStatusMap[item.workStatus].text
                     }}
                   </span>
                 </div>
@@ -132,15 +150,20 @@
             <div class="device-content">
               <p class="sectionTitle">安检详情</p>
               <div class="active-device-name">
-                <img src="../../assets/images/loction@2x.png" width="17" height="22" alt />
+                <img
+                  src="../../assets/images/loction@2x.png"
+                  width="17"
+                  height="22"
+                  alt
+                />
                 <span>{{ activeDevice.name }}</span>
               </div>
               <ul class="camera-list">
                 <li :key="item.id" v-for="item in cameraList">
                   <div class="video">
-                    <my-video width="154px" height="100px"></my-video>
+                    <my-video></my-video>
                   </div>
-                  <div class="camera-name">{{ item.name }}</div>
+                  <!-- <div class="camera-name">{{ item.name }}</div> -->
                 </li>
               </ul>
               <ul class="camera-tab">
@@ -152,7 +175,9 @@
                   "
                   :key="item.tabKey"
                   v-for="item in videoTypeTab.subTabs"
-                >{{ item.name }}</li>
+                >
+                  {{ item.name }}
+                </li>
               </ul>
               <div class="video-container">
                 <div class="video-header">
@@ -162,7 +187,7 @@
                 </div>
                 <ul class="video-list">
                   <li
-                    @click="(e) => setActiveVideo(item)"
+                    @click="(e) => setActiveVideo(item, e)"
                     :key="item.time"
                     v-for="item in videoList"
                     class="video-item"
@@ -170,14 +195,20 @@
                     <span class="time">{{ item.gmtCreate }}</span>
                     <div
                       class="process"
-                      :style="{visibility: item.alarmStatus <= 2 && item.status === 1 ? '' : 'hidden'}"
+                      :style="{
+                        visibility:
+                          item.alarmStatus <= 2 && item.status === 1
+                            ? ''
+                            : 'hidden',
+                      }"
                     >
                       <process :length="4" :value="item.picNum"></process>
                     </div>
                     <span
                       :style="{ color: parseStatus(item).color }"
                       class="status"
-                    >{{ parseStatus(item).text }}</span>
+                      >{{ parseStatus(item).text }}</span
+                    >
                   </li>
                 </ul>
               </div>
@@ -189,15 +220,27 @@
     <modal
       :clickToClose="false"
       width="1283"
-      height="740"
+      height="939"
       :pivotY="0.2"
       :pivotX="0.1"
       name="alarm-image"
     >
-      <alarm-image @close="$modal.hide('alarm-image')" :activeVideoId="activeVideoId"></alarm-image>
+      <alarm-image
+        @close="
+          () => {
+            $modal.hide('alarm-image');
+            activeVideoId = null;
+          }
+        "
+        :activeVideoId="activeVideoId"
+        :activeTagTop="activeTagTop"
+      ></alarm-image>
     </modal>
     <modal :clickToClose="false" height="740" width="1283" name="device-manage">
-      <device-manage :openAddDeviceModal="openAddDeviceModal" @close="$modal.hide('device-manage')"></device-manage>
+      <device-manage
+        :openAddDeviceModal="openAddDeviceModal"
+        @close="$modal.hide('device-manage')"
+      ></device-manage>
     </modal>
     <modal :clickToClose="false" height="580" width="782" name="add-device">
       <add-device @close="$modal.hide('add-device')"></add-device>
@@ -216,9 +259,14 @@ import { Chart } from "@antv/g2";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
 import axios from "axios";
-import moment from 'moment'
+import moment from "moment";
 import { API_URL, WS_URL } from "@/constant.js";
-import { deviceStatusMap, alarmStatusMap, statusMap, parseStatus } from "./config";
+import {
+  deviceStatusMap,
+  alarmStatusMap,
+  statusMap,
+  parseStatus,
+} from "./config";
 
 export default {
   name: "index",
@@ -307,6 +355,7 @@ export default {
       },
       videoList: [],
       activeVideoId: null,
+      activeTagTop: 0,
     };
   },
   created() {},
@@ -320,12 +369,13 @@ export default {
       })();
     };
     this.checkSocket();
-    this.initCharts()
+    this.initCharts();
   },
   methods: {
-    setActiveVideo(item) {
+    setActiveVideo(item, e) {
       this.activeVideoId = item.id;
       this.$modal.show("alarm-image");
+      this.activeTagTop = e.target.offsetTop;
     },
     openAddDeviceModal() {
       this.$modal.show("add-device");
@@ -408,10 +458,10 @@ export default {
       });
       this.chart.axis("hours", {
         label: {
-          formatter: val => {
-            return moment().set('hours', val).format('HH:00')
-          }
-        }
+          formatter: (val) => {
+            return moment().set("hours", val).format("HH:00");
+          },
+        },
       });
       this.chart
         .area()
@@ -429,8 +479,8 @@ export default {
         .size(2)
         .shape("square");
       this.chart.legend({
-        position: 'top',
-      })
+        position: "top",
+      });
     },
     initPage() {
       axios.get(`${API_URL}/init`).then((res) => {
@@ -462,15 +512,34 @@ export default {
       }
       // alarmView
       if (alarmView) {
-        const { lostPackageNum, securityCheckNum, wrongPackageNum, lostPackageNumGroupByHour, wrongPackageNumGroupByHour } = alarmView;
+        const {
+          lostPackageNum,
+          securityCheckNum,
+          wrongPackageNum,
+          lostPackageNumGroupByHour,
+          wrongPackageNumGroupByHour,
+        } = alarmView;
         this.alarmMap.securityCheck.num = securityCheckNum;
         this.alarmMap.lostPackage.num = lostPackageNum;
         this.alarmMap.wrongPackage.num = wrongPackageNum;
-        if (Array.isArray(lostPackageNumGroupByHour) && Array.isArray(wrongPackageNumGroupByHour)) {
-          const lostPackageNumGroup = lostPackageNumGroupByHour.map(item => ({hours: item.hours, count: item.count, type: '遗留包数'}))
-          const wrongPackageNumGroup = wrongPackageNumGroupByHour.map(item => ({hours: item.hours, count: item.count, type: '错拿包数'}))
-          this.chartsData = [...lostPackageNumGroup, ...wrongPackageNumGroup]
-          this.renderCharts()
+        if (
+          Array.isArray(lostPackageNumGroupByHour) &&
+          Array.isArray(wrongPackageNumGroupByHour)
+        ) {
+          const lostPackageNumGroup = lostPackageNumGroupByHour.map((item) => ({
+            hours: item.hours,
+            count: item.count,
+            type: "遗留包数",
+          }));
+          const wrongPackageNumGroup = wrongPackageNumGroupByHour.map(
+            (item) => ({
+              hours: item.hours,
+              count: item.count,
+              type: "错拿包数",
+            })
+          );
+          this.chartsData = [...lostPackageNumGroup, ...wrongPackageNumGroup];
+          this.renderCharts();
         }
       }
       // deviceCountView
@@ -488,7 +557,7 @@ export default {
         this.videoList = securityCheckList;
       }
     },
-    parseStatus
+    parseStatus,
   },
   destroyed() {},
   components: {
@@ -503,5 +572,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  @import "./index.less";
+@import "./index.less";
 </style>

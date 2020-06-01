@@ -10,7 +10,6 @@ import VueForm from 'vue-form';
 import 'moment/locale/zh-cn'
 
 Vue.prototype.$video = Video
-
 Vue.config.productionTip = false
 
 Vue.use(VueForm);
