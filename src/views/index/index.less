@@ -354,7 +354,6 @@
 
       .bodyRight {
         width: 28%;
-
         .device-container {
           height: 100%;
 
@@ -445,7 +444,9 @@
 
             .video-container {
               height: calc(~"100% - 300px");
-
+              overflow-y: auto;
+              margin-left: -60px;
+                        padding-left: 60px;
               .video-header {
                 width: 505px;
                 display: flex;
@@ -469,35 +470,45 @@
                   font-size: 16px;
                 }
               }
-
-              .video-list {
+              .video-list-container {
+                position: relative;
                 height: calc(~"100% - 30px");
-                overflow-y: auto;
-
-                li {
-                  cursor: pointer;
-                  display: flex;
-                  justify-content: space-around;
-                  width: 505px;
-                  height: 34px;
-                  line-height: 34px;
-                  font-size: 15px;
-                  font-family: Source Han Sans SC;
-                  font-weight: bold;
-                  background: linear-gradient(0deg,
-                      rgba(18, 41, 106, 0.3) 0%,
-                      rgba(37, 111, 195, 0.5) 100%);
-                  border-radius: 17px;
-                  margin-bottom: 12px;
-
-                  .time {
-                    width: 40%;
-                    text-align: left;
-                  }
-
-                  .process,
-                  .status {
-                    width: 20%;
+                .video-list {
+                  // height: calc(~"100% - 30px");
+                  
+                  li {
+                    cursor: pointer;
+                    display: flex;
+                    justify-content: space-around;
+                    width: 505px;
+                    height: 34px;
+                    line-height: 34px;
+                    font-size: 15px;
+                    font-family: Source Han Sans SC;
+                    font-weight: bold;
+                    background: linear-gradient(0deg,
+                        rgba(18, 41, 106, 0.3) 0%,
+                        rgba(37, 111, 195, 0.5) 100%);
+                    border-radius: 17px;
+                    margin-bottom: 12px;
+                    position: relative;
+                    z-index: 20;
+                    overflow: visible;
+                    .time {
+                      width: 40%;
+                      text-align: left;
+                    }
+  
+                    .process,
+                    .status {
+                      width: 20%;
+                    }
+                    .activeTag {
+                      position: absolute;
+                      left: -65px;
+                      top: 50%;
+                      margin-top: -75px;
+                    }
                   }
                 }
               }

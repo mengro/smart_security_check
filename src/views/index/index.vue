@@ -185,57 +185,56 @@
                   <h6 class="process">进度</h6>
                   <h6 class="status">状态</h6>
                 </div>
-                <ul class="video-list">
-                  <li
-                    @click="(e) => setActiveVideo(item, e)"
-                    :key="item.time"
-                    v-for="item in videoList"
-                    class="video-item"
-                  >
-                    <span class="time">{{ item.gmtCreate }}</span>
-                    <div
-                      class="process"
-                      :style="{
-                        visibility:
-                          item.alarmStatus <= 2 && item.status === 1
-                            ? ''
-                            : 'hidden',
-                      }"
+                <div class="video-list-container">
+                  <ul class="video-list">
+                    <li
+                      @click="(e) => setActiveVideo(item, e)"
+                      :key="item.time"
+                      v-for="item in videoList"
+                      class="video-item"
                     >
-                      <process :length="4" :value="item.picNum"></process>
-                    </div>
-                    <span
-                      :style="{ color: parseStatus(item).color }"
-                      class="status"
-                      >{{ parseStatus(item).text }}</span
-                    >
-                  </li>
-                </ul>
+                      <span class="time">{{ item.gmtCreate }}</span>
+                      <div
+                        class="process"
+                        :style="{
+                          visibility:
+                            item.alarmStatus <= 2 && item.status === 1
+                              ? ''
+                              : 'hidden',
+                        }"
+                      >
+                        <process :length="4" :value="item.picNum"></process>
+                      </div>
+                      <span
+                        :style="{ color: parseStatus(item).color }"
+                        class="status"
+                        >{{ parseStatus(item).text }}</span
+                      >
+                      <img
+                        v-show="activeVideoId === item.id"
+                        class="activeTag"
+                        src="../../assets/images/alarmModalActiveTag.png"
+                        alt=""
+                      />
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <modal
-      :clickToClose="false"
-      width="1283"
-      height="939"
-      :pivotY="0.2"
-      :pivotX="0.1"
-      name="alarm-image"
-    >
-      <alarm-image
-        @close="
-          () => {
-            $modal.hide('alarm-image');
-            activeVideoId = null;
-          }
-        "
-        :activeVideoId="activeVideoId"
-        :activeTagTop="activeTagTop"
-      ></alarm-image>
-    </modal>
+    <alarm-image
+      v-if="!!activeVideoId"
+      @close="
+        () => {
+          $modal.hide('alarm-image');
+          activeVideoId = null;
+        }
+      "
+      :activeVideoId="activeVideoId"
+    ></alarm-image>
     <modal :clickToClose="false" height="740" width="1283" name="device-manage">
       <device-manage
         :openAddDeviceModal="openAddDeviceModal"
@@ -355,7 +354,6 @@ export default {
       },
       videoList: [],
       activeVideoId: null,
-      activeTagTop: 0,
     };
   },
   created() {},
@@ -374,8 +372,6 @@ export default {
   methods: {
     setActiveVideo(item, e) {
       this.activeVideoId = item.id;
-      this.$modal.show("alarm-image");
-      this.activeTagTop = e.target.offsetTop;
     },
     openAddDeviceModal() {
       this.$modal.show("add-device");

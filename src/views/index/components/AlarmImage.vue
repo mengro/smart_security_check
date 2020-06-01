@@ -24,12 +24,6 @@
           />
         </div>
       </div>
-      <img
-        class="activeTag"
-        :style="{ top: `${activeTagTop - 80}px` }"
-        src="../../../assets/images/alarmModalActiveTag.png"
-        alt=""
-      />
     </div>
   </div>
 </template>
@@ -43,7 +37,7 @@ export default {
       videoList: [],
     };
   },
-  props: ["activeVideoId", "activeTagTop"],
+  props: ["activeVideoId"],
   methods: {
     clickHandle() {
       axios
@@ -71,17 +65,19 @@ export default {
   },
   mounted() {
     this.initView();
-    console.log(this.activeTagTop);
   },
   components: {},
 };
 </script>
 <style lang="less" scoped>
 .video-view {
-  position: relative;
-  height: 100%;
-  width: 100%;
+  position: absolute;
+  height: 939px;
+  width: 1283px;
   background: url("../../../assets/images/alarmModalBg.png") 0 0 no-repeat;
+  z-index: 1;
+  top: 80px;
+  right: 30%;
   .content {
     position: absolute;
     height: 100%;
@@ -162,10 +158,6 @@ export default {
           z-index: 1;
         }
       }
-    }
-    .activeTag {
-      position: absolute;
-      right: 0;
     }
   }
 }
