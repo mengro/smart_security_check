@@ -60,7 +60,9 @@
                 </div>
               </li>
             </ul>
-            <div ref="chartsRef" class="charts-container"></div>
+            <div class="charts-container">
+              <my-chart :data="chartsData"></my-chart>
+            </div>
           </div>
           <!-- 设备统计 -->
           <div class="deviceStatistics">
@@ -251,14 +253,13 @@
 import AlarmImage from "./components/AlarmImage";
 import DeviceManage from "./components/DeviceManage";
 import Process from "./components/Process";
+import MyChart from './components/MyChart'
 import AddDevice from "./components/AddDevice";
 import Timer from "./components/Timer";
 import MyVideo from "@/components/Video";
-import { Chart } from "@antv/g2";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
 import axios from "axios";
-import moment from "moment";
 import { API_URL, WS_URL } from "@/constant.js";
 import {
   deviceStatusMap,
@@ -367,7 +368,6 @@ export default {
       })();
     };
     this.checkSocket();
-    this.initCharts();
   },
   methods: {
     setActiveVideo(item, e) {
@@ -428,56 +428,6 @@ export default {
         });
       });
     },
-    initCharts() {
-      this.chart = new Chart({
-        container: this.$refs.chartsRef,
-        autoFit: true,
-        height: 500,
-      });
-      this.chart.scale({
-        hours: {
-          range: [0, 1],
-        },
-        count: {
-          nice: true,
-          range: [0, 1],
-        },
-      });
-
-      this.chart.tooltip({
-        showCrosshairs: true,
-        shared: true,
-      });
-
-      this.chart.axis("count", {
-        grid: null,
-      });
-      this.chart.axis("hours", {
-        label: {
-          formatter: (val) => {
-            return moment().set("hours", val).format("HH:00");
-          },
-        },
-      });
-      this.chart
-        .area()
-        .position("hours*count")
-        .color("type", ["rgba(255,255,255,0.1)"]);
-      this.chart
-        .line()
-        .position("hours*count")
-        .color("type", ["#D249FF", "#2FCCFF"])
-        .shape("smooth");
-      this.chart
-        .point()
-        .position("hours*count")
-        .color("#D249FF")
-        .size(2)
-        .shape("square");
-      this.chart.legend({
-        position: "top",
-      });
-    },
     initPage() {
       axios.get(`${API_URL}/init`).then((res) => {
         if (res.data) {
@@ -535,17 +485,12 @@ export default {
             })
           );
           this.chartsData = [...lostPackageNumGroup, ...wrongPackageNumGroup];
-          this.renderCharts();
         }
       }
       // deviceCountView
       if (deviceView) {
         this.deviceCountView = deviceView;
       }
-    },
-    renderCharts() {
-      this.chart.data(this.chartsData);
-      this.chart.render();
     },
     renderSecurityCheckList(securityCheckList) {
       // videoList
@@ -560,6 +505,7 @@ export default {
     AlarmImage,
     DeviceManage,
     Process,
+    MyChart,
     AddDevice,
     MyVideo,
     Timer,
