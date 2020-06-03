@@ -28,7 +28,11 @@
           <div class="count">{{ 3 }}</div>
           <div class="status">{{ workStatusMap[item.workStatus] }}</div>
           <!-- <div class="remark">{{ item.remark }}</div> -->
-          <div class="action">{{ item.action }}</div>
+          <div class="action">
+            <span @click="(e) => addHandle(item)" class="text-button edit">编辑</span>
+            <span class="line">|</span>
+            <span class="text-button delete">删除</span>
+          </div>
         </div>
       </div>
     </div>
@@ -48,9 +52,9 @@ export default {
   },
   props: ["openAddDeviceModal"],
   methods: {
-    addHandle() {
+    addHandle(device) {
+      this.openAddDeviceModal(device);
       this.$emit("close");
-      this.openAddDeviceModal();
     },
     initList() {
       axios.post(`${API_URL}/api/device/search`, {
@@ -179,6 +183,23 @@ export default {
         text-align: left;
         width: 28%;
         text-indent: 40px;
+        .text-button {
+          display: inline-block;
+          text-indent: 0px;
+          cursor: pointer;
+          &.edit {
+            color: rgba(34, 164, 255, 1);
+          }
+          &.delete {
+            color: rgba(255, 46, 65, 1);
+          }
+        }
+        .line {
+          display: inline-block;
+          text-indent: 0px;
+          color: rgba(255, 255, 255, 0.2);
+          margin: 0 16px;
+        }
       }
     }
   }

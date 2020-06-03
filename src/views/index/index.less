@@ -108,49 +108,7 @@
         height: calc(~"100% - 80px");
         overflow-y: auto;
 
-        .taskStatistics {
-          ul {
-            display: flex;
-            justify-content: space-around;
-            width: 510px;
-
-            li {
-              position: relative;
-              width: 120px;
-              height: 180px;
-              background-size: 100% 100%;
-
-              p {
-                position: absolute;
-                left: 0;
-                right: 0;
-                font-size: 15px;
-
-                &:nth-child(2) {
-                  font-size: 15px;
-                  font-family: Source Han Sans SC;
-                  font-weight: 500;
-                  color: rgba(255, 255, 255, 1);
-                  bottom: 55px;
-                }
-
-                &:nth-child(3) {
-                  bottom: 26px;
-                  font-size: 18px;
-                  .textLinearGradient;
-                }
-
-                &:nth-child(4) {
-                  bottom: 6px;
-                  font-size: 15px;
-                  font-family: Source Han Sans SC;
-                  font-weight: 500;
-                  color: rgba(255, 255, 255, 1);
-                }
-              }
-            }
-          }
-        }
+        .taskStatistics {}
 
         .alarmStatistics {
           .taskList {
@@ -296,7 +254,19 @@
               width: 310px;
               height: 157px;
               margin-bottom: 30px;
-              background: url("../../assets/images/框.png") -6px -6px no-repeat;
+              background: rgba(68, 85, 255, 0.1);
+              border: 0px solid;
+              box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.73), 4px -6px 26px 0px rgba(251, 217, 237, 0.64) inset;
+              cursor: pointer;
+
+
+              &.active {
+                background: url("../../assets/images/框.png") -6px -6px no-repeat;
+              }
+
+              &.error {
+                background: url("../../assets/images/红.png") 0px 0px no-repeat;
+              }
 
               &.placeholder {
                 height: 0;
@@ -354,6 +324,7 @@
 
       .bodyRight {
         width: 28%;
+
         .device-container {
           height: 100%;
 
@@ -447,6 +418,7 @@
               overflow-y: auto;
               margin-left: -60px;
               padding-left: 60px;
+
               .video-header {
                 width: 505px;
                 display: flex;
@@ -470,12 +442,14 @@
                   font-size: 16px;
                 }
               }
+
               .video-list-container {
                 position: relative;
                 height: calc(~"100% - 30px");
+
                 .video-list {
                   // height: calc(~"100% - 30px");
-                  
+
                   li {
                     cursor: pointer;
                     display: flex;
@@ -494,15 +468,17 @@
                     position: relative;
                     z-index: 20;
                     overflow: visible;
+
                     .time {
                       width: 40%;
                       text-align: left;
                     }
-  
+
                     .process,
                     .status {
                       width: 20%;
                     }
+
                     .activeTag {
                       position: absolute;
                       left: -59px;

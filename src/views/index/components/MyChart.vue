@@ -1,19 +1,13 @@
 <template>
-  <div ref="chartsRef"></div>
+  <div class="my-charts" ref="chartsRef"></div>
 </template>
 
 <script>
 import { Chart } from "@antv/g2";
 import moment from "moment";
 export default {
-  props: ['data'],
   mounted() {
     this.initCharts()
-  },
-  watch: {
-    data: () => {
-      this.renderCharts()
-    }
   },
   methods: {
     initCharts() {
@@ -66,14 +60,16 @@ export default {
         position: "top",
       });
     },
-    renderCharts() {
-      this.chart.data(this.data);
+    renderCharts(chartsData) {
+      this.chart.data(chartsData);
       this.chart.render();
     },
   }
 }
 </script>
-
-<style>
-
+<style lang="less" scoped>
+  .my-charts {
+    width: 100%;
+    height: 100%;
+  }
 </style>
