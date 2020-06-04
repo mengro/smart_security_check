@@ -21,7 +21,7 @@
       </div>
       <div class="video-content">
         <div :key="item.seq" v-for="item in alarmList" class="video">
-          <img :src="`http://121.37.12.97:8000/image/${item.imgAddress}`" :alt="item.imgAddress" />
+          <img :src="`${API_URL}/image/${item.imgAddress}`" :alt="item.imgAddress" />
         </div>
       </div>
     </div>
@@ -38,6 +38,7 @@ export default {
       alarmList: [],
       alarmStatusMap,
       deviceStatusMap,
+      API_URL,
     };
   },
   props: ["activeAlarmObj", 'name'],
