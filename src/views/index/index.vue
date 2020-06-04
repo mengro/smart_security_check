@@ -464,17 +464,17 @@ export default {
     parseStatus,
     setActiveDevice(targetDevice) {
       this.activeDevice = targetDevice
-      this.stompClient.send("/app/send", {}, JSON.stringify({
+      this.stompClient.send("/app/send", JSON.stringify({
         type: 'device',
         value: targetDevice.id
-      }));
+      }), {});
     },
     setActiveTab(tabKey) {
       this.videoTypeTab.activeVideoTab = tabKey
-      this.stompClient.send("/app/send", {}, JSON.stringify({
+      this.stompClient.send("/app/send", JSON.stringify({
         type: 'detail',
         value: tabKey
-      }));
+      }), {});
     }
   },
   destroyed() {},
