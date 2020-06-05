@@ -31,7 +31,9 @@
           <div class="action">
             <span @click="(e) => addHandle(item)" class="text-button edit">编辑</span>
             <span class="line">|</span>
-            <span class="text-button delete">删除</span>
+            <span @click="e => onHandle(item.id)" class="text-button">启用</span>
+            <span class="line">|</span>
+            <span @click="e => offHandle(item.id)" class="text-button delete">禁用</span>
           </div>
         </div>
       </div>
@@ -66,6 +68,16 @@ export default {
         }
       })
     },
+    offHandle(id) {
+      axios.post(`${API_URL}/api/device/disable`, {
+        data: {ids: [id]}
+      })
+    },
+    onHandle(id) {
+      axios.post(`${API_URL}/api/device/enable`, {
+        data: {ids: [id]}
+      })
+    }
   },
   mounted(){
     this.initList()

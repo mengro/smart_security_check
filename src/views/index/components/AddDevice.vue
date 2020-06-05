@@ -57,7 +57,7 @@
             </div>
           </validate>
         </div>
-        <div class="form-item">
+        <!-- <div class="form-item">
           <validate tag="label">
             <span class="label">工作状态：</span>
             <v-select
@@ -82,7 +82,7 @@
             >
             </v-select>
           </validate>
-        </div>
+        </div> -->
         <!-- <div class="form-item">
           <validate tag="label">
             <span class="label">备注：</span>
@@ -134,7 +134,6 @@ export default {
         deviceAddressB,
         deviceAddressC,
         nodeId,
-        workStatus,
       } = this.model;
       axios
         .put(`${API_URL}/api/device`, {
@@ -144,21 +143,10 @@ export default {
           deviceAddressB,
           deviceAddressC,
           nodeId,
-          workStatus,
-          status: workStatus,
         })
         .then((res) => {
           this.$emit("close");
         });
-      // if (workStatus === 1) {
-      //   axios.post(`${API_URL}/api/device/disable`, {
-      //     data: {ids: this.currentEditDevice.id}
-      //   })
-      // } else if (workStatus === 2) {
-      //   axios.post(`${API_URL}/api/device/disable`, {
-      //     data: {ids: this.currentEditDevice.id}
-      //   })
-      // }
     },
   },
   mounted() {
