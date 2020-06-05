@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="button-row">
-      <div @click="(e) => addHandle()" class="button active">+ 添加</div>
+      <!-- <div @click="(e) => addHandle()" class="button active">+ 添加</div> -->
     </div>
     <div class="table-container">
       <div class="list-header">
@@ -69,14 +69,16 @@ export default {
       })
     },
     offHandle(id) {
-      axios.post(`${API_URL}/api/device/disable`, {
-        data: {ids: [id]}
-      })
+      axios.post(`${API_URL}/api/device/disable?ids=${id}`)
+        .then(res => {
+          this.initList()
+        })
     },
     onHandle(id) {
-      axios.post(`${API_URL}/api/device/enable`, {
-        data: {ids: [id]}
-      })
+      axios.post(`${API_URL}/api/device/enable?ids=${id}`)
+        .then(res => {
+          this.initList()
+        })
     }
   },
   mounted(){
@@ -138,7 +140,7 @@ export default {
       width: 92%;
       margin: auto;
       .table-body {
-        height: 520px;
+        height: 568px;
         overflow-y: auto;
       }
       .list-header,

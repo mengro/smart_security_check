@@ -3,9 +3,7 @@
     <div class="header">
       <div class="title">
         <div class="point"></div>
-        <div class="name">
-          {{ currentEditDevice ? "更新设备" : "添加设备" }}
-        </div>
+        <div class="name">{{ currentEditDevice ? "更新设备" : "添加设备" }}</div>
       </div>
       <div @click="$emit('close')" class="close">
         <img src="../../../assets/images/close.png" />
@@ -82,7 +80,7 @@
             >
             </v-select>
           </validate>
-        </div> -->
+        </div>-->
         <!-- <div class="form-item">
           <validate tag="label">
             <span class="label">备注：</span>
@@ -128,21 +126,25 @@ export default {
     },
     save() {
       const {
+        id,
         code,
         name,
         deviceAddressA,
         deviceAddressB,
         deviceAddressC,
         nodeId,
+        version,
       } = this.model;
       axios
         .put(`${API_URL}/api/device`, {
+          id,
           code,
           name,
           deviceAddressA,
           deviceAddressB,
           deviceAddressC,
           nodeId,
+          version,
         })
         .then((res) => {
           this.$emit("close");
@@ -157,106 +159,106 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.add-device {
-  height: 580px;
-  width: 782px;
-  background: url("../../../assets/images/addDevice.png") 0 0 no-repeat;
-  .header {
-    display: flex;
-    justify-content: space-between;
-    .title {
-      padding-left: 20px;
-      margin-top: 24px;
-      .point {
-        display: inline-block;
-        vertical-align: middle;
-        width: 8px;
-        height: 8px;
-        background: rgba(76, 251, 244, 1);
+  .add-device {
+    height: 580px;
+    width: 782px;
+    background: url("../../../assets/images/addDevice.png") 0 0 no-repeat;
+    .header {
+      display: flex;
+      justify-content: space-between;
+      .title {
+        padding-left: 20px;
+        margin-top: 24px;
+        .point {
+          display: inline-block;
+          vertical-align: middle;
+          width: 8px;
+          height: 8px;
+          background: rgba(76, 251, 244, 1);
+        }
+        .name {
+          display: inline-block;
+          vertical-align: middle;
+          margin-left: 16px;
+          font-size: 24px;
+          font-family: Source Han Sans SC;
+          font-weight: bold;
+          color: rgba(76, 251, 244, 1);
+        }
       }
-      .name {
-        display: inline-block;
-        vertical-align: middle;
-        margin-left: 16px;
-        font-size: 24px;
-        font-family: Source Han Sans SC;
-        font-weight: bold;
-        color: rgba(76, 251, 244, 1);
-      }
-    }
-    .close {
-      margin-top: 42px;
-      margin-right: 16px;
-      cursor: pointer;
-    }
-  }
-  .form {
-    text-align: left;
-    width: 80%;
-    margin: auto;
-    margin-top: 24px;
-    .mulInput {
-      display: inline-block;
-      width: 400px;
-      vertical-align: top;
-      .input {
-        margin-bottom: 12px;
-      }
-    }
-    .form-item {
-      margin-top: 24px;
-      .label {
-        font-size: 23px;
-        font-family: Source Han Sans SC;
-        font-weight: 500;
-        color: rgba(129, 184, 227, 1);
-        width: 200px;
-        display: inline-block;
-        vertical-align: middle;
-      }
-      .input {
-        color: #fff;
-        text-indent: 16px;
-        font-size: 20px;
-        font-family: Source Han Sans SC;
-        font-weight: 500;
-        width: 400px;
-        height: 40px;
-        display: inline-block;
-        vertical-align: middle;
-        background: rgba(34, 164, 255, 0.1);
-        border: 1px solid rgba(34, 164, 255, 1);
-        border-radius: 10px;
-      }
-    }
-    .buttons-row {
-      margin-top: 24px;
-      padding-left: 200px;
-      .button {
-        width: 50px;
-        text-align: center;
-      }
-      .active {
+      .close {
+        margin-top: 42px;
         margin-right: 16px;
+        cursor: pointer;
+      }
+    }
+    .form {
+      text-align: left;
+      width: 80%;
+      margin: auto;
+      margin-top: 24px;
+      .mulInput {
+        display: inline-block;
+        width: 400px;
+        vertical-align: top;
+        .input {
+          margin-bottom: 12px;
+        }
+      }
+      .form-item {
+        margin-top: 24px;
+        .label {
+          font-size: 23px;
+          font-family: Source Han Sans SC;
+          font-weight: 500;
+          color: rgba(129, 184, 227, 1);
+          width: 200px;
+          display: inline-block;
+          vertical-align: middle;
+        }
+        .input {
+          color: #fff;
+          text-indent: 16px;
+          font-size: 20px;
+          font-family: Source Han Sans SC;
+          font-weight: 500;
+          width: 400px;
+          height: 40px;
+          display: inline-block;
+          vertical-align: middle;
+          background: rgba(34, 164, 255, 0.1);
+          border: 1px solid rgba(34, 164, 255, 1);
+          border-radius: 10px;
+        }
+      }
+      .buttons-row {
+        margin-top: 24px;
+        padding-left: 200px;
+        .button {
+          width: 50px;
+          text-align: center;
+        }
+        .active {
+          margin-right: 16px;
+        }
       }
     }
   }
-}
 </style>
 <style lang="less">
-.v-select {
-  .vs__selected {
-    color: #fff;
+  .v-select {
+    .vs__selected {
+      color: #fff;
+    }
+    .vs__clear,
+    .vs__open-indicator {
+      fill: #fff;
+    }
+    .vs__dropdown-menu {
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .vs__dropdown-option--highlight {
+      background: rgba(34, 164, 255, 1);
+    }
   }
-  .vs__clear,
-  .vs__open-indicator {
-    fill: #fff;
-  }
-  .vs__dropdown-menu {
-    background: rgba(255, 255, 255, 0.9);
-  }
-  .vs__dropdown-option--highlight {
-    background: rgba(34, 164, 255, 1);
-  }
-}
 </style>

@@ -335,9 +335,9 @@ export default {
   },
   methods: {
     setActiveAlarm(item, e) {
-      // if (item.status !== 3) {
-      //   return
-      // }
+      if (item.status !== 3 && item.status !== 4) {
+        return
+      }
       this.activeAlarmObj = item;
     },
     openAddDeviceModal(device) {
