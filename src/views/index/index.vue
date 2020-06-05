@@ -335,7 +335,7 @@ export default {
   },
   methods: {
     setActiveAlarm(item, e) {
-      if (item.status !== 3 && item.status !== 4) {
+      if (item.alarmStatus !== 3 && item.alarmStatus !== 4) {
         return
       }
       this.activeAlarmObj = item;
