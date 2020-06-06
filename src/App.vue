@@ -90,7 +90,13 @@
       color: rgba(18, 28, 58, 1);
     }
   }
-
+  .video-js .vjs-big-play-button {
+    top: 50%!important;
+    left: 50%!important;
+    font-size: 1.5em!important;
+    margin-top: -16px;
+    margin-left: -22px;
+  }
   .g2-tooltip {
     background: rgba(255, 255, 255, 0.7) !important;
   }

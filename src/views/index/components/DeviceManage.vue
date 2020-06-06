@@ -26,14 +26,13 @@
           <div class="num">{{ index }}</div>
           <div class="name">{{ item.name }}</div>
           <div class="count">{{ 3 }}</div>
-          <div class="status">{{ workStatusMap[item.workStatus] }}</div>
+          <div class="status">{{ workStatusMap[item.status] }}</div>
           <!-- <div class="remark">{{ item.remark }}</div> -->
           <div class="action">
             <span @click="(e) => addHandle(item)" class="text-button edit">编辑</span>
             <span class="line">|</span>
-            <span @click="e => onHandle(item.id)" class="text-button">启用</span>
-            <span class="line">|</span>
-            <span @click="e => offHandle(item.id)" class="text-button delete">禁用</span>
+            <span v-if="item.status === 2" @click="e => onHandle(item.id)" class="text-button">启用</span>
+            <span v-else @click="e => offHandle(item.id)" class="text-button delete">禁用</span>
           </div>
         </div>
       </div>
@@ -56,7 +55,7 @@ export default {
   methods: {
     addHandle(device) {
       this.openAddDeviceModal(device);
-      this.$emit("close");
+      // this.$emit("close");
     },
     initList() {
       axios.post(`${API_URL}/api/device/search`, {

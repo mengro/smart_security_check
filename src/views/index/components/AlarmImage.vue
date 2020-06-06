@@ -14,7 +14,7 @@
           <span>告警时间： {{activeAlarmObj.gmtModify}}</span>
           <span>告警地点：{{name}}</span>
         </div>
-        <div class="buttons">
+        <div v-if="activeAlarmObj.alarmStatus !== 3 && activeAlarmObj.alarmStatus !== 4" class="buttons">
           <div @click="$emit('close')" class="button">暂不处理</div>
           <div @click="clickHandle" class="button active">处理完成</div>
         </div>

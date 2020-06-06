@@ -29,6 +29,7 @@ export default {
       this.chart.tooltip({
         showCrosshairs: true,
         shared: true,
+        showTitle: false
       });
 
       this.chart.axis("count", {
@@ -44,7 +45,8 @@ export default {
       this.chart
         .area()
         .position("hours*count")
-        .color("type", ["rgba(255,255,255,0.1)"]);
+        .color("type", ["rgba(255,255,255,0.1)"])
+        .tooltip(false)
       this.chart
         .line()
         .position("hours*count")

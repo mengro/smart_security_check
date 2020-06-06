@@ -124,9 +124,21 @@
                 <span>{{ activeDevice.name }}</span>
               </div>
               <ul class="camera-list">
-                <li :key="item.id" v-for="item in cameraList">
+                <li>
                   <div class="video">
-                    <my-video></my-video>
+                    <my-video videoName="a" :url="activeDevice.deviceAddressA"></my-video>
+                  </div>
+                  <!-- <div class="camera-name">{{ item.name }}</div> -->
+                </li>
+                <li>
+                  <div class="video">
+                    <my-video videoName="b" :url="activeDevice.deviceAddressB"></my-video>
+                  </div>
+                  <!-- <div class="camera-name">{{ item.name }}</div> -->
+                </li>
+                <li>
+                  <div class="video">
+                    <my-video videoName="c" :url="activeDevice.deviceAddressC"></my-video>
                   </div>
                   <!-- <div class="camera-name">{{ item.name }}</div> -->
                 </li>
@@ -335,7 +347,7 @@ export default {
   },
   methods: {
     setActiveAlarm(item, e) {
-      if (item.alarmStatus !== 3 && item.alarmStatus !== 4) {
+      if (item.alarmStatus !== 3 && item.alarmStatus !== 4 && item.status === 1) {
         return
       }
       this.activeAlarmObj = item;
