@@ -5,7 +5,7 @@
 const path = require('path')
 // const fs = require('fs')
 const webpack = require('webpack')
-
+var babelpolyfill = require("babel-polyfill");
 const resolve = dir => {
   return path.join(__dirname, dir)
 }
@@ -108,7 +108,7 @@ module.exports = {
         changeOrigin: true
       }
     },
-    before: app => { }
+    before: app => {}
   },
   // 第三方插件配置
   pluginOptions: {

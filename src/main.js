@@ -4,6 +4,7 @@ import router from "./router";
 import store from "./store";
 import VModal from "vue-js-modal";
 import Video from "video.js";
+import "regenerator/runtime";
 import "video.js/dist/video-js.css";
 // import "videojs-contrib-hls";
 // import 'videojs-flash';
