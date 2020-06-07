@@ -40,7 +40,13 @@ module.exports = {
       .set('assets', resolve('src/assets'))
       .set('service', resolve('src/service'))
       .set('store', resolve('src/store'))
-      .set('router', resolve('src/router'))
+      .set('router', resolve('src/router'));
+    config.module
+      .rule('swf')
+      .test(/\.swf$/)
+      .use('url-loader')
+      .loader('url-loader')
+      .end()
   },
   // configureWebpack: (config) => {
   //   config.resolve.modules[0] = path.resolve(__dirname, 'node_modules');

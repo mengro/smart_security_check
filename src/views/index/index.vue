@@ -73,15 +73,19 @@
                   class="number-item"
                   :key="index"
                   v-for="(item, index) in String(securityCheckTotal).split('')"
-                >{{ item }}</div>
+                >
+                  {{ item }}
+                </div>
               </span>
             </div>
             <ul class="entries-contianer">
               <li
-                :class="`entries-item ${item.workStatus === 3 ? 'error' : ''} ${activeDevice.id === item.id ? 'active' : ''}`"
+                :class="`entries-item ${item.workStatus === 3 ? 'error' : ''} ${
+                  activeDevice.id === item.id ? 'active' : ''
+                }`"
                 :key="item.id"
                 v-for="item in deviceViewsList"
-                @click="e => setActiveDevice(item)"
+                @click="(e) => setActiveDevice(item)"
               >
                 <h6 class="entries-item-title">{{ item.name }}</h6>
                 <div class="entries-item-data">
@@ -95,8 +99,8 @@
                     class="data-status"
                   >
                     {{
-                    deviceStatusMap[item.workStatus] &&
-                    deviceStatusMap[item.workStatus].text
+                      deviceStatusMap[item.workStatus] &&
+                      deviceStatusMap[item.workStatus].text
                     }}
                   </span>
                 </div>
@@ -120,25 +124,39 @@
             <div class="device-content">
               <p class="sectionTitle">安检详情</p>
               <div class="active-device-name">
-                <img src="../../assets/images/loction@2x.png" width="17" height="22" alt />
+                <img
+                  src="../../assets/images/loction@2x.png"
+                  width="17"
+                  height="22"
+                  alt
+                />
                 <span>{{ activeDevice.name }}</span>
               </div>
               <ul class="camera-list">
                 <li>
                   <div class="video">
-                    <my-video videoName="a" :url="activeDevice.deviceAddressA"></my-video>
+                    <my-video
+                      videoName="a"
+                      :url="activeDevice.deviceAddressA"
+                    ></my-video>
                   </div>
                   <!-- <div class="camera-name">{{ item.name }}</div> -->
                 </li>
                 <li>
                   <div class="video">
-                    <my-video videoName="b" :url="activeDevice.deviceAddressB"></my-video>
+                    <my-video
+                      videoName="b"
+                      :url="activeDevice.deviceAddressB"
+                    ></my-video>
                   </div>
                   <!-- <div class="camera-name">{{ item.name }}</div> -->
                 </li>
                 <li>
                   <div class="video">
-                    <my-video videoName="c" :url="activeDevice.deviceAddressC"></my-video>
+                    <my-video
+                      videoName="c"
+                      :url="activeDevice.deviceAddressC"
+                    ></my-video>
                   </div>
                   <!-- <div class="camera-name">{{ item.name }}</div> -->
                 </li>
@@ -152,8 +170,10 @@
                   "
                   :key="item.tabKey"
                   v-for="item in videoTypeTab.subTabs"
-                  @click="e => setActiveTab(item.tabKey)"
-                >{{ item.name }}</li>
+                  @click="(e) => setActiveTab(item.tabKey)"
+                >
+                  {{ item.name }}
+                </li>
               </ul>
               <div class="video-container">
                 <div class="video-header">
@@ -184,7 +204,8 @@
                       <span
                         :style="{ color: parseStatus(item).color }"
                         class="status"
-                      >{{ parseStatus(item).text }}</span>
+                        >{{ parseStatus(item).text }}</span
+                      >
                       <img
                         v-show="activeAlarmObj.id === item.id"
                         class="activeTag"
@@ -212,17 +233,25 @@
       :name="activeDevice.name"
     ></alarm-image>
     <modal :clickToClose="false" height="740" width="1283" name="device-manage">
-      <device-manage :openAddDeviceModal="openAddDeviceModal" @close="$modal.hide('device-manage')"></device-manage>
+      <device-manage
+        :openAddDeviceModal="openAddDeviceModal"
+        @close="$modal.hide('device-manage')"
+      ></device-manage>
     </modal>
     <modal :clickToClose="false" height="580" width="782" name="add-device">
       <add-device
-        @close="() => {
-          currentEditDevice = null
-          $modal.hide('add-device')
-        }"
+        @close="
+          () => {
+            currentEditDevice = null;
+            $modal.hide('add-device');
+          }
+        "
         :currentEditDevice="currentEditDevice"
       ></add-device>
     </modal>
+    <!-- <button
+      @click="e => activeDevice.deviceAddressA = 'rtmp://58.200.131.2:1935/livetv/hunantv'"
+    >aaaa</button>-->
   </div>
 </template>
 
@@ -230,7 +259,7 @@
 import AlarmImage from "./components/AlarmImage";
 import DeviceManage from "./components/DeviceManage";
 import Process from "./components/Process";
-import MyChart from './components/MyChart'
+import MyChart from "./components/MyChart";
 import AddDevice from "./components/AddDevice";
 import TaskCount from "./components/TaskCount";
 import Timer from "./components/Timer";
@@ -347,13 +376,17 @@ export default {
   },
   methods: {
     setActiveAlarm(item, e) {
-      if (item.alarmStatus !== 3 && item.alarmStatus !== 4 && item.status === 1) {
-        return
+      if (
+        item.alarmStatus !== 3 &&
+        item.alarmStatus !== 4 &&
+        item.status === 1
+      ) {
+        return;
       }
       this.activeAlarmObj = item;
     },
     openAddDeviceModal(device) {
-      this.currentEditDevice = device
+      this.currentEditDevice = device;
       this.$modal.show("add-device");
     },
     checkSocket() {
@@ -411,7 +444,7 @@ export default {
           // deviceList
           if (Array.isArray(deviceList)) {
             this.deviceViewsList = deviceList;
-            this.activeDevice = deviceList[0]
+            this.activeDevice = deviceList[0];
           }
           this.securityCheckTotal = securityCheckTotal || 0;
           this.renderSecurityCheckList(securityCheckList);
@@ -459,7 +492,11 @@ export default {
               type: "错拿包数",
             })
           );
-          this.$refs.myCharts && this.$refs.myCharts.renderCharts([...lostPackageNumGroup, ...wrongPackageNumGroup]);
+          this.$refs.myCharts &&
+            this.$refs.myCharts.renderCharts([
+              ...lostPackageNumGroup,
+              ...wrongPackageNumGroup,
+            ]);
         }
       }
       // deviceCountView
@@ -475,19 +512,27 @@ export default {
     },
     parseStatus,
     setActiveDevice(targetDevice) {
-      this.activeDevice = targetDevice
-      this.stompClient.send("/app/send", JSON.stringify({
-        type: 'device',
-        value: targetDevice.id
-      }), {});
+      this.activeDevice = targetDevice;
+      this.stompClient.send(
+        "/app/send",
+        JSON.stringify({
+          type: "device",
+          value: targetDevice.id,
+        }),
+        {}
+      );
     },
     setActiveTab(tabKey) {
-      this.videoTypeTab.activeVideoTab = tabKey
-      this.stompClient.send("/app/send", JSON.stringify({
-        type: 'detail',
-        value: tabKey
-      }), {});
-    }
+      this.videoTypeTab.activeVideoTab = tabKey;
+      this.stompClient.send(
+        "/app/send",
+        JSON.stringify({
+          type: "detail",
+          value: tabKey,
+        }),
+        {}
+      );
+    },
   },
   destroyed() {},
   components: {
@@ -504,5 +549,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  @import "./index.less";
+@import "./index.less";
 </style>
