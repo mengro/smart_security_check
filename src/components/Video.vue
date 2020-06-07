@@ -1,10 +1,10 @@
 <template>
   <video controls autoplay :id="'myvideo' + videoName" class="video-js">
-    <source :src="url" type="application/x-rtsp" />
+    <!-- <source :src="url" type="application/x-rtsp" /> -->
     <!-- <source
       src="rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
       type="application/x-rtsp"
-    /> -->
+    />-->
   </video>
 </template>
 
@@ -15,12 +15,27 @@ export default {
     return {};
   },
   props: ["url", "videoName"],
+  watch: {
+    url(value) {
+      this.play()
+    }
+  },
   mounted() {
-    Streamedian.player("myvideo" + this.videoName, {
-      socket: "wss://streamedian.com/ws/",
-    });
+    this.play()
   },
   methods: {
+    play() {
+      if (this.url) {
+        const playerEle = document.getElementById("myvideo" + this.videoName)
+        const sourceEle = document.createElement('source')
+        sourceEle.type = 'application/x-rtsp'
+        sourceEle.src = this.url
+        playerEle.appendChild(sourceEle)
+        Streamedian.player("myvideo" + this.videoName, {
+          socket: "wss://streamedian.com/ws/",
+        });
+      }
+    },
     initVideo() {
       //初始化视频方法
       // this.$video("#myvideo" + this.videoName, {
@@ -44,8 +59,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.video-js {
-  width: 100%;
-  height: 100%;
-}
+  .video-js {
+    width: 100%;
+    height: 100%;
+  }
 </style>
