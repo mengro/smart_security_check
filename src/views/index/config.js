@@ -32,11 +32,11 @@ export const alarmStatusMap = {
     color: '#47F939'
   },
   3: {
-    text: '遗留包',
+    text: '错拿包',
     color: '#FF3652'
   },
   4: {
-    text: '错拿包',
+    text: '遗留包',
     color: '#FF3652'
   },
 }

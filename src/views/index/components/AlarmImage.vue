@@ -15,7 +15,7 @@
           <span>告警地点：{{name}}</span>
         </div>
         <div
-          v-if="activeAlarmObj.alarmStatus !== 3 && activeAlarmObj.alarmStatus !== 4"
+          v-if="activeAlarmObj.alarmStatus === 3 || activeAlarmObj.alarmStatus === 4"
           class="buttons"
         >
           <div @click="$emit('close')" class="button">暂不处理</div>
