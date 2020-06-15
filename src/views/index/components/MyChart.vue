@@ -50,7 +50,7 @@ export default {
       this.chart
         .line()
         .position("hours*count")
-        .color("type", ["#D249FF", "#2FCCFF"])
+        .color("type", ["#2FCCFF"])
         .shape("smooth");
       this.chart
         .point()

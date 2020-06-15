@@ -1,5 +1,5 @@
 <template>
-  <div class="video-view">
+  <div class="alarm-history-view">
     <div class="content">
       <div class="status">
         <div :style="{color: deviceStatusMap[activeAlarmObj.status].color}" class="status-text">
@@ -84,7 +84,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-  .video-view {
+  .alarm-history-view {
     position: absolute;
     height: 939px;
     width: 1283px;

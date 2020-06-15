@@ -8,33 +8,13 @@
       </div>
       <div class="body flex_start">
         <div class="bodyItem bodyLeft">
-          <!-- 任务统计 -->
+          <!-- 设备统计 -->
           <div class="taskStatistics">
-            <p class="sectionTitle">任务统计</p>
-            <task-count :taskView="taskView"></task-count>
-          </div>
-          <!-- 报警统计 -->
-          <div class="alarmStatistics">
-            <p class="sectionTitle">报警统计</p>
-            <ul class="taskList flex_start_v">
-              <li
-                class="flex_start_v"
-                :style="{ backgroundImage: `url(${item.icon})` }"
-                v-for="item in alarmMap"
-                :key="item.id"
-              >
-                <div>
-                  <p class="num">{{ item.num }}</p>
-                  <p class="text">{{ item.text }}</p>
-                </div>
-              </li>
-            </ul>
-            <div class="charts-container">
-              <my-chart ref="myCharts"></my-chart>
-            </div>
+            <p class="sectionTitle">设备统计</p>
+            <device-count :deviceCountView="deviceCountView"></device-count>
           </div>
           <!-- 设备统计 -->
-          <div class="deviceStatistics">
+          <!-- <div class="deviceStatistics">
             <p class="sectionTitle">设备统计</p>
             <ul class="deviceList flex_start_v">
               <li>
@@ -62,6 +42,34 @@
                 </p>
               </li>
             </ul>
+          </div>-->
+          <!-- 数据统计 -->
+          <div class="alarmStatistics">
+            <p class="sectionTitle">数据统计</p>
+            <!-- <ul class="taskList flex_start_v">
+              <li
+                class="flex_start_v"
+                :style="{ backgroundImage: `url(${item.icon})` }"
+                v-for="item in alarmMap"
+                :key="item.id"
+              >
+                <div>
+                  <p class="num">{{ item.num }}</p>
+                  <p class="text">{{ item.text }}</p>
+                </div>
+              </li>
+            </ul>-->
+            <ul class="data-count">
+              <li class v-for="(item, key) in alarmMap" :key="item.id">
+                <div :style="{ backgroundImage: `url(${item.icon})` }" class="data-detail">
+                  <p class="text">{{ item.text }}</p>
+                  <p class="num">{{ item.num }}</p>
+                </div>
+                <div class="charts-container">
+                  <my-chart :ref="`myCharts-${key}`"></my-chart>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
         <div class="bodyItem bodyCenter">
@@ -73,9 +81,7 @@
                   class="number-item"
                   :key="index"
                   v-for="(item, index) in String(securityCheckTotal).split('')"
-                >
-                  {{ item }}
-                </div>
+                >{{ item }}</div>
               </span>
             </div>
             <ul class="entries-contianer">
@@ -99,8 +105,8 @@
                     class="data-status"
                   >
                     {{
-                      deviceStatusMap[item.workStatus] &&
-                      deviceStatusMap[item.workStatus].text
+                    deviceStatusMap[item.workStatus] &&
+                    deviceStatusMap[item.workStatus].text
                     }}
                   </span>
                 </div>
@@ -124,39 +130,25 @@
             <div class="device-content">
               <p class="sectionTitle">安检详情</p>
               <div class="active-device-name">
-                <img
-                  src="../../assets/images/loction@2x.png"
-                  width="17"
-                  height="22"
-                  alt
-                />
+                <img src="../../assets/images/loction@2x.png" width="17" height="22" alt />
                 <span>{{ activeDevice.name }}</span>
               </div>
               <ul class="camera-list">
                 <li>
                   <div class="video">
-                    <my-video
-                      videoName="a"
-                      :url="activeDevice.deviceAddressA"
-                    ></my-video>
+                    <my-video videoName="a" :url="activeDevice.deviceAddressA"></my-video>
                   </div>
                   <!-- <div class="camera-name">{{ item.name }}</div> -->
                 </li>
                 <li>
                   <div class="video">
-                    <my-video
-                      videoName="b"
-                      :url="activeDevice.deviceAddressB"
-                    ></my-video>
+                    <my-video videoName="b" :url="activeDevice.deviceAddressB"></my-video>
                   </div>
                   <!-- <div class="camera-name">{{ item.name }}</div> -->
                 </li>
                 <li>
                   <div class="video">
-                    <my-video
-                      videoName="c"
-                      :url="activeDevice.deviceAddressC"
-                    ></my-video>
+                    <my-video videoName="c" :url="activeDevice.deviceAddressC"></my-video>
                   </div>
                   <!-- <div class="camera-name">{{ item.name }}</div> -->
                 </li>
@@ -171,9 +163,7 @@
                   :key="item.tabKey"
                   v-for="item in videoTypeTab.subTabs"
                   @click="(e) => setActiveTab(item.tabKey)"
-                >
-                  {{ item.name }}
-                </li>
+                >{{ item.name }}</li>
               </ul>
               <div class="video-container">
                 <div class="video-header">
@@ -204,8 +194,7 @@
                       <span
                         :style="{ color: parseStatus(item).color }"
                         class="status"
-                        >{{ parseStatus(item).text }}</span
-                      >
+                      >{{ parseStatus(item).text }}</span>
                       <img
                         v-show="activeAlarmObj.id === item.id"
                         class="activeTag"
@@ -220,23 +209,20 @@
           </div>
         </div>
       </div>
-    </div>
-    <alarm-image
-      v-if="!!activeAlarmObj.id"
-      @close="
+      <alarm-image
+        v-if="!!activeAlarmObj.id"
+        @close="
         () => {
           $modal.hide('alarm-image');
           activeAlarmObj = {};
         }
       "
-      :activeAlarmObj="activeAlarmObj"
-      :name="activeDevice.name"
-    ></alarm-image>
+        :activeAlarmObj="activeAlarmObj"
+        :name="activeDevice.name"
+      ></alarm-image>
+    </div>
     <modal :clickToClose="false" height="740" width="1283" name="device-manage">
-      <device-manage
-        :openAddDeviceModal="openAddDeviceModal"
-        @close="$modal.hide('device-manage')"
-      ></device-manage>
+      <device-manage :openAddDeviceModal="openAddDeviceModal" @close="$modal.hide('device-manage')"></device-manage>
     </modal>
     <modal :clickToClose="false" height="580" width="782" name="add-device">
       <add-device
@@ -261,7 +247,7 @@ import DeviceManage from "./components/DeviceManage";
 import Process from "./components/Process";
 import MyChart from "./components/MyChart";
 import AddDevice from "./components/AddDevice";
-import TaskCount from "./components/TaskCount";
+import DeviceCount from "./components/DeviceCount";
 import Timer from "./components/Timer";
 import MyVideo from "@/components/Video";
 import SockJS from "sockjs-client";
@@ -470,34 +456,34 @@ export default {
           lostPackageNum,
           securityCheckNum,
           wrongPackageNum,
+          securityCheckNumGroupByHour,
           lostPackageNumGroupByHour,
           wrongPackageNumGroupByHour,
         } = alarmView;
         this.alarmMap.securityCheck.num = securityCheckNum;
         this.alarmMap.lostPackage.num = lostPackageNum;
         this.alarmMap.wrongPackage.num = wrongPackageNum;
-        if (
-          Array.isArray(lostPackageNumGroupByHour) &&
-          Array.isArray(wrongPackageNumGroupByHour)
-        ) {
-          const lostPackageNumGroup = lostPackageNumGroupByHour.map((item) => ({
+        const securityCheckNumGroup = (securityCheckNumGroupByHour || []).map((item) => ({
+          hours: item.hours,
+          count: item.count,
+          type: "过包总数",
+        }));
+        const lostPackageNumGroup = (lostPackageNumGroupByHour || []).map((item) => ({
+          hours: item.hours,
+          count: item.count,
+          type: "遗留包数",
+        }));
+        const wrongPackageNumGroup = (wrongPackageNumGroupByHour || []).map(
+          (item) => ({
             hours: item.hours,
             count: item.count,
-            type: "遗留包数",
-          }));
-          const wrongPackageNumGroup = wrongPackageNumGroupByHour.map(
-            (item) => ({
-              hours: item.hours,
-              count: item.count,
-              type: "错拿包数",
-            })
-          );
-          this.$refs.myCharts &&
-            this.$refs.myCharts.renderCharts([
-              ...lostPackageNumGroup,
-              ...wrongPackageNumGroup,
-            ]);
-        }
+            type: "错拿包数",
+          })
+        );
+        
+        this.$refs['myCharts-securityCheck'][0].renderCharts(securityCheckNumGroup)
+        this.$refs['myCharts-lostPackage'][0].renderCharts(lostPackageNumGroup)
+        this.$refs['myCharts-wrongPackage'][0].renderCharts(wrongPackageNumGroup)
       }
       // deviceCountView
       if (deviceView) {
@@ -541,7 +527,7 @@ export default {
     Process,
     MyChart,
     AddDevice,
-    TaskCount,
+    DeviceCount,
     MyVideo,
     Timer,
   },
@@ -549,5 +535,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "./index.less";
+  @import "./index.less";
 </style>
