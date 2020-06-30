@@ -59,18 +59,13 @@
                 </div>
               </li>
             </ul>-->
-            <ul class="data-count">
-              <li class v-for="(item, key) in alarmMap" :key="item.id">
-                <div :style="{ backgroundImage: `url(${item.icon})` }" class="data-detail">
-                  <p class="text">{{ item.text }}</p>
-                  <p class="num">{{ item.num }}</p>
-                </div>
-                <div class="charts-container">
-                  <my-chart :ref="`myCharts-${key}`"></my-chart>
-                </div>
-              </li>
-            </ul>
+            <div class="charts-container">
+              <my-chart ref="myCharts"></my-chart>
+            </div>
           </div>
+          <!-- 人员统计 -->
+          <p class="sectionTitle">人员统计</p>
+          <person-count></person-count>
         </div>
         <div class="bodyItem bodyCenter">
           <div class="count-container">
@@ -84,7 +79,7 @@
                 >{{ item }}</div>
               </span>
             </div>
-            <ul class="entries-contianer">
+            <!-- <ul class="entries-contianer">
               <li
                 :class="`entries-item ${item.workStatus === 3 ? 'error' : ''} ${
                   activeDevice.id === item.id ? 'active' : ''
@@ -119,7 +114,8 @@
               <li class="entries-item placeholder">占位符</li>
               <li class="entries-item placeholder">占位符</li>
               <li class="entries-item placeholder">占位符</li>
-            </ul>
+            </ul>-->
+            <div id="gis-container" class="gis-container"></div>
           </div>
         </div>
         <div class="bodyItem bodyRight">
@@ -248,12 +244,13 @@ import Process from "./components/Process";
 import MyChart from "./components/MyChart";
 import AddDevice from "./components/AddDevice";
 import DeviceCount from "./components/DeviceCount";
+import PersonCount from "./components/PersonCount";
 import Timer from "./components/Timer";
 import MyVideo from "@/components/Video";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
 import axios from "axios";
-import { API_URL, WS_URL } from "@/constant.js";
+import { WS_URL } from "@/constant.js";
 import {
   deviceStatusMap,
   alarmStatusMap,
@@ -359,8 +356,36 @@ export default {
       })();
     };
     this.checkSocket();
+    this.initGis()
   },
   methods: {
+    initGis() {
+      this.map = new AMap.Map('gis-container', {
+        zoom: 20,
+      });
+      AMap.plugin([
+          'AMap.ToolBar',
+          'AMap.Scale',
+          'AMap.OverView',
+          'AMap.MapType',
+          'AMap.Geolocation',
+      ], function(){
+          // 在图面添加工具条控件，工具条控件集成了缩放、平移、定位等功能按钮在内的组合控件
+          map.addControl(new AMap.ToolBar());
+
+          // 在图面添加比例尺控件，展示地图在当前层级和纬度下的比例尺
+          map.addControl(new AMap.Scale());
+
+          // 在图面添加鹰眼控件，在地图右下角显示地图的缩略图
+          map.addControl(new AMap.OverView({isOpen:true}));
+        
+          // 在图面添加类别切换控件，实现默认图层与卫星图、实施交通图层之间切换的控制
+          map.addControl(new AMap.MapType());
+        
+          // 在图面添加定位控件，用来获取和展示用户主机所在的经纬度位置
+          map.addControl(new AMap.Geolocation());
+      });
+    },
     setActiveAlarm(item, e) {
       if (
         item.alarmStatus !== 3 &&
@@ -422,7 +447,7 @@ export default {
       });
     },
     initPage() {
-      axios.get(`${API_URL}/init`).then((res) => {
+      axios.get('/init').then((res) => {
         if (res.data) {
           this.renderView(res.data);
           const { deviceList, securityCheckTotal, securityCheckList } =
@@ -463,27 +488,34 @@ export default {
         this.alarmMap.securityCheck.num = securityCheckNum;
         this.alarmMap.lostPackage.num = lostPackageNum;
         this.alarmMap.wrongPackage.num = wrongPackageNum;
-        const securityCheckNumGroup = (securityCheckNumGroupByHour || []).map((item) => ({
-          hours: item.hours,
-          count: item.count,
-          type: "过包总数",
-        }));
-        const lostPackageNumGroup = (lostPackageNumGroupByHour || []).map((item) => ({
-          hours: item.hours,
-          count: item.count,
-          type: "遗留包数",
-        }));
-        const wrongPackageNumGroup = (wrongPackageNumGroupByHour || []).map(
-          (item) => ({
+        if (
+          Array.isArray(lostPackageNumGroupByHour) &&
+          Array.isArray(wrongPackageNumGroupByHour)
+        ) {
+          const securityCheckNumGroup = securityCheckNumGroupByHour.map((item) => ({
             hours: item.hours,
             count: item.count,
-            type: "错拿包数",
-          })
-        );
-        
-        this.$refs['myCharts-securityCheck'][0].renderCharts(securityCheckNumGroup)
-        this.$refs['myCharts-lostPackage'][0].renderCharts(lostPackageNumGroup)
-        this.$refs['myCharts-wrongPackage'][0].renderCharts(wrongPackageNumGroup)
+            type: "过包总数",
+          }));
+          const lostPackageNumGroup = lostPackageNumGroupByHour.map((item) => ({
+            hours: item.hours,
+            count: item.count,
+            type: "遗留包数",
+          }));
+          const wrongPackageNumGroup = wrongPackageNumGroupByHour.map(
+            (item) => ({
+              hours: item.hours,
+              count: item.count,
+              type: "错拿包数",
+            })
+          );
+          this.$refs.myCharts &&
+            this.$refs.myCharts.renderCharts([
+              ...securityCheckNumGroup,
+              ...lostPackageNumGroup,
+              ...wrongPackageNumGroup,
+            ]);
+        }
       }
       // deviceCountView
       if (deviceView) {
@@ -525,6 +557,7 @@ export default {
     AlarmImage,
     DeviceManage,
     Process,
+    PersonCount,
     MyChart,
     AddDevice,
     DeviceCount,

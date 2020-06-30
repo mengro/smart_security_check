@@ -3,23 +3,21 @@
     <div class="header">
       <div class="title">
         <div class="point"></div>
-        <div class="name">设备管理</div>
+        <div class="name">人员管理</div>
       </div>
       <div @click="$emit('close')" class="close">
         <img src="../../../assets/images/close.png" />
       </div>
     </div>
     <div class="button-row">
-      <!-- <div @click="(e) => addHandle()" class="button active">+ 添加</div> -->
+      <div @click="(e) => addHandle()" class="button active">+ 新增</div>
     </div>
     <div class="table-container">
       <div class="list-header">
-        <div class="num">序号</div>
-        <div class="name">名称</div>
-        <div class="count">摄像头数</div>
-        <div class="status">状态</div>
-        <!-- <div class="remark">备注</div> -->
-        <div class="action">操作</div>
+        <div class="num">姓名</div>
+        <div class="name">安检区域</div>
+        <div class="count">执勤时间</div>
+        <div class="status">当前状态</div>
       </div>
       <div class="table-body">
         <div class="list-row" :key="item.id" v-for="(item, index) in deviceList">
@@ -27,22 +25,27 @@
           <div class="name">{{ item.name }}</div>
           <div class="count">{{ 3 }}</div>
           <div class="status">{{ workStatusMap[item.status] }}</div>
-          <!-- <div class="remark">{{ item.remark }}</div> -->
-          <div class="action">
-            <span @click="(e) => addHandle(item)" class="text-button edit">编辑</span>
-            <span class="line">|</span>
-            <span v-if="item.status === 2" @click="e => onHandle(item.id)" class="text-button">启用</span>
-            <span v-else @click="e => offHandle(item.id)" class="text-button delete">禁用</span>
-          </div>
         </div>
       </div>
     </div>
+    <modal :clickToClose="false" height="580" width="782" name="person-add">
+      <person-add
+        @close="
+          () => {
+            currentEditDevice = null;
+            $modal.hide('person-add');
+          }
+        "
+        :currentEditDevice="currentEditDevice"
+      ></person-add>
+    </modal>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
 import { workStatusMap } from "../config";
+import PersonAdd from './PersonAdd'
 export default {
   data() {
     return {
@@ -50,11 +53,10 @@ export default {
       workStatusMap,
     };
   },
-  props: ["openAddDeviceModal"],
+  props: [],
   methods: {
     addHandle(device) {
-      this.openAddDeviceModal(device);
-      // this.$emit("close");
+      this.$modal.show('person-add');
     },
     initList() {
       axios.post('/api/device/search', {
@@ -78,6 +80,9 @@ export default {
           this.initList()
         })
     }
+  },
+  components: {
+    PersonAdd
   },
   mounted(){
     this.initList()
@@ -173,9 +178,6 @@ export default {
           font-weight: bold;
           color: rgba(179, 255, 249, 1);
         }
-      }
-      .num {
-        width: 10%;
       }
       .name {
         text-align: left;

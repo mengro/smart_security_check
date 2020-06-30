@@ -105,7 +105,6 @@
 
 <script>
 import axios from "axios";
-import { API_URL } from "@/constant.js";
 export default {
   data() {
     return {
@@ -117,7 +116,7 @@ export default {
   props: ["currentEditDevice"],
   methods: {
     echo(id) {
-      axios.get(`${API_URL}/api/device/${id}`).then((res) => {
+      axios.get('/api/device/${id}').then((res) => {
         const { data } = res.data || {};
         if (data) {
           this.model = data;
@@ -136,7 +135,7 @@ export default {
         version,
       } = this.model;
       axios
-        .put(`${API_URL}/api/device`, {
+        .put('/api/device', {
           id,
           code,
           name,

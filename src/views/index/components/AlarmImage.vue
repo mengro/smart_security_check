@@ -23,8 +23,8 @@
         </div>
       </div>
       <div class="video-content">
-        <div :key="item.seq" v-for="item in alarmList" class="video">
-          <img :src="`${API_URL}/image/${item.imgAddress}`" :alt="item.imgAddress" />
+        <div :key="item.id" v-for="item in alarmList" class="video">
+          <img :src="`/image/${item.imgAddress}`" :alt="item.imgAddress" />
         </div>
       </div>
     </div>
@@ -33,7 +33,6 @@
 
 <script>
 import axios from "axios";
-import { API_URL } from "@/constant.js";
 import { alarmStatusMap, deviceStatusMap } from '../config'
 export default {
   data() {
@@ -41,7 +40,6 @@ export default {
       alarmList: [],
       alarmStatusMap,
       deviceStatusMap,
-      API_URL,
     };
   },
   props: ["activeAlarmObj", 'name'],
@@ -55,7 +53,7 @@ export default {
   methods: {
     clickHandle() {
       axios
-        .put(`${API_URL}/api/securityCheck`, {
+        .put('/api/securityCheck', {
           id: this.activeAlarmObj.id,
           alarmStatus: 2,
         })
@@ -68,7 +66,7 @@ export default {
     initView() {
       axios
         .post(
-          `${API_URL}/api/securityCheckDetail/findByBillId/${this.activeAlarmObj.id}`
+          `/api/securityCheckDetail/findByBillId/${this.activeAlarmObj.id}`
         )
         .then((res) => {
           if (Array.isArray(res.data.data)) {

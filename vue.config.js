@@ -66,53 +66,24 @@ module.exports = {
   devServer: {
     // open: process.platform === 'darwin',
     host: '0.0.0.0',
-    port: 8081, // 端口号
+    port: 8000, // 端口号
     https: false, // https:{type:Boolean}
     open: true, // 配置自动启动浏览器
     // proxy: 'http://localhost:4000' // 配置跨域处理,只有一个代理
     // 配置多个代理
     proxy: {
-      '/api': {
-        // target: 'http://172.16.1.186:8089',          //  英杰
-        // target: 'http://172.16.0.125:8089',          // 子涵
-        // target: "http://172.16.0.103:8089",          // 北瓜
-        // target: 'http://172.16.0.128:8089',          // 恩来
-        // target: "http://172.16.0.229:8088",          // 雪狼
-        // target: 'http://172.16.0.128:8089',          // 崇文
-        // target: 'http://192.168.250.147:8089',       // 迦鑫
-        // target: 'http://172.16.1.223:8089',          // 小鱼
-        // target: 'http://192.168.250.48:8089',        // 明龙
-        // target: 'http://fdpm.goujiawang.com',        // 预发环境
-        target: 'http://tdpm.goujiawang.com', // 测试环境
-        // target: 'http://dpm.goujiawang.com',         // 正式环境
-        // target: 'http://ddpm.goujiawang.com',        // 测试集群环境
-        ws: true,
+      '/dev_api': {
+        target: 'http://121.37.12.97:8000',
         changeOrigin: true,
         pathRewrite: {
-          '^/api': ''
+          '^/dev_api': ''
         }
       },
-      '/mock': {
-        target: 'http://rap2.goujiawang.com:38080/app/mock/19', // 预发环境
+      '/websocket': {
+        target: 'http://121.37.12.97:8000',
         ws: true,
         changeOrigin: true,
-        pathRewrite: {
-          '^/mock': ''
-        }
       },
-      '/oss': {
-        target: 'http://172.16.1.186:8089', // 英杰
-        // target: 'http://172.16.0.93:8089', // 明龙
-        // target: 'http://172.16.0.125:8089',          // 子涵·
-        // target: "http://172.16.0.103:8088",          // 北瓜
-        // target: 'http://172.16.0.138:8089',          // 恩来
-        // target: 'http://tdpm.goujiawang.com', // 测试环境
-        // target: 'http://fdpm.goujiawang.com', // 预发环境
-        // target: 'http://172.16.1.186:8089',
-
-        ws: true,
-        changeOrigin: true
-      }
     },
     before: app => {}
   },
