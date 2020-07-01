@@ -3,13 +3,20 @@
     <div class="personCount-row">
       <span>负责人</span>
       <span class="personCount-manage">
-        张三
-        <span
-          @click="() => {
-            $modal.show('person-manage');
+        <span class="principal-input">
+          <el-input v-if="editing" size="mini" v-model="principal"></el-input>
+          <span v-else-if="principal">{{principal}}</span>
+          <span v-else>待设置</span>
+        </span>
+        <i
+          @click="e => {
+            editing = true
           }"
-          class="edit-button"
-        ></span>
+          v-if="!editing"
+          class="icon el-icon-edit-outline"
+        ></i>
+        <!-- <i @click="editing = false" v-if="editing" class="icon el-icon-close"></i> -->
+        <i @click="changePrincipal" v-if="editing" class="icon el-icon-check"></i>
       </span>
     </div>
     <div class="personCount-row">
@@ -17,7 +24,12 @@
         安检人员
         <span></span>
       </span>
-      <span>到岗情况 ></span>
+      <span
+        class="show-button"
+        @click="() => {
+        $modal.show('person-manage');
+      }"
+      >到岗情况 ></span>
     </div>
     <modal :clickToClose="false" height="740" width="1283" name="person-manage">
       <person-manage
@@ -34,9 +46,33 @@
 </template>
 
 <script>
+import axios from 'axios'
 import PersonManage from './PersonManage'
 export default {
-  props: [],
+  data() {
+    return {
+      editing: false,
+      principal: '',
+    }
+  },
+  mounted() {
+    this.init()
+  },
+  methods: {
+    init() {
+      axios.post({
+        page: 0,
+        pageSize
+      })
+    },
+    changePrincipal() {
+      if (!this.principal) {
+        return
+      }
+      axios.post(`/api/staff/changePrincipal/${this.principal}`)
+      this.editing = false
+    }
+  },
   components: {
     PersonManage,
   }
@@ -53,19 +89,28 @@ export default {
     }
     .personCount-manage {
       display: block;
-    }
-    .edit-button {
-      display: inline-block;
-      vertical-align: top;
-      height: 22px;
-      width: 22px;
-      cursor: pointer;
-      background: url(../../../assets/images/editor.png) center center;
-      background-size: 100% 100%;
-      &:hover {
-        background: url(../../../assets/images/editor.active.png) center center;
-        background-size: 100% 100%;
+      width: 120px;
+      display: flex;
+      justify-content: flex-end;
+      &.editing {
+        border-bottom: 1px solid #fff;
       }
+      .el-input__inner {
+        background: transparent;
+        color: #fff;
+      }
+    }
+    .icon {
+      padding-top: 2px;
+      margin-left: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      &:hover {
+        color: #409eff;
+      }
+    }
+    .show-button {
+      cursor: pointer;
     }
   }
 </style>

@@ -455,7 +455,7 @@ export default {
           // deviceList
           if (Array.isArray(deviceList)) {
             this.deviceViewsList = deviceList;
-            this.activeDevice = deviceList[0];
+            this.activeDevice = deviceList[0] || {};
           }
           this.securityCheckTotal = securityCheckTotal || 0;
           this.renderSecurityCheckList(securityCheckList);

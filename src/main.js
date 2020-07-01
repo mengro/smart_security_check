@@ -6,7 +6,7 @@ import VModal from "vue-js-modal";
 import VueForm from "vue-form";
 import "moment/locale/zh-cn";
 import vSelect from "vue-select";
-import { DatePicker, TimePicker } from 'element-ui'
+import { DatePicker, TimePicker, Input } from 'element-ui'
 import "vue-select/dist/vue-select.css";
 
 import 'video.js/dist/video-js.css'
@@ -20,6 +20,7 @@ Vue.use(VueForm);
 Vue.use(VModal);
 Vue.use(DatePicker)
 Vue.use(TimePicker)
+Vue.use(Input)
 
 new Vue({
   router,

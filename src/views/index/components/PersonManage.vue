@@ -14,14 +14,14 @@
     </div>
     <div class="table-container">
       <div class="list-header">
-        <div class="num">姓名</div>
+        <div class="person">姓名</div>
         <div class="name">安检区域</div>
         <div class="count">执勤时间</div>
         <div class="status">当前状态</div>
       </div>
       <div class="table-body">
         <div class="list-row" :key="item.id" v-for="(item, index) in deviceList">
-          <div class="num">{{ index }}</div>
+          <div class="person">{{ index }}</div>
           <div class="name">{{ item.name }}</div>
           <div class="count">{{ 3 }}</div>
           <div class="status">{{ workStatusMap[item.status] }}</div>
@@ -59,9 +59,9 @@ export default {
       this.$modal.show('person-add');
     },
     initList() {
-      axios.post('/api/device/search', {
+      axios.post('/api/staff/search', {
         page: 0,
-        pageSize: 50
+        pageSize: 100
       }).then(res => {
         if (Array.isArray(res.data.data.list)) {
           this.deviceList = res.data.data.list
@@ -172,26 +172,25 @@ export default {
         );
         border-radius: 2px;
         margin-bottom: 12px;
-        .num {
+        .person {
           font-size: 29px;
+          width: 15%;
           font-family: DIN Alternate;
           font-weight: bold;
           color: rgba(179, 255, 249, 1);
         }
       }
+      .person {
+        text-indent: 30px;
+        width: 15%;
+        text-align: left;
+      }
       .name {
         text-align: left;
         width: 30%;
       }
-      .count {
-        width: 16%;
-      }
       .status {
         width: 16%;
-      }
-      .remark {
-        text-align: left;
-        width: 30%;
       }
       .action {
         text-align: left;
