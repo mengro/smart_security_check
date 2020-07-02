@@ -29,6 +29,14 @@
           <div class="status">{{ workStatusMap[item.status] }}</div>
           <!-- <div class="remark">{{ item.remark }}</div> -->
           <div class="action">
+            <span
+              @click="(e) => {
+              choosePosition(item)
+              $emit('close')
+            }"
+              class="text-button edit"
+            >选择位置</span>
+            <span class="line">|</span>
             <span @click="(e) => addHandle(item)" class="text-button edit">编辑</span>
             <span class="line">|</span>
             <span v-if="item.status === 2" @click="e => onHandle(item.id)" class="text-button">启用</span>
@@ -46,11 +54,11 @@ import { workStatusMap } from "../config";
 export default {
   data() {
     return {
-      deviceList: [],
+      deviceList: [{}],
       workStatusMap,
     };
   },
-  props: ["openAddDeviceModal"],
+  props: ["openAddDeviceModal", "choosePosition"],
   methods: {
     addHandle(device) {
       this.openAddDeviceModal(device);

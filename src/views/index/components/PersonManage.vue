@@ -16,15 +16,17 @@
       <div class="list-header">
         <div class="person">姓名</div>
         <div class="name">安检区域</div>
-        <div class="count">执勤时间</div>
+        <div class="time">执勤时间</div>
         <div class="status">当前状态</div>
       </div>
       <div class="table-body">
         <div class="list-row" :key="item.id" v-for="(item, index) in deviceList">
           <div class="person">{{ index }}</div>
           <div class="name">{{ item.name }}</div>
-          <div class="count">{{ 3 }}</div>
-          <div class="status">{{ workStatusMap[item.status] }}</div>
+          <div class="time">{{ 3 }}</div>
+          <div class="status">
+            <div class="point" :style="{background: statusColorMap[item.status]}"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -44,13 +46,16 @@
 
 <script>
 import axios from 'axios';
-import { workStatusMap } from "../config";
 import PersonAdd from './PersonAdd'
+const statusColorMap = {
+  0: '#ccc',
+  1: '#409eff'
+}
 export default {
   data() {
     return {
       deviceList: [],
-      workStatusMap,
+      statusColorMap,
     };
   },
   props: [],
@@ -189,8 +194,13 @@ export default {
         text-align: left;
         width: 30%;
       }
+      .time {
+        width: 16%;
+        text-align: left;
+      }
       .status {
         width: 16%;
+        text-align: center;
       }
       .action {
         text-align: left;
@@ -213,6 +223,12 @@ export default {
           color: rgba(255, 255, 255, 0.2);
           margin: 0 16px;
         }
+      }
+      .point {
+        height: 20px;
+        width: 20px;
+        display: inline-block;
+        border-radius: 10px;
       }
     }
   }

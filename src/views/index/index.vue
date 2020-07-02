@@ -218,7 +218,11 @@
       ></alarm-image>
     </div>
     <modal :clickToClose="false" height="740" width="1283" name="device-manage">
-      <device-manage :openAddDeviceModal="openAddDeviceModal" @close="$modal.hide('device-manage')"></device-manage>
+      <device-manage
+        :choosePosition="choosePosition"
+        :openAddDeviceModal="openAddDeviceModal"
+        @close="$modal.hide('device-manage')"
+      ></device-manage>
     </modal>
     <modal :clickToClose="false" height="580" width="782" name="add-device">
       <add-device
@@ -363,28 +367,37 @@ export default {
       this.map = new AMap.Map('gis-container', {
         zoom: 20,
       });
-      AMap.plugin([
-          'AMap.ToolBar',
-          'AMap.Scale',
-          'AMap.OverView',
-          'AMap.MapType',
-          'AMap.Geolocation',
-      ], function(){
-          // 在图面添加工具条控件，工具条控件集成了缩放、平移、定位等功能按钮在内的组合控件
-          map.addControl(new AMap.ToolBar());
-
-          // 在图面添加比例尺控件，展示地图在当前层级和纬度下的比例尺
-          map.addControl(new AMap.Scale());
-
-          // 在图面添加鹰眼控件，在地图右下角显示地图的缩略图
-          map.addControl(new AMap.OverView({isOpen:true}));
-        
-          // 在图面添加类别切换控件，实现默认图层与卫星图、实施交通图层之间切换的控制
-          map.addControl(new AMap.MapType());
-        
-          // 在图面添加定位控件，用来获取和展示用户主机所在的经纬度位置
-          map.addControl(new AMap.Geolocation());
+      this.map.on('click', e => {
+        if (this.chooseing) {
+          this.$confirm(`确定设置位置为经度：${e.lnglat.lng}，纬度：${e.lnglat.lat}吗？`, '设置位置')
+            .then(() => {
+              this.addPoint({
+                lng: e.lnglat.lng,
+                lat: e.lnglat.lat,
+              })
+              this.map.setDefaultCursor('pointer')
+            })
+        }
+      })
+    },
+    addPoint({
+      title,
+      lng,
+      lat,
+    } = {}) {
+      var marker = new AMap.Marker({
+          position: new AMap.LngLat(lng, lat),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+          title,
+          draggable: true,
+          raiseOnDrag: true,
       });
+      // 将创建的点标记添加到已有的地图实例：
+      this.map.add(marker);
+    },
+    choosePosition(device) {
+      this.chooseing = true
+      this.map.setDefaultCursor('url("https://webapi.amap.com/theme/v1.3/markers/b/mark_bs.png"), default')
+      // this.addPoint()
     },
     setActiveAlarm(item, e) {
       if (
