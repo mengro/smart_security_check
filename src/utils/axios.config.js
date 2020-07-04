@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-const url = 'http://localhost:8000';
+const url = '/';
 if (process.env.NODE_ENV === 'development') {
-  axios.defaults.baseURL = url + '/dev_api';
+  axios.defaults.baseURL = url + 'dev_api';
 } else {
   axios.defaults.baseURL = url
 }
