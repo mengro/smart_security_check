@@ -54,7 +54,7 @@ import { workStatusMap } from "../config";
 export default {
   data() {
     return {
-      deviceList: [{}],
+      deviceList: [],
       workStatusMap,
     };
   },

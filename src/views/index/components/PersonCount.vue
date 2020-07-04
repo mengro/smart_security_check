@@ -60,10 +60,11 @@ export default {
   },
   methods: {
     init() {
-      axios.post({
-        page: 0,
-        pageSize
-      })
+      axios.get('/api/staff/selectPrincipal')
+        .then(res => {
+          const { data } = res.data
+          this.principal = data ? data.name : ''
+        })
     },
     changePrincipal() {
       if (!this.principal) {

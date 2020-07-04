@@ -368,14 +368,22 @@ export default {
         zoom: 20,
       });
       this.map.on('click', e => {
-        if (this.chooseing) {
+        if (this.chooseingDevice) {
           this.$confirm(`确定设置位置为经度：${e.lnglat.lng}，纬度：${e.lnglat.lat}吗？`, '设置位置')
             .then(() => {
               this.addPoint({
                 lng: e.lnglat.lng,
                 lat: e.lnglat.lat,
               })
+              axios.put('/api/device', {
+                ...this.chooseingDevice,
+                coordinate: {
+                  longitude: e.lnglat.lng,
+                  latitude: e.lnglat.lat,
+                }
+              })
               this.map.setDefaultCursor('pointer')
+              this.chooseingDevice = null
             })
         }
       })
@@ -395,9 +403,8 @@ export default {
       this.map.add(marker);
     },
     choosePosition(device) {
-      this.chooseing = true
+      this.chooseingDevice = device
       this.map.setDefaultCursor('url("https://webapi.amap.com/theme/v1.3/markers/b/mark_bs.png"), default')
-      // this.addPoint()
     },
     setActiveAlarm(item, e) {
       if (
