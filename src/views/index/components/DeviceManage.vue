@@ -23,8 +23,8 @@
       </div>
       <div class="table-body">
         <div class="list-row" :key="item.id" v-for="(item, index) in deviceList">
-          <div class="num">{{ index }}</div>
-          <div class="name">{{ item.name }}</div>
+          <div class="num">{{ index + 1 }}</div>
+          <div class="name">{{ `${item.coordinate}-${item.orientation}-${item.code}` }}</div>
           <div class="count">{{ 3 }}</div>
           <div class="status">{{ workStatusMap[item.status] }}</div>
           <!-- <div class="remark">{{ item.remark }}</div> -->

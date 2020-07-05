@@ -23,6 +23,15 @@ export default {
       timeRange: [new Date(2016, 9, 10, 8, 0, 0), new Date(2016, 9, 10, 18, 0, 0)]
     }
   },
+  props: ['defaultDates', 'defaultRange'],
+  watch: {
+    defaultDates: function (value) {
+      this.dates = value
+    },
+    defaultRange: function (value) {
+      this.timeRange = value
+    },
+  },
 };
 </script>
 <style lang="less">

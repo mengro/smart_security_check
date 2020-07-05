@@ -11,23 +11,12 @@
     </div>
     <div class="form">
       <vue-form :state="formstate" @submit.prevent="onSubmit">
+        <div class="form-item"></div>
         <div class="form-item">
           <validate tag="label">
-            <span class="label">编码：</span>
+            <span class="label">坐标地址：</span>
             <input
-              autocomplete="off"
-              type="text"
-              class="input"
-              v-model="model.code"
-              required
-              name="code"
-            />
-          </validate>
-        </div>
-        <div class="form-item">
-          <validate tag="label">
-            <span class="label">场馆名：</span>
-            <input
+              :style="{width: '120px'}"
               autocomplete="off"
               type="text"
               class="input"
@@ -36,17 +25,28 @@
               name="coordinate"
             />
           </validate>
-        </div>
-        <div class="form-item">
           <validate tag="label">
-            <span class="label">方位：</span>
             <input
+              :style="{width: '120px', marginLeft: '17px'}"
+              placeholder="方位"
               autocomplete="off"
               type="text"
               class="input"
               v-model="model.orientation"
               required
               name="orientation"
+            />
+          </validate>
+          <validate tag="label">
+            <input
+              :style="{width: '120px', marginLeft: '17px'}"
+              placeholder="设备号"
+              autocomplete="off"
+              type="text"
+              class="input"
+              v-model="model.code"
+              required
+              name="code"
             />
           </validate>
         </div>
@@ -154,8 +154,9 @@ export default {
     save() {
       const {
         id,
+        coordinate,
+        orientation,
         code,
-        name,
         deviceAddressA,
         deviceAddressB,
         deviceAddressC,
@@ -165,8 +166,9 @@ export default {
       axios
         .put('/api/device', {
           id,
+          coordinate,
+          orientation,
           code,
-          name,
           deviceAddressA,
           deviceAddressB,
           deviceAddressC,

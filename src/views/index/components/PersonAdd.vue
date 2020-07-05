@@ -45,7 +45,14 @@
             <span class="label">执勤时间：</span>
             <div class="input dateTimeGroup">
               <div v-for="(item, index) in dateTimeList" :key="index" class="dateTimeGroup-item">
-                <date-time-group ref="dateValues" autocomplete="off" type="text" required />
+                <date-time-group
+                  :defaultDates="item.defaultDates"
+                  :defaultRange="item.defaultRange"
+                  ref="dateValues"
+                  autocomplete="off"
+                  type="text"
+                  required
+                />
               </div>
             </div>
           </validate>
@@ -75,8 +82,7 @@ export default {
       },
       dateTimeList: [
         {
-          date: "",
-          time: [],
+          defaultDates: "",
         },
       ],
     };
@@ -85,7 +91,7 @@ export default {
     deviceListSelect() {
       return this.deviceList.map(item => {
         return {
-          code: item.deviceId,
+          code: item.id,
           label: `${item.coordinate}-${item.orientation}-${item.code}`
         }
       })
@@ -94,14 +100,6 @@ export default {
   props: ["currentEditStaff"],
   components: { DateTimeGroup },
   methods: {
-    echo(id) {
-      axios.get("/api/device/${id}").then((res) => {
-        const { data } = res.data || {};
-        if (data) {
-          this.forms = data;
-        }
-      });
-    },
     addDateTime() {
       this.dateTimeList.push({
         date: "",
@@ -165,6 +163,26 @@ export default {
   },
   mounted() {
     if (this.currentEditStaff) {
+      const staffWorkTimeList = []
+      const someMap = {}
+      if (Array.isArray(this.currentEditStaff.staffWorkTimeList)) {
+        this.currentEditStaff.staffWorkTimeList.forEach(time => {
+          const key = time.workTimeStart + ',' + time.workTimeEnd
+          if (someMap[key]) {
+            someMap[key].push(moment(time.workDate).toDate())
+          } else {
+            someMap[key] = [moment(time.workDate).toDate()]
+          }
+        })
+        Object.keys(someMap).forEach(key => {
+          const [start, end] = key.split(',')
+          staffWorkTimeList.push({
+            defaultDates: someMap[key],
+            defaultRange: [moment('2020-01-01 ' + start).toDate(), moment('2020-01-01 ' + end).toDate()]
+          })
+        })
+        this.dateTimeList = staffWorkTimeList
+      }
       this.forms = this.currentEditStaff
     }
     this.initList()

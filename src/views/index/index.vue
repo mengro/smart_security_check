@@ -116,13 +116,11 @@
               <li class="entries-item placeholder">占位符</li>
             </ul>-->
             <div id="gis-container" class="gis-container"></div>
+            <div @click="$modal.show('device-manage')" class="button device-header">设备管理</div>
           </div>
         </div>
         <div class="bodyItem bodyRight">
           <div class="device-container">
-            <div @click="$modal.show('device-manage')" class="device-header">
-              <!-- 设备管理按钮 -->
-            </div>
             <div class="device-content">
               <p class="sectionTitle">安检详情</p>
               <div class="active-device-name">
