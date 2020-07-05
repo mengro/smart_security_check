@@ -13,14 +13,40 @@
       <vue-form :state="formstate" @submit.prevent="onSubmit">
         <div class="form-item">
           <validate tag="label">
-            <span class="label">名称：</span>
+            <span class="label">编码：</span>
             <input
               autocomplete="off"
               type="text"
               class="input"
-              v-model="model.name"
+              v-model="model.code"
               required
-              name="name"
+              name="code"
+            />
+          </validate>
+        </div>
+        <div class="form-item">
+          <validate tag="label">
+            <span class="label">场馆名：</span>
+            <input
+              autocomplete="off"
+              type="text"
+              class="input"
+              v-model="model.coordinate"
+              required
+              name="coordinate"
+            />
+          </validate>
+        </div>
+        <div class="form-item">
+          <validate tag="label">
+            <span class="label">方位：</span>
+            <input
+              autocomplete="off"
+              type="text"
+              class="input"
+              v-model="model.orientation"
+              required
+              name="orientation"
             />
           </validate>
         </div>
@@ -116,7 +142,9 @@ export default {
   props: ["currentEditDevice"],
   methods: {
     echo(id) {
-      axios.get('/api/device/${id}').then((res) => {
+      console.log(id);
+      
+      axios.get(`/api/device/${id}`).then((res) => {
         const { data } = res.data || {};
         if (data) {
           this.model = data;

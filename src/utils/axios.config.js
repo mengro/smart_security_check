@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const url = location.hostname;
 if (process.env.NODE_ENV === 'development') {
-  axios.defaults.baseURL = url + 'dev_api';
+  axios.defaults.baseURL = 'http://' + url + ':8000/dev_api';
 } else {
   axios.defaults.baseURL = 'http://' + url + ':8000'
 }

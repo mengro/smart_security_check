@@ -35,11 +35,9 @@
       <person-manage
         @close="
           () => {
-            currentEditDevice = null;
             $modal.hide('person-manage');
           }
         "
-        :currentEditDevice="currentEditDevice"
       ></person-manage>
     </modal>
   </div>

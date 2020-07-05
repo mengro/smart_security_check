@@ -3,7 +3,7 @@
     <div class="header">
       <div class="title">
         <div class="point"></div>
-        <div class="name">新增人员</div>
+        <div class="name">{{currentEditStaff ? '编辑人员' : '新增人员'}}</div>
       </div>
       <div @click="$emit('close')" class="close">
         <img src="../../../assets/images/close.png" />
@@ -86,12 +86,12 @@ export default {
       return this.deviceList.map(item => {
         return {
           code: item.deviceId,
-          label: item.name
+          label: `${item.coordinate}-${item.orientation}-${item.code}`
         }
       })
     }
   },
-  props: ["currentEditPerson"],
+  props: ["currentEditStaff"],
   components: { DateTimeGroup },
   methods: {
     echo(id) {
@@ -109,7 +109,7 @@ export default {
       });
     },
     initList() {
-      axios.post('/api/staff/search', {
+      axios.post('/api/device/search', {
         page: 0,
         pageSize: 100
       }).then(res => {
@@ -141,8 +141,14 @@ export default {
         name,
         version,
       } = this.forms;
+      let method
+      if (id) {
+        method = 'put'
+      } else {
+        method = 'post'
+      }
       axios
-        .put("/api/staff", {
+        [method]("/api/staff", {
           id,
           deviceId,
           name,
@@ -151,13 +157,15 @@ export default {
           staffWorkTimeList,
         })
         .then((res) => {
+          this.initList()
+          this.currentEditStaff = null
           this.$emit("close");
         });
     },
   },
   mounted() {
-    if (this.currentEditPerson && this.currentEditPerson.id) {
-      this.echo(this.currentEditPerson.id);
+    if (this.currentEditStaff) {
+      this.forms = this.currentEditStaff
     }
     this.initList()
   },

@@ -127,7 +127,7 @@
               <p class="sectionTitle">安检详情</p>
               <div class="active-device-name">
                 <img src="../../assets/images/loction@2x.png" width="17" height="22" alt />
-                <span>{{ activeDevice.name }}</span>
+                <span>{{ `${activeDevice.coordinate}-${activeDevice.orientation}-${activeDevice.code}` }}</span>
               </div>
               <ul class="camera-list">
                 <li>
@@ -261,6 +261,22 @@ import {
   statusMap,
   parseStatus,
 } from "./config";
+import markerActivePng from '@/assets/images/marker-active.png'
+import markerPng from '@/assets/images/marker.png'
+
+const activeMarkerIcon = new AMap.Icon({
+    size: new AMap.Size(24, 30),    // 图标尺寸
+    image: markerActivePng,  // Icon的图像
+    imageOffset: new AMap.Pixel(0, 0),  // 图像相对展示区域的偏移量，适于雪碧图等
+    imageSize: new AMap.Size(24, 30)   // 根据所设置的大小拉伸或压缩图片
+});
+
+const markerIcon = new AMap.Icon({
+    size: new AMap.Size(24, 30),    // 图标尺寸
+    image: markerPng,  // Icon的图像
+    imageOffset: new AMap.Pixel(0, 0),  // 图像相对展示区域的偏移量，适于雪碧图等
+    imageSize: new AMap.Size(24, 30)   // 根据所设置的大小拉伸或压缩图片
+});
 
 export default {
   name: "index",
@@ -367,40 +383,71 @@ export default {
       this.map = new AMap.Map('gis-container', {
         zoom: 20,
       });
-      this.map.on('click', e => {
-        if (this.chooseingDevice) {
-          this.$confirm(`确定设置位置为经度：${e.lnglat.lng}，纬度：${e.lnglat.lat}吗？`, '设置位置')
+      this.map.on('click', this.addDevicePoint)
+    },
+    addDevicePoint(e) {
+      const device = this.chooseingDevice
+      this.updateDevicePoint(e)
+        .then(e => {
+          this.addPoint({
+            lng: e.lnglat.lng,
+            lat: e.lnglat.lat,
+          }, device)
+          this.map.setDefaultCursor('pointer')
+        })
+    },
+    updateDevicePoint(e) {
+      if (this.chooseingDevice) {
+          return this.$confirm(`确定设置位置为经度：${e.lnglat.lng}，纬度：${e.lnglat.lat}吗？`, '设置位置')
             .then(() => {
-              this.addPoint({
-                lng: e.lnglat.lng,
-                lat: e.lnglat.lat,
-              })
               axios.put('/api/device', {
-                ...this.chooseingDevice,
-                coordinate: {
-                  longitude: e.lnglat.lng,
-                  latitude: e.lnglat.lat,
-                }
+                id: this.chooseingDevice.id,
+                code: this.chooseingDevice.code,
+                coordinate: this.chooseingDevice.coordinate,
+                orientation: this.chooseingDevice.orientation,
+                deviceAddressA: this.chooseingDevice.deviceAddressA,
+                deviceAddressB: this.chooseingDevice.deviceAddressB,
+                deviceAddressC: this.chooseingDevice.deviceAddressC,
+                nodeId: this.chooseingDevice.nodeId,
+                workStatus: this.chooseingDevice.workStatus,
+                workTime: this.chooseingDevice.workTime,
+                alarmStatus: this.chooseingDevice.alarmStatus,
+                version: this.chooseingDevice.version,
+                longitude: e.lnglat.lng,
+                latitude: e.lnglat.lat,
               })
-              this.map.setDefaultCursor('pointer')
               this.chooseingDevice = null
+              return e
             })
-        }
-      })
+      }
     },
     addPoint({
       title,
       lng,
       lat,
-    } = {}) {
+    } = {}, device, active) {
       var marker = new AMap.Marker({
           position: new AMap.LngLat(lng, lat),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
           title,
+          icon: active ? activeMarkerIcon : markerIcon,
           draggable: true,
           raiseOnDrag: true,
       });
+      marker.on('dragend', e => {
+        this.chooseingDevice = device
+        this.updateDevicePoint(e)
+      })
+      marker.on('click', e => this.markerClickHandle(marker, device))
       // 将创建的点标记添加到已有的地图实例：
       this.map.add(marker);
+    },
+    markerClickHandle(marker, device) {
+      if (this.lastMarker) {
+        this.lastMarker.setIcon(markerIcon)
+      }
+      this.setActiveDevice(device)
+      marker.setIcon(activeMarkerIcon)
+      this.lastMarker = marker
     },
     choosePosition(device) {
       this.chooseingDevice = device
@@ -415,6 +462,23 @@ export default {
         return;
       }
       this.activeAlarmObj = item;
+    },
+    addDeviceListToMap(deviceList) {
+      deviceList.forEach((device, index) => {
+        if (device.latitude && device.longitude) {
+          this.addPoint({
+            title: device.name,
+            lng: device.longitude,
+            lat: device.latitude,
+          }, device, index === 0)
+        }
+      })
+      if (deviceList[0]) {
+        this.map.setCenter([
+          deviceList[0].longitude,
+          deviceList[0].latitude,
+        ])
+      }
     },
     openAddDeviceModal(device) {
       this.currentEditDevice = device;
@@ -476,6 +540,7 @@ export default {
           if (Array.isArray(deviceList)) {
             this.deviceViewsList = deviceList;
             this.activeDevice = deviceList[0] || {};
+            this.addDeviceListToMap(deviceList)
           }
           this.securityCheckTotal = securityCheckTotal || 0;
           this.renderSecurityCheckList(securityCheckList);

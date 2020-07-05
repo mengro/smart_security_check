@@ -1,5 +1,5 @@
 <template>
-  <div class="device-manage">
+  <div class="staff-manage">
     <div class="header">
       <div class="title">
         <div class="point"></div>
@@ -10,7 +10,17 @@
       </div>
     </div>
     <div class="button-row">
-      <div @click="(e) => addHandle()" class="button active">+ 新增</div>
+      <div :style="{'margin-right': '16px'}" @click="(e) => addHandle()" class="button active">新增</div>
+      <div
+        v-if="!editing"
+        @click="(e) => {
+        editing = true  
+      }"
+        class="button active"
+      >编辑</div>
+      <div v-else @click="(e) => {
+        editing = false  
+      }" class="button active">完成</div>
     </div>
     <div class="table-container">
       <div class="list-header">
@@ -18,14 +28,21 @@
         <div class="name">安检区域</div>
         <div class="time">执勤时间</div>
         <div class="status">当前状态</div>
+        <div v-if="editing" class="action">操作</div>
       </div>
       <div class="table-body">
-        <div class="list-row" :key="item.id" v-for="(item, index) in deviceList">
-          <div class="person">{{ index }}</div>
-          <div class="name">{{ item.name }}</div>
-          <div class="time">{{ 3 }}</div>
+        <div class="list-row" :key="item.id" v-for="item in staffList">
+          <div class="person">{{ item.name }}</div>
+          <div class="name">{{ item.deviceName }}</div>
+          <div class="time">{{ item.workTime }}</div>
           <div class="status">
-            <div class="point" :style="{background: statusColorMap[item.status]}"></div>
+            <div class="point" :style="{background: statusColorMap[String(item.status)]}"></div>
+          </div>
+          <!-- <div class="remark">{{ item.remark }}</div> -->
+          <div v-if="editing" class="action">
+            <span @click="(e) => addHandle(item)" class="text-button edit">编辑</span>
+            <span class="line">|</span>
+            <span @click="e => deleteHandle(item.id)" class="text-button delete">删除</span>
           </div>
         </div>
       </div>
@@ -34,11 +51,11 @@
       <person-add
         @close="
           () => {
-            currentEditDevice = null;
+            currentEditStaff = null;
             $modal.hide('person-add');
           }
         "
-        :currentEditDevice="currentEditDevice"
+        :currentEditStaff="currentEditStaff"
       ></person-add>
     </modal>
   </div>
@@ -48,43 +65,41 @@
 import axios from 'axios';
 import PersonAdd from './PersonAdd'
 const statusColorMap = {
-  0: '#ccc',
-  1: '#409eff'
+  '0': '#ccc',
+  '1': '#409eff'
 }
 export default {
   data() {
     return {
-      deviceList: [],
+      staffList: [],
       statusColorMap,
+      editing: false,
+      currentEditStaff: null,
     };
   },
   props: [],
   methods: {
-    addHandle(device) {
+    addHandle(staff) {
+      this.currentEditStaff = staff
       this.$modal.show('person-add');
     },
     initList() {
       axios.post('/api/staff/search', {
         page: 0,
-        pageSize: 100
+        pageSize: 100,
+        type: 2
       }).then(res => {
         if (Array.isArray(res.data.data.list)) {
-          this.deviceList = res.data.data.list
+          this.staffList = res.data.data.list
         }
       })
     },
-    offHandle(id) {
-      axios.post(`/api/device/disable?ids=${id}`)
+    deleteHandle(id) {
+      axios.delete(`/api/staff/${id}`)
         .then(res => {
           this.initList()
         })
     },
-    onHandle(id) {
-      axios.post(`/api/device/enable?ids=${id}`)
-        .then(res => {
-          this.initList()
-        })
-    }
   },
   components: {
     PersonAdd
@@ -95,7 +110,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-  .device-manage {
+  .staff-manage {
     height: 740px;
     width: 1283px;
     background: url("../../../assets/images/modalBg.png") 0 0 no-repeat;
@@ -122,7 +137,6 @@ export default {
           vertical-align: middle;
           width: 8px;
           height: 8px;
-          background: rgba(76, 251, 244, 1);
         }
         .name {
           display: inline-block;
@@ -179,7 +193,7 @@ export default {
         margin-bottom: 12px;
         .person {
           font-size: 29px;
-          width: 15%;
+          width: 12%;
           font-family: DIN Alternate;
           font-weight: bold;
           color: rgba(179, 255, 249, 1);
@@ -187,12 +201,12 @@ export default {
       }
       .person {
         text-indent: 30px;
-        width: 15%;
+        width: 12%;
         text-align: left;
       }
       .name {
         text-align: left;
-        width: 30%;
+        width: 35%;
       }
       .time {
         width: 16%;
