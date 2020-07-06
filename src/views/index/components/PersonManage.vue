@@ -34,9 +34,15 @@
         <div class="list-row" :key="item.id" v-for="item in staffList">
           <div class="person">{{ item.name }}</div>
           <div class="name">{{ item.deviceName }}</div>
-          <div class="time">{{ item.workTime }}</div>
+          <div class="time">
+            <ul>
+              <li v-for="time in item.staffWorkTimeList" :key="time.id">
+                {{ `${time.workDate.slice(5)} ${time.workTimeStart.slice(0, 5)}~${time.workTimeEnd.slice(0, 5)}，` }}
+              </li>
+            </ul>
+          </div>
           <div class="status">
-            <div class="point" :style="{background: statusColorMap[String(item.status)]}"></div>
+            <div class="point" :style="{background: statusColorMap[String(item.workStatus)]}"></div>
           </div>
           <!-- <div class="remark">{{ item.remark }}</div> -->
           <div v-if="editing" class="action">
@@ -56,6 +62,7 @@
           }
         "
         :currentEditStaff="currentEditStaff"
+        :refreshList="initList"
       ></person-add>
     </modal>
   </div>
@@ -66,7 +73,7 @@ import axios from 'axios';
 import PersonAdd from './PersonAdd'
 const statusColorMap = {
   '0': '#ccc',
-  '1': '#409eff'
+  '1': 'rgba(52, 239, 253, 1)'
 }
 export default {
   data() {
@@ -206,11 +213,22 @@ export default {
       }
       .name {
         text-align: left;
-        width: 35%;
+        width: 20%;
+        white-space: pre-wrap;
+        word-break: break-all;
+        padding: 0 16px;
       }
       .time {
-        width: 16%;
+        width: 44%;
         text-align: left;
+        ul {
+          display: flex;
+          justify-content: flex-start;
+          flex-wrap: wrap;
+          li {
+            white-space: nowrap;
+          }
+        }
       }
       .status {
         width: 16%;
@@ -218,7 +236,7 @@ export default {
       }
       .action {
         text-align: left;
-        width: 28%;
+        width: 20%;
         text-indent: 40px;
         .text-button {
           display: inline-block;

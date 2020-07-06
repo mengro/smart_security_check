@@ -1,15 +1,13 @@
 <template>
   <div>
     <div class="dateTimeGroup-container">
-      <el-date-picker type="dates" class="dateTimeGroup-date" v-model="dates" placeholder="选择日期"></el-date-picker>
+      <el-date-picker format="MM-DD" type="dates" class="dateTimeGroup-date" v-model="dates" placeholder="选择日期（多选）"></el-date-picker>
       <el-time-picker
         class="dateTimeGroup-time"
         is-range
         v-model="timeRange"
-        range-separator="至"
-        start-placeholder="开始时间"
-        end-placeholder="结束时间"
-        placeholder="选择时间范围"
+        format="HH:mm"
+        range-separator="-"
       ></el-time-picker>
     </div>
   </div>
@@ -41,10 +39,10 @@ export default {
     justify-content: space-between;
     flex-wrap: nowrap;
     .dateTimeGroup-date {
-      width: 120px;
+      width: 360px;
     }
     .dateTimeGroup-time {
-      width: 300px;
+      width: 140px;
     }
     .el-input__prefix {
       display: none;

@@ -6,7 +6,7 @@ import VModal from "vue-js-modal";
 import VueForm from "vue-form";
 import "moment/locale/zh-cn";
 import vSelect from "vue-select";
-import { DatePicker, TimePicker, Input, MessageBox } from 'element-ui'
+import { DatePicker, TimePicker, Input, MessageBox, Message } from 'element-ui'
 import "vue-select/dist/vue-select.css";
 
 import 'video.js/dist/video-js.css'
@@ -15,6 +15,7 @@ import '@/utils/axios.config'
 Vue.component("v-select", vSelect);
 Vue.prototype.$video = window.videojs || videojs;
 Vue.prototype.$confirm = MessageBox
+Vue.prototype.$message = Message
 Vue.config.productionTip = false;
 
 Vue.use(VueForm);

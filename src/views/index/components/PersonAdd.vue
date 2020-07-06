@@ -15,6 +15,7 @@
           <validate tag="label">
             <span class="label">姓名：</span>
             <input
+              placeholder="请输入姓名"
               autocomplete="off"
               type="text"
               class="input"
@@ -97,7 +98,7 @@ export default {
       })
     }
   },
-  props: ["currentEditStaff"],
+  props: ["currentEditStaff", "refreshList"],
   components: { DateTimeGroup },
   methods: {
     addDateTime() {
@@ -139,6 +140,24 @@ export default {
         name,
         version,
       } = this.forms;
+      if (!name) {
+        return this.$message({
+          message: '请填写人员名称',
+          type: 'error',
+        });
+      }
+      if (!deviceId) {
+        return this.$message({
+          message: '请选择安检区域',
+          type: 'error',
+        });
+      }
+      if (staffWorkTimeList.length <= 0) {
+        return this.$message({
+          message: '请添加排期',
+          type: 'error',
+        });
+      }
       let method
       if (id) {
         method = 'put'
@@ -155,7 +174,7 @@ export default {
           staffWorkTimeList,
         })
         .then((res) => {
-          this.initList()
+          this.refreshList()
           this.currentEditStaff = null
           this.$emit("close");
         });
@@ -225,7 +244,7 @@ export default {
     }
     .form {
       text-align: left;
-      width: 80%;
+      width: 88%;
       margin: auto;
       margin-top: 24px;
       height: 420px;
@@ -255,7 +274,7 @@ export default {
           font-size: 20px;
           font-family: Source Han Sans SC;
           font-weight: 500;
-          width: 440px;
+          width: 520px;
           height: 40px;
           display: inline-block;
           vertical-align: middle;
