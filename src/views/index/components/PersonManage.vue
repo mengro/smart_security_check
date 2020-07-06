@@ -36,9 +36,10 @@
           <div class="name">{{ item.deviceName }}</div>
           <div class="time">
             <ul>
-              <li v-for="time in item.staffWorkTimeList" :key="time.id">
-                {{ `${time.workDate.slice(5)} ${time.workTimeStart.slice(0, 5)}~${time.workTimeEnd.slice(0, 5)}，` }}
-              </li>
+              <li
+                v-for="time in item.staffWorkTimeList"
+                :key="time.id"
+              >{{ `${time.workDate.slice(5)} ${time.workTimeStart.slice(0, 5)}~${time.workTimeEnd.slice(0, 5)};` }}</li>
             </ul>
           </div>
           <div class="status">
@@ -200,16 +201,18 @@ export default {
         margin-bottom: 12px;
         .person {
           font-size: 29px;
-          width: 12%;
+          width: 16%;
           font-family: DIN Alternate;
           font-weight: bold;
           color: rgba(179, 255, 249, 1);
         }
       }
       .person {
-        text-indent: 30px;
-        width: 12%;
+        width: 16%;
         text-align: left;
+        white-space: pre-wrap;
+        word-break: break-all;
+        padding: 0 16px;
       }
       .name {
         text-align: left;
@@ -231,7 +234,7 @@ export default {
         }
       }
       .status {
-        width: 16%;
+        width: 12%;
         text-align: center;
       }
       .action {
