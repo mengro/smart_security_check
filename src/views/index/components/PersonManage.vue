@@ -219,7 +219,7 @@ export default {
         padding: 0 16px;
       }
       .time {
-        width: 44%;
+        width: 46%;
         text-align: left;
         ul {
           display: flex;

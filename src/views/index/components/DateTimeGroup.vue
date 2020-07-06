@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="dateTimeGroup-container">
-      <el-date-picker format="MM-DD" type="dates" class="dateTimeGroup-date" v-model="dates" placeholder="选择日期（多选）"></el-date-picker>
+      <el-date-picker format="MM-dd" type="dates" class="dateTimeGroup-date" v-model="dates" placeholder="选择日期（多选）"></el-date-picker>
       <el-time-picker
         class="dateTimeGroup-time"
         is-range
