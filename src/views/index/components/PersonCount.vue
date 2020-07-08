@@ -24,14 +24,11 @@
         安检人员
         <span></span>
       </span>
-      <span
-        class="show-button"
-        @click="() => {
-        $modal.show('person-manage');
-      }"
-      >到岗情况 ></span>
+      <span class="show-button" @click="() => {
+        $modal.show('time-table');
+      }">到岗情况 ></span>
     </div>
-    <modal :clickToClose="false" height="740" width="1283" name="person-manage">
+    <!-- <modal :clickToClose="false" height="740" width="1283" name="person-manage">
       <person-manage
         @close="
           () => {
@@ -39,13 +36,23 @@
           }
         "
       ></person-manage>
+    </modal>-->
+    <modal :clickToClose="false" height="900" width="1283" name="time-table">
+      <time-table
+        @close="
+          () => {
+            $modal.hide('time-table');
+          }
+        "
+      ></time-table>
     </modal>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import PersonManage from './PersonManage'
+// import PersonManage from './PersonManage'
+import TimeTable from './TimeTable'
 export default {
   data() {
     return {
@@ -73,7 +80,8 @@ export default {
     }
   },
   components: {
-    PersonManage,
+    // PersonManage,
+    TimeTable,
   }
 }
 </script>

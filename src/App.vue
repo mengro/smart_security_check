@@ -83,7 +83,8 @@
     display: inline-block;
     padding: 2px 12px;
     cursor: pointer;
-    &.active {
+    &.active,
+    &:hover {
       background: rgba(52, 239, 253, 0.9);
       box-shadow: 0px 6px 4px 0px rgba(44, 165, 252, 0.44);
       color: rgba(18, 28, 58, 1);
