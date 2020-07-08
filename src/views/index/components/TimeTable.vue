@@ -356,16 +356,16 @@ export default {
     }
     .section-dateList {
       .dateGrid {
-        height: 40px;
+        height: 32px;
         width: 50px;
-        line-height: 20px;
+        line-height: 16px;
         .week-view,
         .date-view {
           font-weight: 800;
         }
         i {
           font-size: 24px;
-          line-height: 40px;
+          line-height: 32px;
         }
       }
     }
