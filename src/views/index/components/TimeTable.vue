@@ -13,7 +13,7 @@
         ></el-tab-pane>
       </el-tabs>
     </div>
-    <div v-if="choosedDates.length < 0 || editingDate" class="section section-chooseDate">
+    <div v-if="choosedDates.length <= 0 || editingDate" class="section section-chooseDate">
       <h4>请选择活动时间</h4>
       <el-date-picker
         v-model="timeRange"
