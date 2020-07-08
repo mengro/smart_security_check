@@ -44,8 +44,8 @@
       </el-radio-group>
     </div>
     <div v-if="activeDate" class="section section-table">
-      <el-table :data="tableData" border style="width: 100%">
-        <el-table-column align="center" prop="date" label="时间段" width="300">
+      <el-table :cell-class-name="getCellClass" :data="tableData" border style="width: 100%">
+        <el-table-column align="center" prop="range" label="时间段" width="300">
           <template slot-scope="scope">
             <el-time-picker
               size="small"
@@ -60,7 +60,7 @@
             <span v-else>{{ scope.row.workTimeStart }} ~ {{ scope.row.workTimeEnd }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="name" label="负责人" width="180">
+        <el-table-column align="center" prop="personInCharge" label="负责人" width="180">
           <template slot-scope="scope">
             <el-input
               placeholder="负责人"
@@ -71,7 +71,7 @@
             <span v-else>{{ scope.row.personInCharge }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="address" label="当班人员">
+        <el-table-column align="center" prop="personOnDuty" label="当班人员">
           <template slot-scope="scope">
             <el-input
               placeholder="输入当班人员，多个用英文,隔开"
@@ -284,6 +284,11 @@ export default {
           this.cancelHandle()
           this.initTable()
         })
+    },
+    getCellClass({row, column, rowIndex, columnIndex}) {
+      if (column.property === 'personOnDuty' && this.editingRowIndex !== rowIndex) {
+        return 'personOnDuty-active'
+      }
     }
   },
   watch: {
@@ -369,6 +374,13 @@ export default {
       .el-date-editor {
         width: 200px;
       }
+      .personOnDuty-active {
+        background: @primarycolor!important;
+        color: #fefefe;
+        &:hover {
+          background: darken(@borderColor, 5%) !important;
+        }
+      }
       .icon-addRow {
         cursor: pointer;
         background: #fff;
@@ -388,7 +400,8 @@ export default {
   @primarycolor: darken(@borderColor, 10%);
   @inputColor: rgba(34, 164, 255, 0.1);
   .time-table-container {
-    .section-chooseDate {
+    .section-chooseDate,
+    .section-dateList {
       .el-input__inner {
         background: @inputColor;
       }
