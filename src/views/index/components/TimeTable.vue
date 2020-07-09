@@ -64,6 +64,7 @@
           <template slot-scope="scope">
             <el-input
               placeholder="负责人"
+              style="width: 120px"
               v-model="dataForm.personInCharge"
               size="small"
               v-if="editingRowIndex === scope.$index"
@@ -75,6 +76,7 @@
           <template slot-scope="scope">
             <el-input
               placeholder="输入当班人员，多个用英文,隔开"
+              style="width: 320px"
               v-model="dataForm.personOnDuty"
               size="small"
               v-if="editingRowIndex === scope.$index"
@@ -84,6 +86,12 @@
         </el-table-column>
         <el-table-column align="center" prop="action" label="操作">
           <template slot-scope="scope">
+            <el-button
+              v-if="!!scope.row.id"
+              @click="e => deleteHandle(scope.row, scope.$index)"
+              type="text"
+              style="color: #f56c6c"
+            >删除</el-button>
             <el-button
               @click="e => saveHandle(scope.row)"
               v-if="editingRowIndex === scope.$index"
@@ -131,7 +139,7 @@ const getInitialData = () => {
     personOnDuty: '',
   }
 }
-
+const billIdMap = {}
 export default {
   data() {
     return {
@@ -149,12 +157,9 @@ export default {
   },
   props: [],
   methods: {
-    init() {
-      
-    },
     initDeviceList() {
       this.deviceList = []
-      axios.post('/api/device/search', {
+      return axios.post('/api/device/search', {
         page: 0,
         pageSize: 50
       }).then(res => {
@@ -167,10 +172,14 @@ export default {
     initDateList() {
       axios.post('/api/onDutyTime/search', {
         page: 0,
-        pageSize: 50
+        pageSize: 50,
       }).then(res => {
-        if (Array.isArray(res.data.data.list)) {
-          this.choosedDates = []
+        const list = res.data.data.list
+        if (Array.isArray(list)) {
+          this.choosedDates = list.map(item => {
+            billIdMap[item.onDutyDate] = item.id
+            return item.onDutyDate
+          })
           this.activeDate = this.choosedDates[0]
         }
       })
@@ -180,7 +189,6 @@ export default {
       this.dataForm = getInitialData()
       this.editingRowIndex = -1
       axios.post('/api/onDutyDetail/search', {
-        deviceId: this.activeDeivcce,
         date: this.activeDate,
         page: 0,
         pageSize: 50,
@@ -202,16 +210,16 @@ export default {
         let day = moment(start)
         const endDay = moment(end)
         while (day.valueOf() <= endDay.valueOf()) {
-          dateList.push(day.format('MM-DD'))
+          dateList.push(day.format('YYYY-MM-DD'))
           day.add(1, 'days')
         }
-        this.choosedDates = dateList
-        this.editingDate = false
-        this.activeDate = this.choosedDates[0]
         axios.post('/api/onDutyTime', {
-          dateList
+          dateList,
+          deviceId: this.activeDeivcce,
         }).then(res => {
+          this.initDateList()
           this.editingDate = false
+          this.activeDate = this.choosedDates[0]
         })
       }
     },
@@ -239,11 +247,22 @@ export default {
       this.editingRowIndex = index
     },
     cancelHandle(row, index) {
-      if (!row.id) {
+      if (row && !row.id) {
         this.tableData.splice(index, 1)
       }
       this.dataForm = getInitialData()
       this.editingRowIndex = -1
+    },
+    deleteHandle(row) {
+      const { id } = row
+      this.$confirm('确定删除吗?')
+        .then(() => {
+          axios.delete('/api/onDutyDetail/' + id)
+            .then(res => {
+              this.cancelHandle()
+              this.initTable()
+            })
+        })
     },
     saveHandle(row) {
       const { range, personInCharge, personOnDuty } = this.dataForm
@@ -266,18 +285,20 @@ export default {
         })
       }
       let method = 'post'
-      const { billId, id } = row
+      const { id, version } = row
       if (id) {
         method = 'put'
       }
       const params = {
         id,
-        billId,
+        billId: billIdMap[this.activeDate],
         workDate: this.activeDate,
-        workTimeStart: range[0].format('HH:mm:ss'),
-        workTimeEnd: range[1].format('HH:mm:ss'),
+        workTimeStart: moment(range[0]).format('HH:mm:ss'),
+        workTimeEnd: moment(range[1]).format('HH:mm:ss'),
         personInCharge,
         personOnDuty,
+        version,
+        deviceId: this.activeDeivcce,
       }
       axios[method]('/api/onDutyDetail', params)
         .then(res => {
@@ -286,7 +307,7 @@ export default {
         })
     },
     getCellClass({row, column, rowIndex, columnIndex}) {
-      if (column.property === 'personOnDuty' && this.editingRowIndex !== rowIndex) {
+      if (column.property === 'personOnDuty' && this.editingRowIndex !== rowIndex && row.workStatus == 1) {
         return 'personOnDuty-active'
       }
     }
@@ -301,9 +322,8 @@ export default {
       }
     }
   },
-  mounted(){
-    this.init()
-    this.initDeviceList()
+  async mounted(){
+    await this.initDeviceList()
     this.initDateList()
   }
 };
@@ -371,6 +391,8 @@ export default {
     }
     .section-table {
       text-align: center;
+      height: 620px;
+      overflow-y: auto;
       .el-date-editor {
         width: 200px;
       }
