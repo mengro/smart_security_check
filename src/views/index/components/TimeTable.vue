@@ -53,11 +53,13 @@
               class="dateTimeGroup-time"
               is-range
               v-model="dataForm.range"
-              format="HH:mm:ss"
+              format="HH:mm"
               range-separator="-"
               :default-value="scope.row.range"
             ></el-time-picker>
-            <span v-else>{{ scope.row.workTimeStart }} ~ {{ scope.row.workTimeEnd }}</span>
+            <span
+              v-else
+            >{{ (scope.row.workTimeStart).slice(0, 5) }} ~ {{ (scope.row.workTimeEnd).slice(0, 5) }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="personInCharge" label="负责人" width="180">
@@ -87,12 +89,6 @@
         <el-table-column align="center" prop="action" label="操作">
           <template slot-scope="scope">
             <el-button
-              v-if="!!scope.row.id"
-              @click="e => deleteHandle(scope.row, scope.$index)"
-              type="text"
-              style="color: #f56c6c"
-            >删除</el-button>
-            <el-button
               @click="e => saveHandle(scope.row)"
               v-if="editingRowIndex === scope.$index"
               type="text"
@@ -104,9 +100,15 @@
             >取消</el-button>
             <el-button
               @click="e => setEditingRowHandle(scope.row, scope.$index)"
-              v-else
+              v-if="editingRowIndex !== scope.$index"
               type="text"
             >编辑</el-button>
+            <el-button
+              v-if="!!scope.row.id"
+              @click="e => deleteHandle(scope.row, scope.$index)"
+              type="text"
+              style="color: #f56c6c"
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -179,6 +181,8 @@ export default {
           this.choosedDates = list.map(item => {
             billIdMap[item.onDutyDate] = item.id
             return item.onDutyDate
+          }).sort((a, b) => {
+            return moment(a).valueOf() - moment(b).valueOf()
           })
           this.activeDate = this.choosedDates[0]
         }
@@ -190,6 +194,7 @@ export default {
       this.editingRowIndex = -1
       axios.post('/api/onDutyDetail/search', {
         date: this.activeDate,
+        billId: billIdMap[this.activeDate],
         page: 0,
         pageSize: 50,
       }).then(res => {
@@ -228,10 +233,6 @@ export default {
     },
     getDate(date) {
       return moment(date).format('MM-DD')
-    },
-    dateChangeHandle(date) {
-      console.log(date);
-      
     },
     addRowHandle() {
       this.tableData.push({})
