@@ -197,6 +197,7 @@ export default {
         billId: billIdMap[this.activeDate],
         page: 0,
         pageSize: 50,
+        deviceId: this.activeDeivcce,
       }).then(res => {
         if (Array.isArray(res.data.data.list)) {
           this.tableData = res.data.data.list
@@ -321,7 +322,10 @@ export default {
       } else {
         this.initTable()
       }
-    }
+    },
+    activeDeivcce: function (value) {
+      this.initTable()
+    },
   },
   async mounted(){
     await this.initDeviceList()
