@@ -1,0 +1,19 @@
+$--color-white: #142242;
+$--color-primary: rgba(96, 118, 173, 1);
+
+$--color-text-primary: rgba(96, 118, 173, 1);
+$--color-text-regular: #fefefe;
+$--color-text-secondary: #fefefe;
+
+$--border-color-base: #fefefe;
+
+$--border-color-lighter: rgba(96,118,173,1);
+$--border-color-base: rgba(96, 118, 173, 1);
+$--border-color-light: rgba(96, 118, 173, 1);
+$--border-color-extra-light: rgba(96, 118, 173, 1);
+
+
+/* 改变 icon 字体路径变量，必需 */
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+@import "~element-ui/packages/theme-chalk/src/index";

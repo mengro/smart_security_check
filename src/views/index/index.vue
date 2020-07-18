@@ -380,6 +380,7 @@ export default {
     initGis() {
       this.map = new AMap.Map('gis-container', {
         zoom: 20,
+        mapStyle: 'amap://styles/darkblue', //设置地图的显示样式
       });
       this.map.on('click', this.addDevicePoint)
     },

@@ -24,7 +24,10 @@
       </div>
       <div class="video-content">
         <div :key="item.id" v-for="item in alarmList" class="video">
-          <img :src="`/image/${item.imgAddress}`" :alt="item.imgAddress" />
+          <img
+            :src="`${window.location.hostname}:8000/image/${item.imgAddress}`"
+            :alt="item.imgAddress"
+          />
         </div>
       </div>
     </div>

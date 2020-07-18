@@ -75,18 +75,18 @@
   }
 
   .button {
-    border: 1px solid rgba(52, 239, 253, 1);
-    color: rgba(52, 239, 253, 1);
+    border: 1px solid rgba(52, 185, 253, 1);
+    color: rgba(52, 185, 253, 1);
     font-family: Source Han Sans SC;
     font-weight: bold;
     border-radius: 10px;
     display: inline-block;
-    padding: 2px 12px;
+    padding: 5px 12px;
     cursor: pointer;
     &.active,
     &:hover {
       background: rgba(52, 239, 253, 0.9);
-      box-shadow: 0px 6px 4px 0px rgba(44, 165, 252, 0.44);
+      box-shadow: 0px 2px 2px 0px rgba(44, 165, 252, 0.44);
       color: rgba(18, 28, 58, 1);
     }
   }

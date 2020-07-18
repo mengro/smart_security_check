@@ -13,27 +13,13 @@
         ></el-tab-pane>
       </el-tabs>
     </div>
-    <div v-if="choosedDates.length <= 0 || editingDate" class="section section-chooseDate">
-      <h4>请选择活动时间</h4>
-      <el-date-picker
-        v-model="timeRange"
-        type="daterange"
-        align="right"
-        unlink-panels
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        :picker-options="pickerOptions"
-      ></el-date-picker>
-      <br />
-      <div @click="e => setDateRangeHandle()" class="button">保存</div>
-    </div>
+    <div v-if="choosedDates.length <= 0" class="button setTime-button">设置时间</div>
     <div v-else class="section section-dateList">
       <el-radio-group v-model="activeDate" style="margin-bottom: 30px;">
         <el-radio-button :label="date" :key="date" v-for="date in choosedDates">
           <div class="dateGrid">
-            <div class="week-view">周{{getWeekDay(date)}}</div>
             <div class="date-view">{{getDate(date)}}</div>
+            <div class="week-view">周{{getWeekDay(date)}}</div>
           </div>
         </el-radio-button>
         <el-radio-button label="edit">
@@ -48,7 +34,7 @@
         <el-table-column align="center" prop="range" label="时间段" width="300">
           <template slot-scope="scope">
             <el-time-picker
-              size="small"
+              size="medium"
               v-if="editingRowIndex === scope.$index"
               class="dateTimeGroup-time"
               is-range
@@ -68,7 +54,7 @@
               placeholder="负责人"
               style="width: 120px"
               v-model="dataForm.personInCharge"
-              size="small"
+              size="medium"
               v-if="editingRowIndex === scope.$index"
             ></el-input>
             <span v-else>{{ scope.row.personInCharge }}</span>
@@ -80,7 +66,7 @@
               placeholder="输入当班人员，多个用英文,隔开"
               style="width: 320px"
               v-model="dataForm.personOnDuty"
-              size="small"
+              size="medium"
               v-if="editingRowIndex === scope.$index"
             ></el-input>
             <span v-else>{{ scope.row.personOnDuty }}</span>
@@ -116,6 +102,30 @@
         <i class="el-icon-plus"></i>
       </div>
     </div>
+    <modal class="modal-set-date" :clickToClose="false" height="580" width="782" name="set-date">
+      <div class="title">
+        <div class="point"></div>
+        <div class="name">设置时间</div>
+      </div>
+      <div @click="cancelDateSetting" class="set-date-close">
+        <img src="../../../assets/images/close.png" />
+      </div>
+      <div class="section section-chooseDate">
+        <h4>请选择活动时间</h4>
+        <el-date-picker
+          v-model="timeRange"
+          type="daterange"
+          align="right"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+        ></el-date-picker>
+        <br />
+        <div @click="e => setDateRangeHandle()" class="button">保存</div>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -223,9 +233,10 @@ export default {
           dateList,
           deviceId: this.activeDeivcce,
         }).then(res => {
+          this.cancelDateSetting()
           this.initDateList()
           this.editingDate = false
-          this.activeDate = this.choosedDates[0]
+          this.$modal.hide('set-date');
         })
       }
     },
@@ -312,13 +323,20 @@ export default {
       if (column.property === 'personOnDuty' && this.editingRowIndex !== rowIndex && row.workStatus == 1) {
         return 'personOnDuty-active'
       }
+    },
+    cancelDateSetting() {
+      if (this.choosedDates.length > 0) {
+        this.activeDate = this.choosedDates[0]
+      } else {
+        this.activeDate = ''
+      }
+      this.$modal.hide('set-date')
     }
   },
   watch: {
     activeDate: function (value) {
       if (value === 'edit') {
-        this.activeDate = ''
-        this.editingDate = true
+        this.$modal.show('set-date');
       } else {
         this.initTable()
       }
@@ -334,9 +352,10 @@ export default {
 };
 </script>
 <style lang="less" scope>
-  @borderColor: #02efff;
-  @primarycolor: darken(@borderColor, 10%);
+  @borderColor: rgba(96, 118, 173, 1);
+  @primarycolor: #6076ad;
   @inputColor: rgba(34, 164, 255, 0.1);
+  @background: rgba(20, 34, 66, 1);
   .time-table-container {
     width: 100%;
     height: 100%;
@@ -369,24 +388,26 @@ export default {
         }
       }
     }
-    .section-chooseDate {
-      h4 {
-        margin-bottom: 16px;
-      }
-      .button {
-        width: 324px;
-        text-align: center;
-        margin-top: 24px;
-      }
+    .setTime-button {
+      width: 120px;
+      margin-top: 24px 0;
+      text-align: center;
     }
     .section-dateList {
       .dateGrid {
         height: 32px;
         width: 50px;
-        line-height: 16px;
         .week-view,
         .date-view {
           font-weight: 800;
+        }
+        .week-view {
+          font-size: 15px;
+          line-height: 15px;
+        }
+        .date-view {
+          font-size: 18px;
+          line-height: 18px;
         }
         i {
           font-size: 24px;
@@ -410,11 +431,13 @@ export default {
       }
       .icon-addRow {
         cursor: pointer;
-        background: #fff;
-        color: #222;
+        background: @background;
+        color: #fefefe;
         font-size: 20px;
         font-weight: 600;
         padding: 8px 0;
+        border: 1px solid @borderColor;
+        border-top: 0;
         &:hover {
           color: @primarycolor;
         }
@@ -423,31 +446,128 @@ export default {
   }
 </style>
 <style lang="less">
-  @borderColor: #02efff;
-  @primarycolor: darken(@borderColor, 10%);
-  @inputColor: rgba(34, 164, 255, 0.1);
+  @borderColor: rgba(96, 118, 173, 1);
+  @hoverColor: rgba(14, 252, 255, 1);
+  @primarycolor: #6076ad;
+  @inputColor: rgba(34, 164, 255, 0.2);
+  @background: rgba(20, 34, 66, 1);
   .time-table-container {
     .section-chooseDate,
     .section-dateList {
       .el-input__inner {
-        background: @inputColor;
+        background: @background;
       }
       .el-range-input {
-        background: transparent;
+        background: @background;
         color: #fefefe;
       }
-      .el-range-separator {
-        color: #fefefe;
+      .el-radio-button {
+        margin: 4px;
+        .el-radio-button__inner {
+          border-radius: 4px;
+          background: @background;
+          border: 1px solid @borderColor;
+          color: #fff;
+        }
       }
       .el-radio-button__orig-radio:checked + .el-radio-button__inner {
         background: @primarycolor;
-        border-color: @primarycolor;
+        border-color: @hoverColor;
         box-shadow: none;
-        color: #fff;
+        color: @hoverColor;
       }
       .el-radio-button__inner:hover {
         color: @primarycolor;
       }
     }
+    .el-range-input {
+      background-color: transparent !important;
+    }
+    .el-table--enable-row-hover .el-table__body tr:hover > td {
+      background-color: rgba(9, 18, 54, 0.95);
+    }
+    .el-table {
+      font-size: 16px;
+      .el-button--text {
+        font-size: 16px;
+      }
+    }
+    .el-table,
+    .el-table--enable-row-hover .el-table__body tr > td {
+      background-color: @background;
+    }
+    .el-date-editor .el-range-separator {
+      color: #fefefe !important;
+    }
+  }
+  .modal-set-date {
+    background: url("../../../assets/images/addDevice.png") center center
+      no-repeat;
+    .title {
+      padding-left: 20px;
+      margin-top: 18px;
+      .point {
+        display: inline-block;
+        vertical-align: middle;
+        width: 8px;
+        height: 8px;
+        background: rgba(76, 251, 244, 1);
+      }
+      .name {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 16px;
+        font-size: 20px;
+        font-family: Source Han Sans SC;
+        font-weight: bold;
+        color: rgba(76, 251, 244, 1);
+      }
+    }
+    .set-date-close {
+      position: absolute;
+      top: 50px;
+      right: 0;
+      margin-right: 16px;
+      cursor: pointer;
+    }
+    .section-chooseDate {
+      margin: 120px auto 0;
+      width: min-content;
+      position: relative;
+      h4 {
+        margin-bottom: 24px;
+        color: rgba(129, 184, 227, 1);
+        height: 23px;
+      }
+      .button {
+        width: 324px;
+        text-align: center;
+        margin-top: 24px;
+      }
+    }
+  }
+  .el-date-table td.in-range div {
+    background-color: @inputColor!important;
+    &:hover {
+      background-color: @inputColor!important;
+    }
+  }
+  .el-time-panel__btn,
+  .el-time-panel__btn.confirm {
+    color: #fefefe !important;
+  }
+  .el-time-spinner__item:hover:not(.disabled):not(.active) {
+    background: transparent;
+    color: @borderColor;
+  }
+  .el-time-panel__footer {
+    border-color: @borderColor;
+  }
+  .el-date-range-picker__content.is-left {
+    border-color: @borderColor;
+  }
+  .el-picker-panel *[slot="sidebar"],
+  .el-picker-panel__sidebar {
+    border-color: @borderColor;
   }
 </style>
