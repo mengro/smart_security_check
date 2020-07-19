@@ -10,6 +10,7 @@ import { DatePicker, TimePicker, Input, MessageBox, Message, Tabs, TabPane, Radi
 import "vue-select/dist/vue-select.css";
 
 import '@/utils/axios.config'
+import 'video.js/dist/video-js.css'
 import './theme.scss'
 
 Vue.component("v-select", vSelect);
