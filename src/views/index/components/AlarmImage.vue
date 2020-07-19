@@ -24,10 +24,7 @@
       </div>
       <div class="video-content">
         <div :key="item.id" v-for="item in alarmList" class="video">
-          <img
-            :src="`${window.location.hostname}:8000/image/${item.imgAddress}`"
-            :alt="item.imgAddress"
-          />
+          <img :src="`http://${hostname}:8000/image/${item.imgAddress}`" :alt="item.imgAddress" />
         </div>
       </div>
     </div>
@@ -44,6 +41,11 @@ export default {
       alarmStatusMap,
       deviceStatusMap,
     };
+  },
+  computed: {
+    hostname() {
+      return window.location.hostname
+    }
   },
   props: ["activeAlarmObj", 'name'],
   watch: {

@@ -570,4 +570,14 @@ export default {
   .el-picker-panel__sidebar {
     border-color: @borderColor;
   }
+  .el-tabs__active-bar {
+    display: none;
+  }
+  .el-tabs__nav-wrap::after {
+    display: none;
+  }
+  .el-tabs__item {
+    background: url("../../../assets/images/deviceBg.png") center center no-repeat;
+    background-size: 100% 100%;
+  }
 </style>
