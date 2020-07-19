@@ -305,7 +305,7 @@ export default {
         wrongPackage: {
           id: 3,
           icon: require("../../assets/images/3.png"),
-          text: "拿错包总数",
+          text: "错拿包总数",
           num: 0,
         },
       },
