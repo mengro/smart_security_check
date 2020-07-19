@@ -9,7 +9,6 @@ import vSelect from "vue-select";
 import { DatePicker, TimePicker, Input, MessageBox, Message, Tabs, TabPane, Radio, RadioButton, RadioGroup, Table, TableColumn, Button } from 'element-ui'
 import "vue-select/dist/vue-select.css";
 
-import 'video.js/dist/video-js.css'
 import '@/utils/axios.config'
 import './theme.scss'
 
