@@ -110,7 +110,38 @@
         height: calc(~"100% - 80px");
         overflow-y: auto;
 
-        .taskStatistics {}
+        .taskList {
+          li {
+            width: 165px;
+            height: 60px;
+            margin: 12px 0 24px;
+            color: #f8f8f8;
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            &+li {
+              margin-left: 20px;
+            }
+
+            div {
+              margin-left: 64px;
+              text-align: left;
+
+              .num {
+                font-size: 24px;
+                font-family: DIN Alternate;
+                font-weight: bold;
+              }
+
+              .text {
+                font-size: 14px;
+                font-family: Source Han Sans CN;
+                font-weight: 400;
+                color: rgba(177, 177, 177, 1);
+              }
+            }
+          }
+        }
 
         .alarmStatistics {
           .data-count {

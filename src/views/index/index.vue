@@ -46,7 +46,7 @@
           <!-- 数据统计 -->
           <div class="alarmStatistics">
             <p class="sectionTitle">数据统计</p>
-            <!-- <ul class="taskList flex_start_v">
+            <ul class="taskList flex_start_v">
               <li
                 class="flex_start_v"
                 :style="{ backgroundImage: `url(${item.icon})` }"
@@ -58,7 +58,7 @@
                   <p class="text">{{ item.text }}</p>
                 </div>
               </li>
-            </ul>-->
+            </ul>
             <div class="charts-container">
               <my-chart ref="myCharts"></my-chart>
             </div>
