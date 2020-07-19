@@ -77,22 +77,22 @@
             <el-button
               @click="e => saveHandle(scope.row)"
               v-if="editingRowIndex === scope.$index"
-              type="text"
+              type="text text-button"
             >保存</el-button>
             <el-button
               @click="e => cancelHandle(scope.row, scope.$index)"
               v-if="editingRowIndex === scope.$index"
-              type="text"
+              type="text text-button"
             >取消</el-button>
             <el-button
               @click="e => setEditingRowHandle(scope.row, scope.$index)"
               v-if="editingRowIndex !== scope.$index"
-              type="text"
+              type="text text-button"
             >编辑</el-button>
             <el-button
               v-if="!!scope.row.id"
               @click="e => deleteHandle(scope.row, scope.$index)"
-              type="text"
+              type="text text-button"
               style="color: #f56c6c"
             >删除</el-button>
           </template>
@@ -377,6 +377,7 @@ export default {
     }
     .section-tabs {
       .tabs-container {
+        margin-top: 36px;
         .el-tabs__item {
           color: #fefefe;
           &.is-active {
@@ -428,6 +429,9 @@ export default {
         &:hover {
           background: darken(@borderColor, 5%) !important;
         }
+      }
+      .text-button {
+        color: #1b98dc;
       }
       .icon-addRow {
         cursor: pointer;
@@ -573,8 +577,19 @@ export default {
   .el-tabs__active-bar {
     display: none;
   }
+  .el-tabs__nav-wrap.is-scrollable {
+    padding: 0 30px 0 24px;
+  }
   .el-tabs__nav-wrap::after {
     display: none;
+  }
+  .el-tabs__nav-prev,
+  .el-tabs__nav-next {
+    color: #1b98dc;
+    font-size: 24px;
+    font-weight: 900;
+    line-height: 56px;
+    height: 56px;
   }
   .el-tabs__item {
     width: 275px;
