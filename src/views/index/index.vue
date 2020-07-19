@@ -116,7 +116,7 @@
               <li class="entries-item placeholder">占位符</li>
             </ul>-->
             <div id="gis-container" class="gis-container"></div>
-            <div @click="$modal.show('device-manage')" class="device-header">设备管理</div>
+            <div @click="$modal.show('device-manage')" class="device-header"></div>
           </div>
         </div>
         <div class="bodyItem bodyRight">

@@ -577,7 +577,19 @@ export default {
     display: none;
   }
   .el-tabs__item {
-    background: url("../../../assets/images/deviceBg.png") center center no-repeat;
+    width: 275px;
+    height: 56px;
+    line-height: 56px;
+    text-align: center;
+    background: url("../../../assets/images/deviceNameBg.png") center center
+      no-repeat;
     background-size: 100% 100%;
+    padding: 0;
+    &.is-active {
+      background: url("../../../assets/images/deviceNameBgActive.png") center
+        center no-repeat;
+      background-size: 100% 100%;
+      color: @hoverColor!important;
+    }
   }
 </style>
