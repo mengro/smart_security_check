@@ -380,7 +380,7 @@ export default {
     initGis() {
       this.map = new AMap.Map('gis-container', {
         zoom: 20,
-        mapStyle: 'amap://styles/darkblue', //设置地图的显示样式
+        mapStyle: 'amap://styles/d2d9f0bac875a60d2e0e35dbfe6849fb', //设置地图的显示样式
       });
       this.map.on('click', this.addDevicePoint)
     },
@@ -573,6 +573,7 @@ export default {
         this.alarmMap.lostPackage.num = lostPackageNum;
         this.alarmMap.wrongPackage.num = wrongPackageNum;
         if (
+          Array.isArray(securityCheckNumGroupByHour) &&
           Array.isArray(lostPackageNumGroupByHour) &&
           Array.isArray(wrongPackageNumGroupByHour)
         ) {
