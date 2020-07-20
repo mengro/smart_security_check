@@ -477,6 +477,11 @@ export default {
           deviceList[0].longitude,
           deviceList[0].latitude,
         ])
+      } else {
+        this.map.setCenter([
+          120.165477,
+          30.278475,
+        ]) // 默认设知道西湖文化广场
       }
     },
     openAddDeviceModal(device) {
