@@ -23,7 +23,7 @@
         </div>
       </div>
       <div class="video-content">
-        <div :key="item.id" v-for="item in alarmList" class="video">
+        <div :key="item.id" v-for="item in alarmList.slice(0, 4)" class="video">
           <img :src="`http://${hostname}:8000/image/${item.imgAddress}`" :alt="item.imgAddress" />
         </div>
       </div>
