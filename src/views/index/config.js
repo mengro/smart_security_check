@@ -1,3 +1,6 @@
+import working from '@/assets/images/device_status_working.png'
+import waiting from '@/assets/images/device_status_waiting.png'
+
 export const deviceStatusMap = {
   1: {
     text: '空闲',
@@ -44,6 +47,10 @@ export const workStatusMap = {
   1: '待机',
   2: '工作中',
   3: '告警',
+}
+export const workStatusIconMap = {
+  1: waiting,
+  2: working,
 }
 export const parseStatus = (item) => {
   const { alarmStatus, status } = item;

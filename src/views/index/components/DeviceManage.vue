@@ -26,7 +26,9 @@
           <div class="num">{{ index + 1 }}</div>
           <div class="name">{{ `${item.coordinate}-${item.orientation}-${item.code}` }}</div>
           <div class="count">{{ 3 }}</div>
-          <div class="status">{{ workStatusMap[item.status] }}</div>
+          <div class="status">
+            <img :style="{height: '36px'}" :src="workStatusIconMap[item.status]" alt="." />
+          </div>
           <!-- <div class="remark">{{ item.remark }}</div> -->
           <div class="action">
             <span
@@ -37,11 +39,13 @@
             }"
               class="text-button edit"
             >选择位置</span>
-            <span v-if="!item.latitude && !item.longitude" class="line">|</span>
             <span @click="(e) => addHandle(item)" class="text-button edit">编辑</span>
-            <span class="line">|</span>
-            <span v-if="item.status === 2" @click="e => onHandle(item.id)" class="text-button">启用</span>
-            <span v-else @click="e => offHandle(item.id)" class="text-button delete">禁用</span>
+            <span
+              v-if="item.status === 2"
+              @click="e => onHandle(item.id)"
+              class="text-button start"
+            ></span>
+            <span v-else @click="e => offHandle(item.id)" class="text-button stop"></span>
           </div>
         </div>
       </div>
@@ -51,12 +55,13 @@
 
 <script>
 import axios from 'axios';
-import { workStatusMap } from "../config";
+import { workStatusMap, workStatusIconMap } from "../config";
 export default {
   data() {
     return {
       deviceList: [],
       workStatusMap,
+      workStatusIconMap,
     };
   },
   props: ["openAddDeviceModal", "choosePosition"],
@@ -145,10 +150,14 @@ export default {
     }
     .table-container {
       width: 92%;
+      height: auto;
       margin: auto;
+      border: 1px solid rgba(129, 184, 227, 0.2);
+      border-right: 0;
+      border-bottom: 0;
       .table-body {
-        height: 568px;
         overflow-y: auto;
+        max-height: 768px;
       }
       .list-header,
       .list-row {
@@ -159,23 +168,28 @@ export default {
         font-size: 23px;
         font-family: Source Han Sans SC;
         font-weight: bold;
-        color: rgba(129, 184, 227, 1);
-        border-bottom: 1px solid rgba(129, 184, 227, 0.2);
-        padding-bottom: 4px;
-        margin-bottom: 16px;
-      }
-      .list-row {
-        font-size: 23px;
-        font-family: Source Han Sans SC;
-        font-weight: bold;
-        color: rgba(255, 255, 255, 1);
+        color: #fff;
         background: linear-gradient(
           54deg,
           rgba(6, 37, 68, 0.6) 0%,
           rgba(7, 52, 88, 0.6) 100%
         );
+        .num,
+        .name,
+        .count,
+        .status,
+        .remark,
+        .action {
+          padding: 12px 16px;
+        }
+      }
+      .list-row {
+        font-size: 20px;
+        font-family: Source Han Sans SC;
+        font-weight: bold;
+        color: rgba(255, 255, 255, 1);
+        border-bottom: 1px solid rgba(129, 184, 227, 0.2);
         border-radius: 2px;
-        margin-bottom: 12px;
         .num {
           font-size: 29px;
           font-family: DIN Alternate;
@@ -183,36 +197,55 @@ export default {
           color: rgba(179, 255, 249, 1);
         }
       }
+      .num,
+      .name,
+      .count,
+      .status,
+      .remark,
+      .action {
+        border-right: 1px solid rgba(129, 184, 227, 0.2);
+        padding: 8px 16px;
+      }
       .num {
-        width: 10%;
+        width: 6%;
       }
       .name {
         text-align: left;
-        width: 30%;
+        width: 36%;
       }
       .count {
-        width: 16%;
+        width: 12%;
       }
       .status {
-        width: 16%;
-      }
-      .remark {
-        text-align: left;
-        width: 30%;
+        width: 14%;
       }
       .action {
         text-align: left;
-        width: 28%;
+        width: 18%;
         text-indent: 40px;
         .text-button {
           display: inline-block;
           text-indent: 0px;
           cursor: pointer;
+          margin-right: 24px;
+          vertical-align: middle;
           &.edit {
             color: rgba(34, 164, 255, 1);
+            font-size: 18px;
           }
-          &.delete {
-            color: rgba(255, 46, 65, 1);
+          &.stop {
+            background: url("../../../assets/images/stop.png") center center
+              no-repeat;
+            width: 66px;
+            height: 25px;
+            background-size: cover;
+          }
+          &.start {
+            background: url("../../../assets/images/start.png") center center
+              no-repeat;
+            width: 66px;
+            height: 25px;
+            background-size: cover;
           }
         }
         .line {
