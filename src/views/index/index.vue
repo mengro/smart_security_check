@@ -240,166 +240,192 @@
 </template>
 
 <script>
-import AlarmImage from "./components/AlarmImage";
-import DeviceManage from "./components/DeviceManage";
-import Process from "./components/Process";
-import MyChart from "./components/MyChart";
-import AddDevice from "./components/AddDevice";
-import DeviceCount from "./components/DeviceCount";
-import PersonCount from "./components/PersonCount";
-import Timer from "./components/Timer";
-import MyVideo from "@/components/Video";
-import SockJS from "sockjs-client";
-import Stomp from "webstomp-client";
-import axios from "axios";
-import { WS_URL } from "@/constant.js";
-import {
-  deviceStatusMap,
-  alarmStatusMap,
-  statusMap,
-  parseStatus,
-} from "./config";
-import markerActivePng from '@/assets/images/marker-active.png'
-import markerPng from '@/assets/images/marker.png'
+  import AlarmImage from "./components/AlarmImage";
+  import DeviceManage from "./components/DeviceManage";
+  import Process from "./components/Process";
+  import MyChart from "./components/MyChart";
+  import AddDevice from "./components/AddDevice";
+  import DeviceCount from "./components/DeviceCount";
+  import PersonCount from "./components/PersonCount";
+  import Timer from "./components/Timer";
+  import MyVideo from "@/components/Video";
+  import SockJS from "sockjs-client";
+  import Stomp from "webstomp-client";
+  import axios from "axios";
+  import { WS_URL } from "@/constant.js";
+  import {
+    deviceStatusMap,
+    alarmStatusMap,
+    statusMap,
+    parseStatus,
+  } from "./config";
+  import markerActivePng from "@/assets/images/device_dot_active.png";
+  import markerPng from "@/assets/images/device_dot.png";
+  import markerMoving from "@/assets/images/maker_moving.png";
 
-const activeMarkerIcon = new AMap.Icon({
-    size: new AMap.Size(24, 30),    // 图标尺寸
-    image: markerActivePng,  // Icon的图像
-    imageOffset: new AMap.Pixel(0, 0),  // 图像相对展示区域的偏移量，适于雪碧图等
-    imageSize: new AMap.Size(24, 30)   // 根据所设置的大小拉伸或压缩图片
-});
+  const activeMarkerIcon = new AMap.Icon({
+    size: new AMap.Size(64, 64), // 图标尺寸
+    image: markerActivePng, // Icon的图像
+    imageOffset: new AMap.Pixel(0, 0), // 图像相对展示区域的偏移量，适于雪碧图等
+    imageSize: new AMap.Size(64, 64), // 根据所设置的大小拉伸或压缩图片
+  });
 
-const markerIcon = new AMap.Icon({
-    size: new AMap.Size(24, 30),    // 图标尺寸
-    image: markerPng,  // Icon的图像
-    imageOffset: new AMap.Pixel(0, 0),  // 图像相对展示区域的偏移量，适于雪碧图等
-    imageSize: new AMap.Size(24, 30)   // 根据所设置的大小拉伸或压缩图片
-});
+  const markerIcon = new AMap.Icon({
+    size: new AMap.Size(64, 64), // 图标尺寸
+    image: markerPng, // Icon的图像
+    imageOffset: new AMap.Pixel(0, 0), // 图像相对展示区域的偏移量，适于雪碧图等
+    imageSize: new AMap.Size(64, 64), // 根据所设置的大小拉伸或压缩图片
+  });
 
-export default {
-  name: "index",
-  data() {
-    return {
-      deviceStatusMap,
-      alarmStatusMap,
-      statusMap,
-      pageHeight: window.innerHeight,
-      taskView: {
-        dataNum: 0,
-        picNum: 0,
-        videoNum: 0,
-      },
-      alarmMap: {
-        securityCheck: {
-          id: 1,
-          icon: require("../../assets/images/1.png"),
-          text: "过包总数",
-          num: 0,
+  const movingMarkerIcon = new AMap.Icon({
+    size: new AMap.Size(70, 85), // 图标尺寸
+    image: markerMoving, // Icon的图像
+    imageOffset: new AMap.Pixel(0, 0), // 图像相对展示区域的偏移量，适于雪碧图等
+    imageSize: new AMap.Size(70, 85), // 根据所设置的大小拉伸或压缩图片
+  });
+
+  export default {
+    name: "index",
+    data() {
+      return {
+        deviceStatusMap,
+        alarmStatusMap,
+        statusMap,
+        pageHeight: window.innerHeight,
+        taskView: {
+          dataNum: 0,
+          picNum: 0,
+          videoNum: 0,
         },
-        lostPackage: {
-          id: 2,
-          icon: require("../../assets/images/2.png"),
-          text: "遗留包总数",
-          num: 0,
+        alarmMap: {
+          securityCheck: {
+            id: 1,
+            icon: require("../../assets/images/1.png"),
+            text: "过包总数",
+            num: 0,
+          },
+          lostPackage: {
+            id: 2,
+            icon: require("../../assets/images/2.png"),
+            text: "遗留包总数",
+            num: 0,
+          },
+          wrongPackage: {
+            id: 3,
+            icon: require("../../assets/images/3.png"),
+            text: "错拿包总数",
+            num: 0,
+          },
         },
-        wrongPackage: {
-          id: 3,
-          icon: require("../../assets/images/3.png"),
-          text: "错拿包总数",
-          num: 0,
+        deviceCountView: {
+          webFrontDisable: 0,
+          webFrontEnable: 0,
+          webFrontTotal: 0,
+          machineDisable: 0,
+          machineEnable: 0,
+          machineTotal: 0,
+          cameraDisable: 0,
+          cameraEnable: 0,
+          cameraTotal: 0,
         },
-      },
-      deviceCountView: {
-        webFrontDisable: 0,
-        webFrontEnable: 0,
-        webFrontTotal: 0,
-        machineDisable: 0,
-        machineEnable: 0,
-        machineTotal: 0,
-        cameraDisable: 0,
-        cameraEnable: 0,
-        cameraTotal: 0,
-      },
-      currentEditDevice: null,
-      securityCheckTotal: 0,
-      deviceViewsList: [],
-      activeDevice: {},
-      cameraList: [
-        {
-          name: "摄像头一号",
-          id: 1,
-        },
-        {
-          name: "摄像头一号",
-          id: 2,
-        },
-        {
-          name: "摄像头一号",
-          id: 3,
-        },
-      ],
-      videoTypeTab: {
-        activeVideoTab: 1,
-        subTabs: [
+        currentEditDevice: null,
+        securityCheckTotal: 0,
+        deviceViewsList: [],
+        activeDevice: {},
+        cameraList: [
           {
-            name: "全部",
-            tabKey: 1,
+            name: "摄像头一号",
+            id: 1,
           },
           {
-            name: "归档中",
-            tabKey: 2,
+            name: "摄像头一号",
+            id: 2,
           },
           {
-            name: "已归档",
-            tabKey: 3,
-          },
-          {
-            name: "告警",
-            tabKey: 4,
+            name: "摄像头一号",
+            id: 3,
           },
         ],
+        videoTypeTab: {
+          activeVideoTab: 1,
+          subTabs: [
+            {
+              name: "全部",
+              tabKey: 1,
+            },
+            {
+              name: "归档中",
+              tabKey: 2,
+            },
+            {
+              name: "已归档",
+              tabKey: 3,
+            },
+            {
+              name: "告警",
+              tabKey: 4,
+            },
+          ],
+        },
+        videoList: [],
+        activeAlarmObj: {},
+        markers: [],
+      };
+    },
+    created() {},
+    mounted() {
+      this.initPage();
+      // 挂载浏览器高度获取方法
+      const that = this;
+      window.onresize = () => {
+        return (() => {
+          that.pageHeight = window.innerHeight;
+        })();
+      };
+      this.checkSocket();
+      this.initGis();
+    },
+    methods: {
+      initGis() {
+        this.map = new AMap.Map("gis-container", {
+          zoom: 20,
+          mapStyle: "amap://styles/d2d9f0bac875a60d2e0e35dbfe6849fb", //设置地图的显示样式
+        });
+        this.map.on("click", this.addDevicePoint);
+        this.map.on("zoomend", (e) => {
+          const zoom = this.map.getZoom();
+          if (zoom < 15) {
+            this.markers.forEach((marker) => {
+              marker.hideTitle();
+            });
+          } else {
+            this.markers.forEach((marker) => {
+              marker.showTitle();
+            });
+          }
+        });
       },
-      videoList: [],
-      activeAlarmObj: {},
-    };
-  },
-  created() {},
-  mounted() {
-    this.initPage();
-    // 挂载浏览器高度获取方法
-    const that = this;
-    window.onresize = () => {
-      return (() => {
-        that.pageHeight = window.innerHeight;
-      })();
-    };
-    this.checkSocket();
-    this.initGis()
-  },
-  methods: {
-    initGis() {
-      this.map = new AMap.Map('gis-container', {
-        zoom: 20,
-        mapStyle: 'amap://styles/d2d9f0bac875a60d2e0e35dbfe6849fb', //设置地图的显示样式
-      });
-      this.map.on('click', this.addDevicePoint)
-    },
-    addDevicePoint(e) {
-      const device = this.chooseingDevice
-      this.updateDevicePoint(e)
-        .then(e => {
-          this.addPoint({
-            lng: e.lnglat.lng,
-            lat: e.lnglat.lat,
-          }, device)
-          this.map.setDefaultCursor('pointer')
-        })
-    },
-    updateDevicePoint(e) {
-      if (this.chooseingDevice) {
-          return this.$confirm(`确定设置位置为经度：${e.lnglat.lng}，纬度：${e.lnglat.lat}吗？`, '设置位置')
+      addDevicePoint(e) {
+        const device = this.chooseingDevice;
+        this.updateDevicePoint(e).then((e) => {
+          this.addPoint(
+            {
+              lng: e.lnglat.lng,
+              lat: e.lnglat.lat,
+            },
+            device
+          );
+          this.map.setDefaultCursor("pointer");
+        });
+      },
+      updateDevicePoint(e) {
+        if (this.chooseingDevice) {
+          return this.$confirm(
+            `确定设置位置为经度：${e.lnglat.lng}，纬度：${e.lnglat.lat}吗？`,
+            "设置位置"
+          )
             .then(() => {
-              axios.put('/api/device', {
+              axios.put("/api/device", {
                 id: this.chooseingDevice.id,
                 code: this.chooseingDevice.code,
                 coordinate: this.chooseingDevice.coordinate,
@@ -414,249 +440,343 @@ export default {
                 version: this.chooseingDevice.version,
                 longitude: e.lnglat.lng,
                 latitude: e.lnglat.lat,
-              })
-              this.chooseingDevice = null
-              return e
+              });
+              this.chooseingDevice = null;
+              return e;
             })
-      }
-    },
-    addPoint({
-      title,
-      lng,
-      lat,
-    } = {}, device, active) {
-      var marker = new AMap.Marker({
-          position: new AMap.LngLat(lng, lat),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+            .catch((err) => {
+              if (this.lastPosition) {
+                this.currentMovingMaker &&
+                  this.currentMovingMaker.setPosition(this.lastPosition);
+              }
+            });
+        }
+      },
+      addPoint({ title, lng, lat } = {}, device, active) {
+        var marker = new AMap.Marker({
+          position: new AMap.LngLat(lng, lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
           title,
           icon: active ? activeMarkerIcon : markerIcon,
           draggable: true,
-          raiseOnDrag: true,
-      });
-      marker.on('dragend', e => {
-        this.chooseingDevice = device
-        this.updateDevicePoint(e)
-      })
-      marker.on('click', e => this.markerClickHandle(marker, device))
-      // 将创建的点标记添加到已有的地图实例：
-      this.map.add(marker);
-    },
-    markerClickHandle(marker, device) {
-      if (this.lastMarker) {
-        this.lastMarker.setIcon(markerIcon)
-      }
-      this.setActiveDevice(device)
-      marker.setIcon(activeMarkerIcon)
-      this.lastMarker = marker
-    },
-    choosePosition(device) {
-      this.chooseingDevice = device
-      this.map.setDefaultCursor('url("https://webapi.amap.com/theme/v1.3/markers/b/mark_bs.png"), default')
-    },
-    setActiveAlarm(item, e) {
-      if (
-        item.alarmStatus !== 3 &&
-        item.alarmStatus !== 4 &&
-        item.status === 1
-      ) {
-        return;
-      }
-      this.activeAlarmObj = item;
-    },
-    addDeviceListToMap(deviceList) {
-      deviceList.forEach((device, index) => {
-        if (device.latitude && device.longitude) {
-          this.addPoint({
-            title: device.name,
-            lng: device.longitude,
-            lat: device.latitude,
-          }, device, index === 0)
+          offset: new AMap.Pixel(0, 0),
+          anchor: "bottom-center",
+        });
+        if (active) {
+          this.lastMarker = marker;
+          marker.setzIndex(101);
         }
-      })
-      if (deviceList[0]) {
-        this.map.setCenter([
-          deviceList[0].longitude,
-          deviceList[0].latitude,
-        ])
-      } else {
-        this.map.setCenter([
-          120.165477,
-          30.278475,
-        ]) // 默认设知道西湖文化广场
-      }
-    },
-    openAddDeviceModal(device) {
-      this.currentEditDevice = device;
-      this.$modal.show("add-device");
-    },
-    checkSocket() {
-      if ("WebSocket" in window) {
-        this.connection();
-      } else {
-        alert("当前浏览器 Not support websocket");
-      }
-    },
-    connection() {
-      const socket = new SockJS(WS_URL);
-      this.stompClient = Stomp.over(socket, { debug: false });
-      this.stompClient.connect({}, (frame) => {
-        this.stompClient.subscribe("/topic/statistics", (greeting) => {
-          const datas = JSON.parse(greeting.body);
-          if (datas) {
-            this.renderView(datas);
+        const showTitle = () => {
+          const active = this.activeDevice.id === device.id;
+          marker.setLabel({
+            offset: new AMap.Pixel(20, 20), //设置文本标注偏移量
+            content: `<div class=${active ? "active" : "normal"}>
+                                                                    <h3>检测人数</h3>
+                                                                    <span>${
+                                                                      device.securityCheckNum
+                                                                    }</span>
+                                                                  </div>`, //设置文本标注内容
+            direction: "top", //设置文本标注方位
+          });
+        };
+        const hideTitle = () => {
+          marker.setLabel({
+            offset: new AMap.Pixel(20, 20), //设置文本标注偏移量
+            content: `<div class="hidden"></div>`, //设置文本标注内容
+            direction: "top", //设置文本标注方位
+          });
+        };
+        marker.showTitle = showTitle;
+        marker.hideTitle = hideTitle;
+        showTitle();
+        marker.on("dragstart", (e) => {
+          hideTitle();
+          this.lastIcon = marker.getIcon();
+          marker.setIcon(movingMarkerIcon);
+          this.lastPosition = new AMap.LngLat(e.lnglat.lng, e.lnglat.lat);
+        });
+        marker.on("dragend", (e) => {
+          this.chooseingDevice = device;
+          this.updateDevicePoint(e);
+          this.currentMovingMaker = marker;
+          marker.setIcon(this.lastIcon);
+        });
+        marker.on("mouseover", (e) => {
+          const zomm = this.map.getZoom();
+          if (zomm < 15) {
+            showTitle();
           }
         });
-        this.stompClient.subscribe("/topic/device", (greeting) => {
-          const deviceData = JSON.parse(greeting.body);
-          if (deviceData.id) {
-            const index = this.deviceViewsList.findIndex(
-              (item) => item.id === deviceData.id
+        marker.on("mouseout", (e) => {
+          const zomm = this.map.getZoom();
+          if (zomm < 15) {
+            hideTitle();
+          }
+        });
+        marker.on("click", (e) => {
+          this.markerClickHandle(marker, device);
+        });
+        // 将创建的点标记添加到已有的地图实例：
+        this.map.add(marker);
+        this.markers.push(marker);
+      },
+      markerClickHandle(marker, device) {
+        this.setActiveDevice(device);
+        if (this.lastMarker) {
+          this.lastMarker.setIcon(markerIcon);
+          this.lastMarker.setzIndex(100);
+          const zomm = this.map.getZoom();
+          if (zomm >= 15) {
+            this.lastMarker.showTitle();
+          } else {
+            this.lastMarker.hideTitle();
+          }
+        }
+        marker.setzIndex(101);
+        marker.showTitle();
+        marker.setIcon(activeMarkerIcon);
+        this.lastMarker = marker;
+      },
+      choosePosition(device) {
+        this.chooseingDevice = device;
+        this.map.setDefaultCursor(
+          'url("https://webapi.amap.com/theme/v1.3/markers/b/mark_bs.png"), default'
+        );
+      },
+      setActiveAlarm(item, e) {
+        if (
+          item.alarmStatus !== 3 &&
+          item.alarmStatus !== 4 &&
+          item.status === 1
+        ) {
+          return;
+        }
+        this.activeAlarmObj = item;
+      },
+      addDeviceListToMap(deviceList) {
+        deviceList.forEach((device, index) => {
+          if (device.latitude && device.longitude) {
+            this.addPoint(
+              {
+                title: device.name,
+                lng: device.longitude,
+                lat: device.latitude,
+              },
+              device,
+              index === 0
             );
-            if (index > -1) {
-              if (deviceData.status === 2) {
-                this.deviceViewsList.splice(index, 1);
+          }
+        });
+        if (deviceList[0]) {
+          this.map.setCenter([deviceList[0].longitude, deviceList[0].latitude]);
+        } else {
+          this.map.setCenter([120.165477, 30.278475]); // 默认设知道西湖文化广场
+        }
+      },
+      openAddDeviceModal(device) {
+        this.currentEditDevice = device;
+        this.$modal.show("add-device");
+      },
+      checkSocket() {
+        if ("WebSocket" in window) {
+          this.connection();
+        } else {
+          alert("当前浏览器 Not support websocket");
+        }
+      },
+      connection() {
+        const socket = new SockJS(WS_URL);
+        this.stompClient = Stomp.over(socket, { debug: false });
+        this.stompClient.connect({}, (frame) => {
+          this.stompClient.subscribe("/topic/statistics", (greeting) => {
+            const datas = JSON.parse(greeting.body);
+            if (datas) {
+              this.renderView(datas);
+            }
+          });
+          this.stompClient.subscribe("/topic/device", (greeting) => {
+            const deviceData = JSON.parse(greeting.body);
+            if (deviceData.id) {
+              const index = this.deviceViewsList.findIndex(
+                (item) => item.id === deviceData.id
+              );
+              if (index > -1) {
+                if (deviceData.status === 2) {
+                  this.deviceViewsList.splice(index, 1);
+                } else {
+                  this.deviceViewsList.splice(index, 1, deviceData);
+                }
               } else {
-                this.deviceViewsList.splice(index, 1, deviceData);
+                this.deviceViewsList.push(deviceData);
               }
             } else {
               this.deviceViewsList.push(deviceData);
             }
-          } else {
-            this.deviceViewsList.push(deviceData);
+          });
+          this.stompClient.subscribe("/topic/securityCheckCount", (greeting) => {
+            const count = JSON.parse(greeting.body);
+            this.securityCheckTotal = count;
+          });
+          this.stompClient.subscribe("/topic/securityCheckDetail", (greeting) => {
+            const { securityCheckList } = JSON.parse(greeting.body) || {};
+            this.renderSecurityCheckList(securityCheckList);
+          });
+        });
+      },
+      initPage() {
+        axios.get("/init").then((res) => {
+          if (res.data) {
+            this.renderView(res.data);
+            const { deviceList, securityCheckTotal, securityCheckList } =
+              res.data || {};
+            // deviceList
+            if (Array.isArray(deviceList)) {
+              this.deviceViewsList = deviceList;
+              this.activeDevice = deviceList[0] || {};
+              this.addDeviceListToMap(deviceList);
+            }
+            this.securityCheckTotal = securityCheckTotal || 0;
+            this.renderSecurityCheckList(securityCheckList);
           }
         });
-        this.stompClient.subscribe("/topic/securityCheckCount", (greeting) => {
-          const count = JSON.parse(greeting.body);
-          this.securityCheckTotal = count;
-        });
-        this.stompClient.subscribe("/topic/securityCheckDetail", (greeting) => {
-          const { securityCheckList } = JSON.parse(greeting.body) || {};
-          this.renderSecurityCheckList(securityCheckList);
-        });
-      });
-    },
-    initPage() {
-      axios.get('/init').then((res) => {
-        if (res.data) {
-          this.renderView(res.data);
-          const { deviceList, securityCheckTotal, securityCheckList } =
-            res.data || {};
-          // deviceList
-          if (Array.isArray(deviceList)) {
-            this.deviceViewsList = deviceList;
-            this.activeDevice = deviceList[0] || {};
-            this.addDeviceListToMap(deviceList)
-          }
-          this.securityCheckTotal = securityCheckTotal || 0;
-          this.renderSecurityCheckList(securityCheckList);
-        }
-      });
-    },
-    renderView(viewDatas) {
-      const {
-        taskView,
-        alarmView,
-        deviceList,
-        securityCheckTotal,
-        deviceView,
-        securityCheckList,
-      } = viewDatas || {};
-      // taskView
-      if (taskView) {
-        this.taskView = taskView;
-      }
-      // alarmView
-      if (alarmView) {
+      },
+      renderView(viewDatas) {
         const {
-          lostPackageNum,
-          securityCheckNum,
-          wrongPackageNum,
-          securityCheckNumGroupByHour,
-          lostPackageNumGroupByHour,
-          wrongPackageNumGroupByHour,
-        } = alarmView;
-        this.alarmMap.securityCheck.num = securityCheckNum;
-        this.alarmMap.lostPackage.num = lostPackageNum;
-        this.alarmMap.wrongPackage.num = wrongPackageNum;
-        if (
-          Array.isArray(securityCheckNumGroupByHour) &&
-          Array.isArray(lostPackageNumGroupByHour) &&
-          Array.isArray(wrongPackageNumGroupByHour)
-        ) {
-          const securityCheckNumGroup = securityCheckNumGroupByHour.map((item) => ({
-            hours: item.hours,
-            count: item.count,
-            type: "过包总数",
-          }));
-          const lostPackageNumGroup = lostPackageNumGroupByHour.map((item) => ({
-            hours: item.hours,
-            count: item.count,
-            type: "遗留包数",
-          }));
-          const wrongPackageNumGroup = wrongPackageNumGroupByHour.map(
-            (item) => ({
+          taskView,
+          alarmView,
+          deviceList,
+          securityCheckTotal,
+          deviceView,
+          securityCheckList,
+        } = viewDatas || {};
+        // taskView
+        if (taskView) {
+          this.taskView = taskView;
+        }
+        // alarmView
+        if (alarmView) {
+          const {
+            lostPackageNum,
+            securityCheckNum,
+            wrongPackageNum,
+            securityCheckNumGroupByHour,
+            lostPackageNumGroupByHour,
+            wrongPackageNumGroupByHour,
+          } = alarmView;
+          this.alarmMap.securityCheck.num = securityCheckNum;
+          this.alarmMap.lostPackage.num = lostPackageNum;
+          this.alarmMap.wrongPackage.num = wrongPackageNum;
+          if (
+            Array.isArray(securityCheckNumGroupByHour) &&
+            Array.isArray(lostPackageNumGroupByHour) &&
+            Array.isArray(wrongPackageNumGroupByHour)
+          ) {
+            const securityCheckNumGroup = securityCheckNumGroupByHour.map(
+              (item) => ({
+                hours: item.hours,
+                count: item.count,
+                type: "过包总数",
+              })
+            );
+            const lostPackageNumGroup = lostPackageNumGroupByHour.map((item) => ({
               hours: item.hours,
               count: item.count,
-              type: "错拿包数",
-            })
-          );
-          this.$refs.myCharts &&
-            this.$refs.myCharts.renderCharts([
-              ...securityCheckNumGroup,
-              ...lostPackageNumGroup,
-              ...wrongPackageNumGroup,
-            ]);
+              type: "遗留包数",
+            }));
+            const wrongPackageNumGroup = wrongPackageNumGroupByHour.map(
+              (item) => ({
+                hours: item.hours,
+                count: item.count,
+                type: "错拿包数",
+              })
+            );
+            this.$refs.myCharts &&
+              this.$refs.myCharts.renderCharts([
+                ...securityCheckNumGroup,
+                ...lostPackageNumGroup,
+                ...wrongPackageNumGroup,
+              ]);
+          }
         }
-      }
-      // deviceCountView
-      if (deviceView) {
-        this.deviceCountView = deviceView;
-      }
+        // deviceCountView
+        if (deviceView) {
+          this.deviceCountView = deviceView;
+        }
+      },
+      renderSecurityCheckList(securityCheckList) {
+        // videoList
+        if (Array.isArray(securityCheckList)) {
+          this.videoList = securityCheckList;
+        }
+      },
+      parseStatus,
+      setActiveDevice(targetDevice) {
+        this.activeDevice = targetDevice;
+        this.stompClient.send(
+          "/app/send",
+          JSON.stringify({
+            type: "device",
+            value: targetDevice.id,
+          }),
+          {}
+        );
+      },
+      setActiveTab(tabKey) {
+        this.videoTypeTab.activeVideoTab = tabKey;
+        this.stompClient.send(
+          "/app/send",
+          JSON.stringify({
+            type: "detail",
+            value: tabKey,
+          }),
+          {}
+        );
+      },
     },
-    renderSecurityCheckList(securityCheckList) {
-      // videoList
-      if (Array.isArray(securityCheckList)) {
-        this.videoList = securityCheckList;
-      }
+    destroyed() {},
+    components: {
+      AlarmImage,
+      DeviceManage,
+      Process,
+      PersonCount,
+      MyChart,
+      AddDevice,
+      DeviceCount,
+      MyVideo,
+      Timer,
     },
-    parseStatus,
-    setActiveDevice(targetDevice) {
-      this.activeDevice = targetDevice;
-      this.stompClient.send(
-        "/app/send",
-        JSON.stringify({
-          type: "device",
-          value: targetDevice.id,
-        }),
-        {}
-      );
-    },
-    setActiveTab(tabKey) {
-      this.videoTypeTab.activeVideoTab = tabKey;
-      this.stompClient.send(
-        "/app/send",
-        JSON.stringify({
-          type: "detail",
-          value: tabKey,
-        }),
-        {}
-      );
-    },
-  },
-  destroyed() {},
-  components: {
-    AlarmImage,
-    DeviceManage,
-    Process,
-    PersonCount,
-    MyChart,
-    AddDevice,
-    DeviceCount,
-    MyVideo,
-    Timer,
-  },
-};
+  };
 </script>
 
 <style lang="less" scoped>
   @import "./index.less";
+</style>
+<style lang="less">
+  .amap-marker-label {
+    background-color: transparent;
+    border: 0;
+    margin-left: -20px;
+    margin-top: -12px;
+    z-index: 3;
+    .normal {
+      background-image: url("../../assets/images/device_map_count.png");
+    }
+    .active {
+      background-image: url("../../assets/images/device_map_active.png");
+    }
+    .hidden {
+      display: none;
+    }
+    .normal,
+    .active {
+      background-position: center center;
+      background-repeat: no-repeat;
+      width: 90px;
+      height: 80px;
+      background-size: cover;
+      padding-top: 18px;
+      font-size: 12px;
+      line-height: 18px;
+      box-sizing: border-box;
+    }
+  }
 </style>
