@@ -388,6 +388,7 @@
         });
       },
       saveMoving () {
+        this.iconChangeBack()
         axios.put("/api/device", {
           id: this.chooseingDevice.id,
           code: this.chooseingDevice.code,
@@ -404,7 +405,6 @@
           longitude: this.finalPosition.lng,
           latitude: this.finalPosition.lat,
         });
-        this.iconChangeBack()
       },
       cancelMoving () {
         if (this.originPosition) {
@@ -414,7 +414,10 @@
         this.iconChangeBack()
       },
       iconChangeBack() {
+        console.log(this.currentMovingMaker, 'this.currentMovingMaker')
+        console.log(this.originIcon, 'this.originIcon');
         this.currentMovingMaker.setIcon(this.originIcon);
+        this.currentMovingMaker.isMoving = false
         this.chooseingDevice = null;
         this.currentMovingMaker = null
       },
