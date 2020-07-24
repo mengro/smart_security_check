@@ -40,12 +40,8 @@
               class="text-button edit"
             >选择位置</span>
             <span @click="(e) => addHandle(item)" class="text-button edit">编辑</span>
-            <span
-              v-if="item.status === 2"
-              @click="e => onHandle(item.id)"
-              class="text-button start"
-            ></span>
-            <span v-else @click="e => offHandle(item.id)" class="text-button stop"></span>
+            <span v-if="item.status === 2" @click="e => onHandle(item.id)" class="text-button stop"></span>
+            <span v-else @click="e => offHandle(item.id)" class="text-button start"></span>
           </div>
         </div>
       </div>
@@ -54,49 +50,49 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { workStatusMap, workStatusIconMap } from "../config";
-export default {
-  data() {
-    return {
-      deviceList: [],
-      workStatusMap,
-      workStatusIconMap,
-    };
-  },
-  props: ["openAddDeviceModal", "choosePosition"],
-  methods: {
-    addHandle(device) {
-      this.openAddDeviceModal(device);
-      // this.$emit("close");
+  import axios from "axios";
+  import { workStatusMap, workStatusIconMap } from "../config";
+  export default {
+    data() {
+      return {
+        deviceList: [],
+        workStatusMap,
+        workStatusIconMap,
+      };
     },
-    initList() {
-      axios.post('/api/device/search', {
-        page: 0,
-        pageSize: 50
-      }).then(res => {
-        if (Array.isArray(res.data.data.list)) {
-          this.deviceList = res.data.data.list
-        }
-      })
+    props: ["openAddDeviceModal", "choosePosition"],
+    methods: {
+      addHandle(device) {
+        this.openAddDeviceModal(device);
+        // this.$emit("close");
+      },
+      initList() {
+        axios
+          .post("/api/device/search", {
+            page: 0,
+            pageSize: 50,
+          })
+          .then((res) => {
+            if (Array.isArray(res.data.data.list)) {
+              this.deviceList = res.data.data.list;
+            }
+          });
+      },
+      offHandle(id) {
+        axios.post(`/api/device/disable?ids=${id}`).then((res) => {
+          this.initList();
+        });
+      },
+      onHandle(id) {
+        axios.post(`/api/device/enable?ids=${id}`).then((res) => {
+          this.initList();
+        });
+      },
     },
-    offHandle(id) {
-      axios.post(`/api/device/disable?ids=${id}`)
-        .then(res => {
-          this.initList()
-        })
+    mounted() {
+      this.initList();
     },
-    onHandle(id) {
-      axios.post(`/api/device/enable?ids=${id}`)
-        .then(res => {
-          this.initList()
-        })
-    }
-  },
-  mounted(){
-    this.initList()
-  }
-};
+  };
 </script>
 <style lang="less" scoped>
   .device-manage {

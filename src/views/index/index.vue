@@ -80,7 +80,11 @@
               </span>
             </div>
             <div id="gis-container" class="gis-container"></div>
-            <div v-if="!currentMovingMaker" @click="$modal.show('device-manage')" class="device-header"></div>
+            <div
+              v-if="!currentMovingMaker"
+              @click="$modal.show('device-manage')"
+              class="device-header"
+            ></div>
             <div v-else class="map-buttons">
               <span @click="saveMoving" class="map-buttons-save">确定</span>
               <span @click="cancelMoving" class="map-buttons-cancel">取消</span>
@@ -198,6 +202,7 @@
             $modal.hide('add-device');
           }
         "
+        :choosePosition="choosePosition"
         :currentEditDevice="currentEditDevice"
       ></add-device>
     </modal>
@@ -377,18 +382,52 @@
       addDevicePoint(e) {
         const device = this.chooseingDevice;
         this.updateDevicePoint(e).then((e) => {
-          this.addPoint(
-            {
-              lng: e.lnglat.lng,
-              lat: e.lnglat.lat,
-            },
-            device
-          );
-          this.map.setDefaultCursor("pointer");
+          const mk =
+            this.markers && this.markers.find((mk) => mk.id === device.id);
+          if (mk) {
+            const newPosition = new AMap.LngLat(e.lnglat.lng, e.lnglat.lat);
+            mk.setPosition(newPosition);
+          } else {
+            this.addPoint(
+              {
+                lng: e.lnglat.lng,
+                lat: e.lnglat.lat,
+              },
+              device
+            );
+          }
         });
+        this.map.setDefaultCursor("pointer");
       },
-      saveMoving () {
-        this.iconChangeBack()
+      updateDevicePoint(e) {
+        if (this.chooseingDevice) {
+          return this.$confirm(
+            `确定设置位置为经度：${e.lnglat.lng}，纬度：${e.lnglat.lat}吗？`,
+            "设置位置"
+          ).then(() => {
+            axios.put("/api/device", {
+              id: this.chooseingDevice.id,
+              code: this.chooseingDevice.code,
+              coordinate: this.chooseingDevice.coordinate,
+              orientation: this.chooseingDevice.orientation,
+              deviceAddressA: this.chooseingDevice.deviceAddressA,
+              deviceAddressB: this.chooseingDevice.deviceAddressB,
+              deviceAddressC: this.chooseingDevice.deviceAddressC,
+              nodeId: this.chooseingDevice.nodeId,
+              workStatus: this.chooseingDevice.workStatus,
+              workTime: this.chooseingDevice.workTime,
+              alarmStatus: this.chooseingDevice.alarmStatus,
+              version: this.chooseingDevice.version,
+              longitude: e.lnglat.lng,
+              latitude: e.lnglat.lat,
+            });
+            this.chooseingDevice = null;
+            return e;
+          });
+        }
+      },
+      saveMoving() {
+        this.iconChangeBack();
         axios.put("/api/device", {
           id: this.chooseingDevice.id,
           code: this.chooseingDevice.code,
@@ -406,30 +445,29 @@
           latitude: this.finalPosition.lat,
         });
       },
-      cancelMoving () {
+      cancelMoving() {
         if (this.originPosition) {
           this.currentMovingMaker &&
             this.currentMovingMaker.setPosition(this.originPosition);
         }
-        this.iconChangeBack()
+        this.iconChangeBack();
       },
       iconChangeBack() {
-        console.log(this.currentMovingMaker, 'this.currentMovingMaker')
-        console.log(this.originIcon, 'this.originIcon');
         this.currentMovingMaker.setIcon(this.originIcon);
-        this.currentMovingMaker.isMoving = false
+        this.currentMovingMaker.isMoving = false;
         this.chooseingDevice = null;
-        this.currentMovingMaker = null
+        this.currentMovingMaker = null;
       },
       addPoint({ title, lng, lat } = {}, device, active) {
         var marker = new AMap.Marker({
           position: new AMap.LngLat(lng, lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-          title,
+          title: device.code,
           icon: active ? activeMarkerIcon : markerIcon,
           draggable: true,
           offset: new AMap.Pixel(0, 0),
           anchor: "bottom-center",
         });
+        marker.id = device.id;
         if (active) {
           this.lastMarker = marker;
           marker.setzIndex(101);
@@ -439,11 +477,9 @@
           marker.setLabel({
             offset: new AMap.Pixel(20, 20), //设置文本标注偏移量
             content: `<div class=${active ? "active" : "normal"}>
-                        <h3>检测人数</h3>
-                        <span>${
-                          device.securityCheckNum
-                        }</span>
-                      </div>`, //设置文本标注内容
+                                <h3>检测人数</h3>
+                                <span>${device.securityCheckNum || 0}</span>
+                              </div>`, //设置文本标注内容
             direction: "top", //设置文本标注方位
           });
         };
@@ -463,21 +499,21 @@
             this.originPosition = new AMap.LngLat(e.lnglat.lng, e.lnglat.lat);
             const active = this.activeDevice.id === device.id;
             if (active) {
-              this.originIcon = activeMarkerIcon
+              this.originIcon = activeMarkerIcon;
             } else {
-              this.originIcon = markerIcon
+              this.originIcon = markerIcon;
             }
           }
           marker.setIcon(movingMarkerIcon);
-          marker.isMoving = true
-          this.currentMovingMaker = marker
+          marker.isMoving = true;
+          this.currentMovingMaker = marker;
         });
         marker.on("dragend", (e) => {
           this.chooseingDevice = device;
           this.finalPosition = {
             lng: e.lnglat.lng,
             lat: e.lnglat.lat,
-          }
+          };
         });
         marker.on("mouseover", (e) => {
           const zomm = this.map.getZoom();

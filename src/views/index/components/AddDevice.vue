@@ -11,10 +11,13 @@
     </div>
     <div class="form">
       <vue-form :state="formstate" @submit.prevent="onSubmit">
-        <div class="form-item"></div>
+        <div class="form-item">
+          <span class="label">ID：</span>
+          <span class="text">{{this.currentEditDevice.id}}</span>
+        </div>
         <div class="form-item">
           <validate tag="label">
-            <span class="label">坐标地址：</span>
+            <span class="label">设备地址：</span>
             <input
               :style="{width: '120px'}"
               autocomplete="off"
@@ -81,45 +84,39 @@
             </div>
           </validate>
         </div>
-        <!-- <div class="form-item">
+        <div class="form-item">
           <validate tag="label">
-            <span class="label">工作状态：</span>
-            <v-select
-              autocomplete="off"
-              type="text"
-              class="input"
-              v-model="model.workStatus"
-              required
-              name="name"
-              label="label"
-              :reduce="(status) => status.code"
-              :options="[
-                {
-                  code: 1,
-                  label: '待机',
-                },
-                {
-                  code: 2,
-                  label: '工作中',
-                },
-              ]"
-            >
-            </v-select>
-          </validate>
-        </div>-->
-        <!-- <div class="form-item">
-          <validate tag="label">
-            <span class="label">备注：</span>
+            <span class="label">坐标信息：</span>
             <input
+              :style="{width: '120px'}"
               autocomplete="off"
               type="text"
               class="input"
-              v-model="model.name"
+              v-model="model.longitude"
               required
               name="name"
             />
           </validate>
-        </div>-->
+          <validate tag="label">
+            <input
+              :style="{width: '120px', marginLeft: '17px'}"
+              autocomplete="off"
+              type="text"
+              class="input"
+              v-model="model.latitude"
+              required
+              name="coordinate"
+            />
+          </validate>
+          <span
+            @click="(e) => {
+              choosePosition(this.currentEditDevice)
+              $emit('close')
+              $modal.hide('device-manage')
+            }"
+            class="position-setting"
+          >地图定位</span>
+        </div>
         <div class="buttons-row">
           <div @click="save" class="button active" type="submit">确定</div>
           <div @click="$emit('close')" class="button">取消</div>
@@ -130,41 +127,29 @@
 </template>
 
 <script>
-import axios from "axios";
-export default {
-  data() {
-    return {
-      deviceList: [],
-      formstate: {},
-      model: {},
-    };
-  },
-  props: ["currentEditDevice"],
-  methods: {
-    echo(id) {
-      console.log(id);
-      
-      axios.get(`/api/device/${id}`).then((res) => {
-        const { data } = res.data || {};
-        if (data) {
-          this.model = data;
-        }
-      });
+  import axios from "axios";
+  export default {
+    data() {
+      return {
+        deviceList: [],
+        formstate: {},
+        model: {},
+      };
     },
-    save() {
-      const {
-        id,
-        coordinate,
-        orientation,
-        code,
-        deviceAddressA,
-        deviceAddressB,
-        deviceAddressC,
-        nodeId,
-        version,
-      } = this.model;
-      axios
-        .put('/api/device', {
+    props: ["currentEditDevice", "choosePosition"],
+    methods: {
+      echo(id) {
+        console.log(id);
+
+        axios.get(`/api/device/${id}`).then((res) => {
+          const { data } = res.data || {};
+          if (data) {
+            this.model = data;
+          }
+        });
+      },
+      save() {
+        const {
           id,
           coordinate,
           orientation,
@@ -174,18 +159,34 @@ export default {
           deviceAddressC,
           nodeId,
           version,
-        })
-        .then((res) => {
-          this.$emit("close");
-        });
+          longitude,
+          latitude,
+        } = this.model;
+        axios
+          .put("/api/device", {
+            id,
+            coordinate,
+            orientation,
+            code,
+            deviceAddressA,
+            deviceAddressB,
+            deviceAddressC,
+            nodeId,
+            version,
+            longitude,
+            latitude,
+          })
+          .then((res) => {
+            this.$emit("close");
+          });
+      },
     },
-  },
-  mounted() {
-    if (this.currentEditDevice && this.currentEditDevice.id) {
-      this.echo(this.currentEditDevice.id);
-    }
-  },
-};
+    mounted() {
+      if (this.currentEditDevice && this.currentEditDevice.id) {
+        this.echo(this.currentEditDevice.id);
+      }
+    },
+  };
 </script>
 <style lang="less" scoped>
   .add-device {
@@ -259,6 +260,26 @@ export default {
           border: 1px solid rgba(34, 164, 255, 1);
           border-radius: 10px;
         }
+        .text {
+          color: #fff;
+          text-indent: 16px;
+          font-size: 20px;
+          font-family: Source Han Sans SC;
+          font-weight: 500;
+        }
+      }
+      .position-setting {
+        font-size: 18px;
+        font-family: Adobe Heiti Std;
+        font-weight: normal;
+        color: rgba(118, 233, 254, 1);
+        background: url("../../../assets/images/marker_icon_small.png") 0 center
+          no-repeat;
+        height: 42px;
+        padding-left: 24px;
+        margin-left: 24px;
+        background-size: 20px auto;
+        cursor: pointer;
       }
       .buttons-row {
         margin-top: 24px;
