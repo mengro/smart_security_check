@@ -355,13 +355,45 @@
             z-index: 1;
             bottom: 0px;
             right: 0px;
-            margin-bottom: 100px;
+            margin-bottom: 88px;
             margin-right: 18px;
             width: 154px;
             height: 56px;
             cursor: pointer;
             background: url('../../assets/images/deviceButton.png') center center no-repeat;
             background-size: 100% 100%;
+          }
+          .map-buttons {
+            position: absolute;
+            z-index: 1;
+            bottom: 0px;
+            right: 0px;
+            margin-bottom: 88px;
+            margin-right: 18px;
+            width: 360px;
+            text-align: right;
+            .map-buttons-save, .map-buttons-cancel {
+              cursor: pointer;
+              background-repeat: no-repeat;
+              background-size: cover;
+              background-position: center center;
+              display: inline-block;
+              vertical-align: middle;
+              width: 140px;
+              height: 60px;
+              line-height: 60px;
+              font-family:Adobe Heiti Std;
+              text-align: center;
+              font-weight: 600;
+            }
+            .map-buttons-save {
+              background-image: url('../../assets/images/moving_save.png');
+              color:rgba(18,28,58,1);
+            }
+            .map-buttons-cancel {
+              background-image: url('../../assets/images/moving_cancel.png');
+              color:rgba(52,185,253,1);
+            }
           }
         }
       }

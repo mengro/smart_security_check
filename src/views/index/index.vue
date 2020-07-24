@@ -79,44 +79,12 @@
                 >{{ item }}</div>
               </span>
             </div>
-            <!-- <ul class="entries-contianer">
-              <li
-                :class="`entries-item ${item.workStatus === 3 ? 'error' : ''} ${
-                  activeDevice.id === item.id ? 'active' : ''
-                }`"
-                :key="item.id"
-                v-for="item in deviceViewsList"
-                @click="(e) => setActiveDevice(item)"
-              >
-                <h6 class="entries-item-title">{{ item.name }}</h6>
-                <div class="entries-item-data">
-                  <span class="data-count">{{ item.securityCheckNum }}</span>
-                  <span
-                    :style="{
-                      color:
-                        deviceStatusMap[item.workStatus] &&
-                        deviceStatusMap[item.workStatus].color,
-                    }"
-                    class="data-status"
-                  >
-                    {{
-                    deviceStatusMap[item.workStatus] &&
-                    deviceStatusMap[item.workStatus].text
-                    }}
-                  </span>
-                </div>
-                <div class="entries-item-name">
-                  <span class="name-count">检测人数</span>
-                  <span class="name-status">运行状态</span>
-                </div>
-              </li>
-              <li class="entries-item placeholder">占位符</li>
-              <li class="entries-item placeholder">占位符</li>
-              <li class="entries-item placeholder">占位符</li>
-              <li class="entries-item placeholder">占位符</li>
-            </ul>-->
             <div id="gis-container" class="gis-container"></div>
-            <div @click="$modal.show('device-manage')" class="device-header"></div>
+            <div v-if="!currentMovingMaker" @click="$modal.show('device-manage')" class="device-header"></div>
+            <div v-else class="map-buttons">
+              <span @click="saveMoving" class="map-buttons-save">确定</span>
+              <span @click="cancelMoving" class="map-buttons-cancel">取消</span>
+            </div>
           </div>
         </div>
         <div class="bodyItem bodyRight">
@@ -370,6 +338,7 @@
         videoList: [],
         activeAlarmObj: {},
         markers: [],
+        currentMovingMaker: null,
       };
     },
     created() {},
@@ -418,39 +387,36 @@
           this.map.setDefaultCursor("pointer");
         });
       },
-      updateDevicePoint(e) {
-        if (this.chooseingDevice) {
-          return this.$confirm(
-            `确定设置位置为经度：${e.lnglat.lng}，纬度：${e.lnglat.lat}吗？`,
-            "设置位置"
-          )
-            .then(() => {
-              axios.put("/api/device", {
-                id: this.chooseingDevice.id,
-                code: this.chooseingDevice.code,
-                coordinate: this.chooseingDevice.coordinate,
-                orientation: this.chooseingDevice.orientation,
-                deviceAddressA: this.chooseingDevice.deviceAddressA,
-                deviceAddressB: this.chooseingDevice.deviceAddressB,
-                deviceAddressC: this.chooseingDevice.deviceAddressC,
-                nodeId: this.chooseingDevice.nodeId,
-                workStatus: this.chooseingDevice.workStatus,
-                workTime: this.chooseingDevice.workTime,
-                alarmStatus: this.chooseingDevice.alarmStatus,
-                version: this.chooseingDevice.version,
-                longitude: e.lnglat.lng,
-                latitude: e.lnglat.lat,
-              });
-              this.chooseingDevice = null;
-              return e;
-            })
-            .catch((err) => {
-              if (this.lastPosition) {
-                this.currentMovingMaker &&
-                  this.currentMovingMaker.setPosition(this.lastPosition);
-              }
-            });
+      saveMoving () {
+        axios.put("/api/device", {
+          id: this.chooseingDevice.id,
+          code: this.chooseingDevice.code,
+          coordinate: this.chooseingDevice.coordinate,
+          orientation: this.chooseingDevice.orientation,
+          deviceAddressA: this.chooseingDevice.deviceAddressA,
+          deviceAddressB: this.chooseingDevice.deviceAddressB,
+          deviceAddressC: this.chooseingDevice.deviceAddressC,
+          nodeId: this.chooseingDevice.nodeId,
+          workStatus: this.chooseingDevice.workStatus,
+          workTime: this.chooseingDevice.workTime,
+          alarmStatus: this.chooseingDevice.alarmStatus,
+          version: this.chooseingDevice.version,
+          longitude: this.finalPosition.lng,
+          latitude: this.finalPosition.lat,
+        });
+        this.iconChangeBack()
+      },
+      cancelMoving () {
+        if (this.originPosition) {
+          this.currentMovingMaker &&
+            this.currentMovingMaker.setPosition(this.originPosition);
         }
+        this.iconChangeBack()
+      },
+      iconChangeBack() {
+        this.currentMovingMaker.setIcon(this.lastIcon);
+        this.chooseingDevice = null;
+        this.currentMovingMaker = null
       },
       addPoint({ title, lng, lat } = {}, device, active) {
         var marker = new AMap.Marker({
@@ -470,11 +436,11 @@
           marker.setLabel({
             offset: new AMap.Pixel(20, 20), //设置文本标注偏移量
             content: `<div class=${active ? "active" : "normal"}>
-                                                                    <h3>检测人数</h3>
-                                                                    <span>${
-                                                                      device.securityCheckNum
-                                                                    }</span>
-                                                                  </div>`, //设置文本标注内容
+                        <h3>检测人数</h3>
+                        <span>${
+                          device.securityCheckNum
+                        }</span>
+                      </div>`, //设置文本标注内容
             direction: "top", //设置文本标注方位
           });
         };
@@ -492,13 +458,18 @@
           hideTitle();
           this.lastIcon = marker.getIcon();
           marker.setIcon(movingMarkerIcon);
-          this.lastPosition = new AMap.LngLat(e.lnglat.lng, e.lnglat.lat);
+          if (!marker.isMoving) {
+            this.originPosition = new AMap.LngLat(e.lnglat.lng, e.lnglat.lat);
+          }
+          marker.isMoving = true
+          this.currentMovingMaker = marker
         });
         marker.on("dragend", (e) => {
           this.chooseingDevice = device;
-          this.updateDevicePoint(e);
-          this.currentMovingMaker = marker;
-          marker.setIcon(this.lastIcon);
+          this.finalPosition = {
+            lng: e.lnglat.lng,
+            lat: e.lnglat.lat,
+          }
         });
         marker.on("mouseover", (e) => {
           const zomm = this.map.getZoom();
