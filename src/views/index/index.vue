@@ -414,7 +414,7 @@
         this.iconChangeBack()
       },
       iconChangeBack() {
-        this.currentMovingMaker.setIcon(this.lastIcon);
+        this.currentMovingMaker.setIcon(this.originIcon);
         this.chooseingDevice = null;
         this.currentMovingMaker = null
       },
@@ -456,10 +456,10 @@
         showTitle();
         marker.on("dragstart", (e) => {
           hideTitle();
-          this.lastIcon = marker.getIcon();
           marker.setIcon(movingMarkerIcon);
           if (!marker.isMoving) {
             this.originPosition = new AMap.LngLat(e.lnglat.lng, e.lnglat.lat);
+            this.originIcon = marker.getIcon();
           }
           marker.isMoving = true
           this.currentMovingMaker = marker
