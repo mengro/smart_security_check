@@ -456,11 +456,11 @@
         showTitle();
         marker.on("dragstart", (e) => {
           hideTitle();
-          marker.setIcon(movingMarkerIcon);
           if (!marker.isMoving) {
             this.originPosition = new AMap.LngLat(e.lnglat.lng, e.lnglat.lat);
             this.originIcon = marker.getIcon();
           }
+          marker.setIcon(movingMarkerIcon);
           marker.isMoving = true
           this.currentMovingMaker = marker
         });
