@@ -458,7 +458,12 @@
           hideTitle();
           if (!marker.isMoving) {
             this.originPosition = new AMap.LngLat(e.lnglat.lng, e.lnglat.lat);
-            this.originIcon = marker.getIcon();
+            const active = this.activeDevice.id === device.id;
+            if (active) {
+              this.originIcon = activeMarkerIcon
+            } else {
+              this.originIcon = markerIcon
+            }
           }
           marker.setIcon(movingMarkerIcon);
           marker.isMoving = true
