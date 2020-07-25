@@ -397,7 +397,6 @@
             );
           }
         });
-        this.map.setDefaultCursor("pointer");
       },
       updateDevicePoint(e) {
         if (this.chooseingDevice) {
@@ -553,9 +552,6 @@
       },
       choosePosition(device) {
         this.chooseingDevice = device;
-        this.map.setDefaultCursor(
-          'url("https://webapi.amap.com/theme/v1.3/markers/b/mark_bs.png"), default'
-        );
       },
       setActiveAlarm(item, e) {
         if (
