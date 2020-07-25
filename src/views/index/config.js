@@ -24,6 +24,10 @@ export const statusMap = {
     text: '已归档',
     color: '#47F939',
   },
+  3: {
+    text: '告警',
+    color: '#FF2E51'
+  },
 }
 export const alarmStatusMap = {
   1: {

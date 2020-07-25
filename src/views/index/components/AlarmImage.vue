@@ -2,9 +2,9 @@
   <div class="alarm-history-view">
     <div class="content">
       <div class="status">
-        <div :style="{color: deviceStatusMap[activeAlarmObj.status].color}" class="status-text">
-          <span :style="{background: deviceStatusMap[activeAlarmObj.status].color}" class="ract"></span>
-          {{deviceStatusMap[activeAlarmObj.status].text}}
+        <div :style="{color: statusMap[activeAlarmObj.status].color}" class="status-text">
+          <span :style="{background: statusMap[activeAlarmObj.status].color}" class="ract"></span>
+          {{statusMap[activeAlarmObj.status].text}}
         </div>
         <div @click="$emit('close')" class="close"></div>
       </div>
@@ -33,13 +33,13 @@
 
 <script>
 import axios from "axios";
-import { alarmStatusMap, deviceStatusMap } from '../config'
+import { alarmStatusMap, statusMap } from '../config'
 export default {
   data() {
     return {
       alarmList: [],
       alarmStatusMap,
-      deviceStatusMap,
+      statusMap,
     };
   },
   computed: {

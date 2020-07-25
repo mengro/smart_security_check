@@ -427,7 +427,6 @@
         }
       },
       saveMoving() {
-        this.iconChangeBack();
         axios.put("/api/device", {
           id: this.chooseingDevice.id,
           code: this.chooseingDevice.code,
@@ -444,6 +443,7 @@
           longitude: this.finalPosition.lng,
           latitude: this.finalPosition.lat,
         });
+        this.iconChangeBack();
       },
       cancelMoving() {
         if (this.originPosition) {
@@ -464,7 +464,7 @@
           title: device.code,
           icon: active ? activeMarkerIcon : markerIcon,
           draggable: true,
-          offset: new AMap.Pixel(0, 0),
+          offset: new AMap.Pixel(0, 32),
           anchor: "bottom-center",
         });
         marker.id = device.id;

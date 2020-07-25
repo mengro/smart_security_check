@@ -14,20 +14,23 @@
     </div>
     <div class="table-container">
       <div class="list-header">
-        <div class="num">序号</div>
+        <div class="num">ID</div>
         <div class="name">名称</div>
-        <div class="count">摄像头数</div>
+        <div class="count">坐标信息</div>
         <div class="status">状态</div>
         <!-- <div class="remark">备注</div> -->
         <div class="action">操作</div>
       </div>
       <div class="table-body">
-        <div class="list-row" :key="item.id" v-for="(item, index) in deviceList">
-          <div class="num">{{ index + 1 }}</div>
+        <div class="list-row" :key="item.id" v-for="item in deviceList">
+          <div class="num">{{ item.id }}</div>
           <div class="name">{{ `${item.coordinate}-${item.orientation}-${item.code}` }}</div>
-          <div class="count">{{ 3 }}</div>
+          <div class="count">
+            经度：{{item.longitude}}
+            纬度：{{item.latitude}}
+          </div>
           <div class="status">
-            <img :style="{height: '36px'}" :src="workStatusIconMap[item.status]" alt="." />
+            <img :style="{height: '32px'}" :src="workStatusIconMap[item.status]" alt="." />
           </div>
           <!-- <div class="remark">{{ item.remark }}</div> -->
           <div class="action">
@@ -180,14 +183,14 @@
         }
       }
       .list-row {
-        font-size: 20px;
+        font-size: 18px;
         font-family: Source Han Sans SC;
         font-weight: bold;
         color: rgba(255, 255, 255, 1);
         border-bottom: 1px solid rgba(129, 184, 227, 0.2);
         border-radius: 2px;
         .num {
-          font-size: 29px;
+          font-size: 22px;
           font-family: DIN Alternate;
           font-weight: bold;
           color: rgba(179, 255, 249, 1);
@@ -199,29 +202,26 @@
       .status,
       .remark,
       .action {
+        text-align: center;
         border-right: 1px solid rgba(129, 184, 227, 0.2);
         padding: 8px 16px;
       }
       .num {
-        width: 6%;
+        width: 2%;
       }
       .name {
-        text-align: left;
-        width: 36%;
+        width: 32%;
       }
       .count {
-        width: 12%;
+        width: 28%;
       }
       .status {
-        width: 14%;
+        width: 10%;
       }
       .action {
-        text-align: left;
-        width: 18%;
-        text-indent: 40px;
+        width: 16%;
         .text-button {
           display: inline-block;
-          text-indent: 0px;
           cursor: pointer;
           margin-right: 24px;
           vertical-align: middle;
@@ -246,7 +246,6 @@
         }
         .line {
           display: inline-block;
-          text-indent: 0px;
           color: rgba(255, 255, 255, 0.2);
           margin: 0 16px;
         }
