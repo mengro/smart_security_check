@@ -43,9 +43,9 @@
               class="text-button edit"
             >选择位置</span>
             <span @click="(e) => addHandle(item)" class="text-button edit">编辑</span>
-            <span v-if="item.status === 2" @click="e => onHandle(item.id)" class="text-button stop"></span>
+            <span v-if="item.status === 1" @click="e => onHandle(item.id)" class="text-button stop"></span>
             <span
-              v-if="item.status === 1"
+              v-if="item.status === 2"
               @click="e => offHandle(item.id)"
               class="text-button start"
             ></span>
