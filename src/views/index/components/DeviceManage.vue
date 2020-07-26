@@ -217,10 +217,10 @@
         width: 2%;
       }
       .name {
-        width: 32%;
+        width: 30%;
       }
       .count {
-        width: 28%;
+        width: 30%;
       }
       .status {
         width: 10%;
