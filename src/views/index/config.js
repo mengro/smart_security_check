@@ -53,8 +53,8 @@ export const workStatusMap = {
   3: '告警',
 }
 export const workStatusIconMap = {
-  1: waiting,
-  2: working,
+  1: working,
+  2: waiting,
 }
 export const parseStatus = (item) => {
   const { alarmStatus, status } = item;
