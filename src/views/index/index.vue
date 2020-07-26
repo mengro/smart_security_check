@@ -189,6 +189,7 @@
     </div>
     <modal :clickToClose="false" height="740" width="1283" name="device-manage">
       <device-manage
+        ref="deviceListModal"
         :choosePosition="choosePosition"
         :openAddDeviceModal="openAddDeviceModal"
         @close="$modal.hide('device-manage')"
@@ -202,6 +203,7 @@
             $modal.hide('add-device');
           }
         "
+        :initDeviceList="initDeviceList"
         :choosePosition="choosePosition"
         :currentEditDevice="currentEditDevice"
       ></add-device>
@@ -476,12 +478,12 @@
           marker.setLabel({
             offset: new AMap.Pixel(20, 20), //设置文本标注偏移量
             content: `<div class=${active ? "active" : "normal"}>
-                                                                  <h3>检测人数</h3>
-                                                                  <span>${
-                                                                    device.securityCheckNum ||
-                                                                    0
-                                                                  }</span>
-                                                                </div>`, //设置文本标注内容
+                                                                              <h3>检测人数</h3>
+                                                                              <span>${
+                                                                                device.securityCheckNum ||
+                                                                                0
+                                                                              }</span>
+                                                                            </div>`, //设置文本标注内容
             direction: "top", //设置文本标注方位
           });
         };
@@ -596,6 +598,9 @@
         } else {
           alert("当前浏览器 Not support websocket");
         }
+      },
+      initDeviceList() {
+        this.$refs.deviceListModal && this.$refs.deviceListModal.initList();
       },
       connection() {
         const socket = new SockJS(WS_URL);

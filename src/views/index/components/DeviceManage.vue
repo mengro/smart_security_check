@@ -75,7 +75,6 @@
     methods: {
       addHandle(device) {
         this.openAddDeviceModal(device);
-        // this.$emit("close");
       },
       initList() {
         axios

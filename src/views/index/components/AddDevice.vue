@@ -136,11 +136,9 @@
         model: {},
       };
     },
-    props: ["currentEditDevice", "choosePosition"],
+    props: ["currentEditDevice", "choosePosition", "initDeviceList"],
     methods: {
       echo(id) {
-        console.log(id);
-
         axios.get(`/api/device/${id}`).then((res) => {
           const { data } = res.data || {};
           if (data) {
@@ -178,6 +176,7 @@
           })
           .then((res) => {
             this.$emit("close");
+            this.initDeviceList();
           });
       },
     },
