@@ -14,10 +14,7 @@
           <span>告警时间： {{activeAlarmObj.gmtModify}}</span>
           <span>告警地点：{{name}}</span>
         </div>
-        <div
-          v-if="activeAlarmObj.alarmStatus === 3 || activeAlarmObj.alarmStatus === 4"
-          class="buttons"
-        >
+        <div v-if="isAlarm" class="buttons">
           <div @click="$emit('close')" class="button">暂不处理</div>
           <div @click="clickHandle" class="button active">处理完成</div>
         </div>
@@ -32,59 +29,63 @@
 </template>
 
 <script>
-import axios from "axios";
-import { alarmStatusMap, statusMap } from '../config'
-export default {
-  data() {
-    return {
-      alarmList: [],
-      alarmStatusMap,
-      statusMap,
-    };
-  },
-  computed: {
-    hostname() {
-      return window.location.hostname
-    }
-  },
-  props: ["activeAlarmObj", 'name'],
-  watch: {
-    activeAlarmObj(value, newValue) {
+  import axios from "axios";
+  import { alarmStatusMap, statusMap } from "../config";
+  export default {
+    data() {
+      return {
+        alarmList: [],
+        alarmStatusMap,
+        statusMap,
+      };
+    },
+    computed: {
+      hostname() {
+        return window.location.hostname;
+      },
+      isAlarm() {
+        return (
+          this.activeAlarmObj.alarmStatus === 3 ||
+          this.activeAlarmObj.alarmStatus === 4
+        );
+      },
+    },
+    props: ["activeAlarmObj", "name"],
+    watch: {
+      activeAlarmObj(value, newValue) {
         if (value.id !== newValue.id) {
-          this.initView()
+          this.initView();
         }
-    }
-  },
-  methods: {
-    clickHandle() {
-      axios
-        .put('/api/securityCheck', {
-          id: this.activeAlarmObj.id,
-          alarmStatus: 2,
-        })
-        .then((res) => {
-          if (res.data.flag) {
-            this.$emit("close");
-          }
-        });
+      },
     },
-    initView() {
-      axios
-        .post(
-          `/api/securityCheckDetail/findByBillId/${this.activeAlarmObj.id}`
-        )
-        .then((res) => {
-          if (Array.isArray(res.data.data)) {
-            this.alarmList = res.data.data;
-          }
-        });
+    methods: {
+      clickHandle() {
+        axios
+          .put("/api/securityCheck", {
+            id: this.activeAlarmObj.id,
+            alarmStatus: 2,
+          })
+          .then((res) => {
+            if (res.data.flag) {
+              this.$emit("close");
+            }
+          });
+      },
+      initView() {
+        axios
+          .post(`/api/securityCheckDetail/findByBillId/${this.activeAlarmObj.id}`)
+          .then((res) => {
+            if (Array.isArray(res.data.data)) {
+              this.alarmList = res.data.data;
+            }
+          });
+      },
     },
-  },
-  mounted() {
-    this.initView();
-  },
-  components: {},
-};
+    mounted() {
+      this.initView();
+    },
+    components: {},
+  };
 </script>
 <style lang="less" scoped>
   .alarm-history-view {

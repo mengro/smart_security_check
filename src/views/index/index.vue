@@ -184,7 +184,7 @@
         }
       "
         :activeAlarmObj="activeAlarmObj"
-        :name="activeDevice.name"
+        :name="`${activeDevice.coordinate}-${activeDevice.orientation}-${activeDevice.code}`"
       ></alarm-image>
     </div>
     <modal :clickToClose="false" height="740" width="1283" name="device-manage">
@@ -476,9 +476,11 @@
           marker.setLabel({
             offset: new AMap.Pixel(20, 20), //设置文本标注偏移量
             content: `<div class=${active ? "active" : "normal"}>
-                                <h3>检测人数</h3>
-                                <span>${device.securityCheckNum || 0}</span>
-                              </div>`, //设置文本标注内容
+                                          <h3>检测人数</h3>
+                                          <span>${
+                                            device.securityCheckNum || 0
+                                          }</span>
+                                        </div>`, //设置文本标注内容
             direction: "top", //设置文本标注方位
           });
         };
@@ -618,6 +620,9 @@
                 }
               } else {
                 this.deviceViewsList.push(deviceData);
+              }
+              if (deviceData.id === this.activeDevice.id) {
+                this.activeDevice = deviceData;
               }
             } else {
               this.deviceViewsList.push(deviceData);
