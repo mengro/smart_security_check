@@ -48,8 +48,8 @@ export const alarmStatusMap = {
   },
 }
 export const workStatusMap = {
-  1: '待机',
-  2: '工作中',
+  1: '工作中',
+  2: '待机',
   3: '告警',
 }
 export const workStatusIconMap = {
