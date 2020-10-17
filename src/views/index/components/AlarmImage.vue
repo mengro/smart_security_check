@@ -4,13 +4,13 @@
       <div class="status">
         <div :style="{color: statusMap[activeAlarmObj.status].color}" class="status-text">
           <span :style="{background: statusMap[activeAlarmObj.status].color}" class="ract"></span>
-          {{statusMap[activeAlarmObj.status].text}}
+          {{statusMap[activeAlarmObj.status] && statusMap[activeAlarmObj.status].text}}
         </div>
         <div @click="$emit('close')" class="close"></div>
       </div>
       <div class="header">
         <div class="info">
-          <span>告警原因： {{alarmStatusMap[activeAlarmObj.alarmStatus].text}}</span>
+          <span>告警原因： {{alarmStatusMap[activeAlarmObj.alarmStatus] && alarmStatusMap[activeAlarmObj.alarmStatus].text}}</span>
           <span>告警时间： {{activeAlarmObj.gmtModify}}</span>
           <span>告警地点：{{name}}</span>
         </div>
