@@ -13,13 +13,15 @@
         ></el-tab-pane>
       </el-tabs>
     </div>
-    <div v-if="choosedDates.length <= 0" class="button setTime-button">设置时间</div>
+    <div v-if="choosedDates.length <= 0" class="button setTime-button">
+      设置时间
+    </div>
     <div v-else class="section section-dateList">
       <el-radio-group v-model="activeDate" style="margin-bottom: 30px;">
         <el-radio-button :label="date" :key="date" v-for="date in choosedDates">
           <div class="dateGrid">
-            <div class="date-view">{{getDate(date)}}</div>
-            <div class="week-view">周{{getWeekDay(date)}}</div>
+            <div class="date-view">{{ getDate(date) }}</div>
+            <div class="week-view">周{{ getWeekDay(date) }}</div>
           </div>
         </el-radio-button>
         <el-radio-button label="edit">
@@ -30,7 +32,12 @@
       </el-radio-group>
     </div>
     <div v-if="activeDate" class="section section-table">
-      <el-table :cell-class-name="getCellClass" :data="tableData" border style="width: 100%">
+      <el-table
+        :cell-class-name="getCellClass"
+        :data="tableData"
+        border
+        style="width: 100%;"
+      >
         <el-table-column align="center" prop="range" label="时间段" width="300">
           <template slot-scope="scope">
             <el-time-picker
@@ -43,16 +50,22 @@
               range-separator="-"
               :default-value="scope.row.range"
             ></el-time-picker>
-            <span
-              v-else
-            >{{ (scope.row.workTimeStart).slice(0, 5) }} ~ {{ (scope.row.workTimeEnd).slice(0, 5) }}</span>
+            <span v-else
+              >{{ scope.row.workTimeStart.slice(0, 5) }} ~
+              {{ scope.row.workTimeEnd.slice(0, 5) }}</span
+            >
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="personInCharge" label="负责人" width="180">
+        <el-table-column
+          align="center"
+          prop="personInCharge"
+          label="负责人"
+          width="180"
+        >
           <template slot-scope="scope">
             <el-input
               placeholder="负责人"
-              style="width: 120px"
+              style="width: 120px;"
               v-model="dataForm.personInCharge"
               size="medium"
               v-if="editingRowIndex === scope.$index"
@@ -64,7 +77,7 @@
           <template slot-scope="scope">
             <el-input
               placeholder="输入当班人员，多个用英文,隔开"
-              style="width: 320px"
+              style="width: 320px;"
               v-model="dataForm.personOnDuty"
               size="medium"
               v-if="editingRowIndex === scope.$index"
@@ -75,26 +88,30 @@
         <el-table-column align="center" prop="action" label="操作">
           <template slot-scope="scope">
             <el-button
-              @click="e => saveHandle(scope.row)"
+              @click="(e) => saveHandle(scope.row)"
               v-if="editingRowIndex === scope.$index"
               type="text text-button"
-            >保存</el-button>
+              >保存</el-button
+            >
             <el-button
-              @click="e => cancelHandle(scope.row, scope.$index)"
+              @click="(e) => cancelHandle(scope.row, scope.$index)"
               v-if="editingRowIndex === scope.$index"
               type="text text-button"
-            >取消</el-button>
+              >取消</el-button
+            >
             <el-button
-              @click="e => setEditingRowHandle(scope.row, scope.$index)"
+              @click="(e) => setEditingRowHandle(scope.row, scope.$index)"
               v-if="editingRowIndex !== scope.$index"
               type="text text-button"
-            >编辑</el-button>
+              >编辑</el-button
+            >
             <el-button
               v-if="!!scope.row.id"
-              @click="e => deleteHandle(scope.row, scope.$index)"
+              @click="(e) => deleteHandle(scope.row, scope.$index)"
               type="text text-button"
-              style="color: #f56c6c"
-            >删除</el-button>
+              style="color: #f56c6c;"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -102,7 +119,13 @@
         <i class="el-icon-plus"></i>
       </div>
     </div>
-    <modal class="modal-set-date" :clickToClose="false" height="580" width="782" name="set-date">
+    <modal
+      class="modal-set-date"
+      :clickToClose="false"
+      height="580"
+      width="782"
+      name="set-date"
+    >
       <div class="title">
         <div class="point"></div>
         <div class="name">设置时间</div>
@@ -123,233 +146,249 @@
           :picker-options="pickerOptions"
         ></el-date-picker>
         <br />
-        <div @click="e => setDateRangeHandle()" class="button">保存</div>
+        <div @click="(e) => setDateRangeHandle()" class="button">保存</div>
       </div>
     </modal>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import moment from 'moment'
+  import axios from "axios";
+  import moment from "moment";
 
-const pickerOptions = {
-  shortcuts: [{
-    text: '往后一周',
-    onClick(picker) {
-      const start = new Date();
-      const end = new Date();
-      end.setTime(end.getTime() + 3600 * 1000 * 24 * 7);
-      picker.$emit('pick', [start, end]);
-    }
-  }]
-}
-const getInitialData = () => {
-  return {
-    range: [moment('2020-07-07 09:00:00'), moment('2020-07-07 18:00:00')],
-    personInCharge: '',
-    personOnDuty: '',
-  }
-}
-const billIdMap = {}
-export default {
-  data() {
+  const pickerOptions = {
+    shortcuts: [
+      {
+        text: "往后一周",
+        onClick(picker) {
+          const start = new Date();
+          const end = new Date();
+          end.setTime(end.getTime() + 3600 * 1000 * 24 * 7);
+          picker.$emit("pick", [start, end]);
+        },
+      },
+    ],
+  };
+  const getInitialData = () => {
     return {
-      activeDeivcce: '',
-      deviceList: [],
-      pickerOptions,
-      timeRange: [],
-      choosedDates: [],
-      editingDate: false,
-      activeDate: '',
-      tableData: [],
-      editingRowIndex: -1,
-      dataForm: getInitialData(),
+      range: [moment("2020-07-07 09:00:00"), moment("2020-07-07 18:00:00")],
+      personInCharge: "",
+      personOnDuty: "",
     };
-  },
-  props: [],
-  methods: {
-    initDeviceList() {
-      this.deviceList = []
-      return axios.post('/api/device/search', {
-        page: 0,
-        pageSize: 50
-      }).then(res => {
-        if (Array.isArray(res.data.data.list)) {
-          this.deviceList = res.data.data.list
-          this.activeDeivcce = String(this.deviceList[0].id)
-        }
-      })
+  };
+  const billIdMap = {};
+  export default {
+    data() {
+      return {
+        activeDeivcce: "",
+        deviceList: [],
+        pickerOptions,
+        timeRange: [],
+        choosedDates: [],
+        editingDate: false,
+        activeDate: "",
+        tableData: [],
+        editingRowIndex: -1,
+        dataForm: getInitialData(),
+      };
     },
-    initDateList() {
-      axios.post('/api/onDutyTime/search', {
-        page: 0,
-        pageSize: 50,
-      }).then(res => {
-        const list = res.data.data.list
-        if (Array.isArray(list)) {
-          this.choosedDates = list.map(item => {
-            billIdMap[item.onDutyDate] = item.id
-            return item.onDutyDate
-          }).sort((a, b) => {
-            return moment(a).valueOf() - moment(b).valueOf()
+    props: [],
+    methods: {
+      initDeviceList() {
+        this.deviceList = [];
+        return axios
+          .post("/api/device/search", {
+            page: 0,
+            pageSize: 50,
           })
-          this.activeDate = this.choosedDates[0]
-        }
-      })
-    },
-    initTable() {
-      this.tableData = []
-      this.dataForm = getInitialData()
-      this.editingRowIndex = -1
-      axios.post('/api/onDutyDetail/search', {
-        date: this.activeDate,
-        billId: billIdMap[this.activeDate],
-        page: 0,
-        pageSize: 50,
-        deviceId: this.activeDeivcce,
-      }).then(res => {
-        if (Array.isArray(res.data.data.list)) {
-          this.tableData = res.data.data.list
-        }
-      })
-    },
-    setDateRangeHandle() {
-      if (this.timeRange.length !== 2) {
-        this.$message({
-          type: 'error',
-          message: '请选择日期范围！'
-        })
-      } else {
-        const [start, end] = this.timeRange
-        const dateList = []
-        let day = moment(start)
-        const endDay = moment(end)
-        while (day.valueOf() <= endDay.valueOf()) {
-          dateList.push(day.format('YYYY-MM-DD'))
-          day.add(1, 'days')
-        }
-        axios.post('/api/onDutyTime', {
-          dateList,
-          deviceId: this.activeDeivcce,
-        }).then(res => {
-          this.cancelDateSetting()
-          this.initDateList()
-          this.editingDate = false
-          this.$modal.hide('set-date');
-        })
-      }
-    },
-    getWeekDay(date) {
-      return moment(date).format('dd')
-    },
-    getDate(date) {
-      return moment(date).format('MM-DD')
-    },
-    addRowHandle() {
-      this.tableData.push({})
-      this.editingRowIndex = this.tableData.length - 1
-    },
-    setEditingRowHandle(row, index) {
-      const { personInCharge, personOnDuty, workTimeStart, workTimeEnd } = row
-      this.dataForm = {
-        range: [moment(`2020-07-07 ${workTimeStart}`), moment(`2020-07-07 ${workTimeEnd}`)],
-        personInCharge: row.personInCharge,
-        personOnDuty: row.personOnDuty,
-      }
-      this.editingRowIndex = index
-    },
-    cancelHandle(row, index) {
-      if (row && !row.id) {
-        this.tableData.splice(index, 1)
-      }
-      this.dataForm = getInitialData()
-      this.editingRowIndex = -1
-    },
-    deleteHandle(row) {
-      const { id } = row
-      this.$confirm('确定删除吗?')
-        .then(() => {
-          axios.delete('/api/onDutyDetail/' + id)
-            .then(res => {
-              this.cancelHandle()
-              this.initTable()
+          .then((res) => {
+            if (Array.isArray(res.data.data.list)) {
+              this.deviceList = res.data.data.list;
+              this.activeDeivcce = String(this.deviceList[0].id);
+            }
+          });
+      },
+      initDateList() {
+        axios
+          .post("/api/onDutyTime/search", {
+            page: 0,
+            pageSize: 50,
+          })
+          .then((res) => {
+            const list = res.data.data.list;
+            if (Array.isArray(list)) {
+              this.choosedDates = list
+                .map((item) => {
+                  billIdMap[item.onDutyDate] = item.id;
+                  return item.onDutyDate;
+                })
+                .sort((a, b) => {
+                  return moment(a).valueOf() - moment(b).valueOf();
+                });
+              this.activeDate = this.choosedDates[0];
+            }
+          });
+      },
+      initTable() {
+        this.tableData = [];
+        this.dataForm = getInitialData();
+        this.editingRowIndex = -1;
+        axios
+          .post("/api/onDutyDetail/search", {
+            date: this.activeDate,
+            billId: billIdMap[this.activeDate],
+            page: 0,
+            pageSize: 50,
+            deviceId: this.activeDeivcce,
+          })
+          .then((res) => {
+            if (Array.isArray(res.data.data.list)) {
+              this.tableData = res.data.data.list;
+            }
+          });
+      },
+      setDateRangeHandle() {
+        if (this.timeRange.length !== 2) {
+          this.$message({
+            type: "error",
+            message: "请选择日期范围！",
+          });
+        } else {
+          const [start, end] = this.timeRange;
+          const dateList = [];
+          let day = moment(start);
+          const endDay = moment(end);
+          while (day.valueOf() <= endDay.valueOf()) {
+            dateList.push(day.format("YYYY-MM-DD"));
+            day.add(1, "days");
+          }
+          axios
+            .post("/api/onDutyTime", {
+              dateList,
+              deviceId: this.activeDeivcce,
             })
-        })
+            .then((res) => {
+              this.cancelDateSetting();
+              this.initDateList();
+              this.editingDate = false;
+              this.$modal.hide("set-date");
+            });
+        }
+      },
+      getWeekDay(date) {
+        return moment(date).format("dd");
+      },
+      getDate(date) {
+        return moment(date).format("MM-DD");
+      },
+      addRowHandle() {
+        this.tableData.push({});
+        this.editingRowIndex = this.tableData.length - 1;
+      },
+      setEditingRowHandle(row, index) {
+        const { personInCharge, personOnDuty, workTimeStart, workTimeEnd } = row;
+        this.dataForm = {
+          range: [
+            moment(`2020-07-07 ${workTimeStart}`),
+            moment(`2020-07-07 ${workTimeEnd}`),
+          ],
+          personInCharge: row.personInCharge,
+          personOnDuty: row.personOnDuty,
+        };
+        this.editingRowIndex = index;
+      },
+      cancelHandle(row, index) {
+        if (row && !row.id) {
+          this.tableData.splice(index, 1);
+        }
+        this.dataForm = getInitialData();
+        this.editingRowIndex = -1;
+      },
+      deleteHandle(row) {
+        const { id } = row;
+        this.$confirm("确定删除吗?").then(() => {
+          axios.delete("/api/onDutyDetail/" + id).then((res) => {
+            this.cancelHandle();
+            this.initTable();
+          });
+        });
+      },
+      saveHandle(row) {
+        const { range, personInCharge, personOnDuty } = this.dataForm;
+        if (!range) {
+          return this.$message({
+            type: "error",
+            message: "请选择时间段",
+          });
+        }
+        if (!personInCharge) {
+          return this.$message({
+            type: "error",
+            message: "请输入负责人",
+          });
+        }
+        if (!personOnDuty) {
+          return this.$message({
+            type: "error",
+            message: "请输入值班人员",
+          });
+        }
+        let method = "post";
+        const { id, version } = row;
+        if (id) {
+          method = "put";
+        }
+        const params = {
+          id,
+          billId: billIdMap[this.activeDate],
+          workDate: this.activeDate,
+          workTimeStart: moment(range[0]).format("HH:mm:ss"),
+          workTimeEnd: moment(range[1]).format("HH:mm:ss"),
+          personInCharge,
+          personOnDuty,
+          version,
+          deviceId: this.activeDeivcce,
+        };
+        axios[method]("/api/onDutyDetail", params).then((res) => {
+          this.cancelHandle();
+          this.initTable();
+        });
+      },
+      getCellClass({ row, column, rowIndex, columnIndex }) {
+        if (
+          column.property === "personOnDuty" &&
+          this.editingRowIndex !== rowIndex &&
+          row.workStatus == 1
+        ) {
+          return "personOnDuty-active";
+        }
+      },
+      cancelDateSetting() {
+        if (this.choosedDates.length > 0) {
+          this.activeDate = this.choosedDates[0];
+        } else {
+          this.activeDate = "";
+        }
+        this.$modal.hide("set-date");
+      },
     },
-    saveHandle(row) {
-      const { range, personInCharge, personOnDuty } = this.dataForm
-      if (!range) {
-        return this.$message({
-          type: 'error',
-          message: '请选择时间段'
-        })
-      }
-      if (!personInCharge) {
-        return this.$message({
-          type: 'error',
-          message: '请输入负责人'
-        })
-      }
-      if (!personOnDuty) {
-        return this.$message({
-          type: 'error',
-          message: '请输入值班人员'
-        })
-      }
-      let method = 'post'
-      const { id, version } = row
-      if (id) {
-        method = 'put'
-      }
-      const params = {
-        id,
-        billId: billIdMap[this.activeDate],
-        workDate: this.activeDate,
-        workTimeStart: moment(range[0]).format('HH:mm:ss'),
-        workTimeEnd: moment(range[1]).format('HH:mm:ss'),
-        personInCharge,
-        personOnDuty,
-        version,
-        deviceId: this.activeDeivcce,
-      }
-      axios[method]('/api/onDutyDetail', params)
-        .then(res => {
-          this.cancelHandle()
-          this.initTable()
-        })
+    watch: {
+      activeDate: function (value) {
+        if (value === "edit") {
+          this.$modal.show("set-date");
+        } else {
+          this.initTable();
+        }
+      },
+      activeDeivcce: function (value) {
+        this.initTable();
+      },
     },
-    getCellClass({row, column, rowIndex, columnIndex}) {
-      if (column.property === 'personOnDuty' && this.editingRowIndex !== rowIndex && row.workStatus == 1) {
-        return 'personOnDuty-active'
-      }
+    async mounted() {
+      await this.initDeviceList();
+      this.initDateList();
     },
-    cancelDateSetting() {
-      if (this.choosedDates.length > 0) {
-        this.activeDate = this.choosedDates[0]
-      } else {
-        this.activeDate = ''
-      }
-      this.$modal.hide('set-date')
-    }
-  },
-  watch: {
-    activeDate: function (value) {
-      if (value === 'edit') {
-        this.$modal.show('set-date');
-      } else {
-        this.initTable()
-      }
-    },
-    activeDeivcce: function (value) {
-      this.initTable()
-    },
-  },
-  async mounted(){
-    await this.initDeviceList()
-    this.initDateList()
-  }
-};
+  };
 </script>
 <style lang="less" scope>
   @borderColor: rgba(96, 118, 173, 1);
@@ -550,61 +589,63 @@ export default {
       }
     }
   }
-  .el-date-table td.in-range div {
-    background-color: @inputColor!important;
-    &:hover {
+  .time-table-container {
+    .el-date-table td.in-range div {
       background-color: @inputColor!important;
+      &:hover {
+        background-color: @inputColor!important;
+      }
     }
-  }
-  .el-time-panel__btn,
-  .el-time-panel__btn.confirm {
-    color: #fefefe !important;
-  }
-  .el-time-spinner__item:hover:not(.disabled):not(.active) {
-    background: transparent;
-    color: @borderColor;
-  }
-  .el-time-panel__footer {
-    border-color: @borderColor;
-  }
-  .el-date-range-picker__content.is-left {
-    border-color: @borderColor;
-  }
-  .el-picker-panel *[slot="sidebar"],
-  .el-picker-panel__sidebar {
-    border-color: @borderColor;
-  }
-  .el-tabs__active-bar {
-    display: none;
-  }
-  .el-tabs__nav-wrap.is-scrollable {
-    padding: 0 30px 0 24px;
-  }
-  .el-tabs__nav-wrap::after {
-    display: none;
-  }
-  .el-tabs__nav-prev,
-  .el-tabs__nav-next {
-    color: #1b98dc;
-    font-size: 24px;
-    font-weight: 900;
-    line-height: 56px;
-    height: 56px;
-  }
-  .el-tabs__item {
-    width: 275px;
-    height: 56px;
-    line-height: 56px;
-    text-align: center;
-    background: url("../../../assets/images/deviceNameBg.png") center center
-      no-repeat;
-    background-size: 100% 100%;
-    padding: 0;
-    &.is-active {
-      background: url("../../../assets/images/deviceNameBgActive.png") center
-        center no-repeat;
+    .el-time-panel__btn,
+    .el-time-panel__btn.confirm {
+      color: #fefefe !important;
+    }
+    .el-time-spinner__item:hover:not(.disabled):not(.active) {
+      background: transparent;
+      color: @borderColor;
+    }
+    .el-time-panel__footer {
+      border-color: @borderColor;
+    }
+    .el-date-range-picker__content.is-left {
+      border-color: @borderColor;
+    }
+    .el-picker-panel *[slot="sidebar"],
+    .el-picker-panel__sidebar {
+      border-color: @borderColor;
+    }
+    .el-tabs__active-bar {
+      display: none;
+    }
+    .el-tabs__nav-wrap.is-scrollable {
+      padding: 0 30px 0 24px;
+    }
+    .el-tabs__nav-wrap::after {
+      display: none;
+    }
+    .el-tabs__nav-prev,
+    .el-tabs__nav-next {
+      color: #1b98dc;
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 56px;
+      height: 56px;
+    }
+    .el-tabs__item {
+      width: 275px;
+      height: 56px;
+      line-height: 56px;
+      text-align: center;
+      background: url("../../../assets/images/deviceNameBg.png") center center
+        no-repeat;
       background-size: 100% 100%;
-      color: @hoverColor!important;
+      padding: 0;
+      &.is-active {
+        background: url("../../../assets/images/deviceNameBgActive.png") center
+          center no-repeat;
+        background-size: 100% 100%;
+        color: @hoverColor!important;
+      }
     }
   }
 </style>

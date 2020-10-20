@@ -5,6 +5,13 @@
         <div class="time-text">
           <timer></timer>
         </div>
+        <div
+          class="console"
+          v-if="!currentMovingMaker"
+          @click="$modal.show('console')"
+        >
+          控制台
+        </div>
       </div>
       <div class="body flex_start">
         <div class="bodyItem bodyLeft">
@@ -76,16 +83,13 @@
                   class="number-item"
                   :key="index"
                   v-for="(item, index) in String(securityCheckTotal).split('')"
-                >{{ item }}</div>
+                >
+                  {{ item }}
+                </div>
               </span>
             </div>
             <div id="gis-container" class="gis-container"></div>
-            <div
-              v-if="!currentMovingMaker"
-              @click="$modal.show('device-manage')"
-              class="device-header"
-            ></div>
-            <div v-else class="map-buttons">
+            <div v-if="currentMovingMaker" class="map-buttons">
               <span @click="saveMoving" class="map-buttons-save">确定</span>
               <span @click="cancelMoving" class="map-buttons-cancel">取消</span>
             </div>
@@ -96,25 +100,41 @@
             <div class="device-content">
               <p class="sectionTitle">安检详情</p>
               <div class="active-device-name">
-                <img src="../../assets/images/loction@2x.png" width="17" height="22" alt />
-                <span>{{ `${activeDevice.coordinate}-${activeDevice.orientation}-${activeDevice.code}` }}</span>
+                <img
+                  src="../../assets/images/loction@2x.png"
+                  width="17"
+                  height="22"
+                  alt
+                />
+                <span>{{
+                  `${activeDevice.coordinate}-${activeDevice.orientation}-${activeDevice.code}`
+                }}</span>
               </div>
               <ul class="camera-list">
                 <li>
                   <div class="video">
-                    <my-video videoName="a" :url="activeDevice.deviceAddressA"></my-video>
+                    <my-video
+                      videoName="a"
+                      :url="activeDevice.deviceAddressA"
+                    ></my-video>
                   </div>
                   <!-- <div class="camera-name">{{ item.name }}</div> -->
                 </li>
                 <li>
                   <div class="video">
-                    <my-video videoName="b" :url="activeDevice.deviceAddressB"></my-video>
+                    <my-video
+                      videoName="b"
+                      :url="activeDevice.deviceAddressB"
+                    ></my-video>
                   </div>
                   <!-- <div class="camera-name">{{ item.name }}</div> -->
                 </li>
                 <li>
                   <div class="video">
-                    <my-video videoName="c" :url="activeDevice.deviceAddressC"></my-video>
+                    <my-video
+                      videoName="c"
+                      :url="activeDevice.deviceAddressC"
+                    ></my-video>
                   </div>
                   <!-- <div class="camera-name">{{ item.name }}</div> -->
                 </li>
@@ -129,7 +149,9 @@
                   :key="item.tabKey"
                   v-for="item in videoTypeTab.subTabs"
                   @click="(e) => setActiveTab(item.tabKey)"
-                >{{ item.name }}</li>
+                >
+                  {{ item.name }}
+                </li>
               </ul>
               <div class="video-container">
                 <div class="video-header">
@@ -160,7 +182,8 @@
                       <span
                         :style="{ color: parseStatus(item).color }"
                         class="status"
-                      >{{ parseStatus(item).text }}</span>
+                        >{{ parseStatus(item).text }}</span
+                      >
                       <img
                         v-show="activeAlarmObj.id === item.id"
                         class="activeTag"
@@ -178,11 +201,11 @@
       <alarm-image
         v-if="!!activeAlarmObj.id"
         @close="
-        () => {
-          $modal.hide('alarm-image');
-          activeAlarmObj = {};
-        }
-      "
+          () => {
+            $modal.hide('alarm-image');
+            activeAlarmObj = {};
+          }
+        "
         :activeAlarmObj="activeAlarmObj"
         :name="`${activeDevice.coordinate}-${activeDevice.orientation}-${activeDevice.code}`"
       ></alarm-image>
@@ -194,6 +217,14 @@
         :openAddDeviceModal="openAddDeviceModal"
         @close="$modal.hide('device-manage')"
       ></device-manage>
+    </modal>
+    <modal :clickToClose="false" height="740" width="1283" name="console">
+      <console
+        ref="deviceListModal"
+        :choosePosition="choosePosition"
+        :openAddDeviceModal="openAddDeviceModal"
+        @close="$modal.hide('console')"
+      ></console>
     </modal>
     <modal :clickToClose="false" height="580" width="782" name="add-device">
       <add-device
@@ -217,6 +248,7 @@
 <script>
   import AlarmImage from "./components/AlarmImage";
   import DeviceManage from "./components/DeviceManage";
+  import Console from "./components/Console/index";
   import Process from "./components/Process";
   import MyChart from "./components/MyChart";
   import AddDevice from "./components/AddDevice";
@@ -478,12 +510,12 @@
           marker.setLabel({
             offset: new AMap.Pixel(20, 20), //设置文本标注偏移量
             content: `<div class=${active ? "active" : "normal"}>
-                                                                              <h3>检测人数</h3>
-                                                                              <span>${
-                                                                                device.securityCheckNum ||
-                                                                                0
-                                                                              }</span>
-                                                                            </div>`, //设置文本标注内容
+                                                                                          <h3>检测人数</h3>
+                                                                                          <span>${
+                                                                                            device.securityCheckNum ||
+                                                                                            0
+                                                                                          }</span>
+                                                                                        </div>`, //设置文本标注内容
             direction: "top", //设置文本标注方位
           });
         };
@@ -765,6 +797,7 @@
       DeviceCount,
       MyVideo,
       Timer,
+      Console,
     },
   };
 </script>
