@@ -2,17 +2,32 @@
   <div class="alarm-history-view">
     <div class="content">
       <div class="status">
-        <div :style="{color: statusMap[activeAlarmObj.status].color}" class="status-text">
-          <span :style="{background: statusMap[activeAlarmObj.status].color}" class="ract"></span>
-          {{statusMap[activeAlarmObj.status] && statusMap[activeAlarmObj.status].text}}
+        <div
+          :style="{ color: statusMap[activeAlarmObj.status].color }"
+          class="status-text"
+        >
+          <span
+            :style="{ background: statusMap[activeAlarmObj.status].color }"
+            class="ract"
+          ></span>
+          {{
+            statusMap[activeAlarmObj.status] &&
+            statusMap[activeAlarmObj.status].text
+          }}
         </div>
         <div @click="$emit('close')" class="close"></div>
       </div>
       <div class="header">
         <div class="info">
-          <span>告警原因： {{alarmStatusMap[activeAlarmObj.alarmStatus] && alarmStatusMap[activeAlarmObj.alarmStatus].text}}</span>
-          <span>告警时间： {{activeAlarmObj.gmtModify}}</span>
-          <span>告警地点：{{name}}</span>
+          <span
+            >告警原因：
+            {{
+              alarmStatusMap[activeAlarmObj.alarmStatus] &&
+              alarmStatusMap[activeAlarmObj.alarmStatus].text
+            }}</span
+          >
+          <span>告警时间： {{ activeAlarmObj.gmtModify }}</span>
+          <span>告警地点：{{ name }}</span>
         </div>
         <div v-if="isAlarm" class="buttons">
           <div @click="$emit('close')" class="button">暂不处理</div>
@@ -20,8 +35,11 @@
         </div>
       </div>
       <div class="video-content">
-        <div :key="item.id" v-for="item in alarmList.slice(0, 4)" class="video">
-          <img :src="`http://${hostname}:8000/image/${item.imgAddress}`" :alt="item.imgAddress" />
+        <div :key="item.id" v-for="item in alarmList" class="video">
+          <img
+            :src="`http://${hostname}:8000/image/${item.imgAddress}`"
+            :alt="item.imgAddress"
+          />
         </div>
       </div>
     </div>
@@ -61,7 +79,7 @@
     methods: {
       clickHandle() {
         axios
-          .put("/api/securityCheck", {
+          .put("/api/securityCheck/1751", {
             id: this.activeAlarmObj.id,
             alarmStatus: 2,
           })
@@ -72,13 +90,11 @@
           });
       },
       initView() {
-        axios
-          .post(`/api/securityCheckDetail/findByBillId/${this.activeAlarmObj.id}`)
-          .then((res) => {
-            if (Array.isArray(res.data.data)) {
-              this.alarmList = res.data.data;
-            }
-          });
+        axios.post(`/api/securityCheck/${this.activeAlarmObj.id}`).then((res) => {
+          if (Array.isArray(res.data.data.securityCheckDetailList)) {
+            this.alarmList = res.data.data.securityCheckDetailList;
+          }
+        });
       },
     },
     mounted() {
@@ -159,18 +175,22 @@
         width: 90%;
         margin: 24px auto 0;
         .video {
-          width: 561px;
           height: 366px;
+          flex: 0 0 544px;
+          padding: 18px;
+          margin: 0 16px;
           border: 2px solid rgba(255, 255, 255, 1);
           position: relative;
           background: rgba(255, 255, 255, 0.1);
+          box-sizing: border-box;
+          &:nth-child(3),
+          &:nth-child(4),
+          &:nth-child(5) {
+            flex: 1 0 320px;
+          }
           img {
-            position: absolute;
             height: 100%;
-            width: 100%;
-            top: 0;
-            left: 0;
-            z-index: 1;
+            max-width: 100%;
           }
         }
       }
