@@ -16,6 +16,7 @@
       return {
         tableStyle: {
           width: "100%",
+          minHeight: "380px",
         },
       };
     },

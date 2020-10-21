@@ -6,7 +6,7 @@ import VModal from "vue-js-modal";
 import VueForm from "vue-form";
 import "moment/locale/zh-cn";
 import vSelect from "vue-select";
-import { DatePicker, TimePicker, Input, MessageBox, Message, Tabs, TabPane, Radio, RadioButton, RadioGroup, Table, TableColumn, Button } from 'element-ui'
+import { DatePicker, TimePicker, Input, MessageBox, Message, Pagination, Tabs, TabPane, Radio, RadioButton, RadioGroup, Table, TableColumn, Button } from 'element-ui'
 import "vue-select/dist/vue-select.css";
 
 import '@/utils/axios.config'
@@ -28,6 +28,7 @@ Vue.use(Tabs)
 Vue.use(TabPane)
 Vue.use(Radio)
 Vue.use(RadioButton)
+Vue.use(Pagination)
 Vue.use(RadioGroup)
 Vue.use(Table)
 Vue.use(TableColumn)

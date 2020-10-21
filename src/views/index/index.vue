@@ -510,12 +510,12 @@
           marker.setLabel({
             offset: new AMap.Pixel(20, 20), //设置文本标注偏移量
             content: `<div class=${active ? "active" : "normal"}>
-                                                                                          <h3>检测人数</h3>
-                                                                                          <span>${
-                                                                                            device.securityCheckNum ||
-                                                                                            0
-                                                                                          }</span>
-                                                                                        </div>`, //设置文本标注内容
+                                                                                              <h3>检测人数</h3>
+                                                                                              <span>${
+                                                                                                device.securityCheckNum ||
+                                                                                                0
+                                                                                              }</span>
+                                                                                            </div>`, //设置文本标注内容
             direction: "top", //设置文本标注方位
           });
         };

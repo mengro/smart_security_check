@@ -3,7 +3,9 @@
     <div class="header">
       <div class="title">
         <div class="point"></div>
-        <div class="name">{{ currentEditDevice ? "更新设备" : "添加设备" }}</div>
+        <div class="name">
+          {{ currentEditDevice ? "更新设备" : "添加设备" }}
+        </div>
       </div>
       <div @click="$emit('close')" class="close">
         <img src="../../../assets/images/close.png" />
@@ -13,13 +15,15 @@
       <vue-form :state="formstate" @submit.prevent="onSubmit">
         <div class="form-item">
           <span class="label">ID：</span>
-          <span class="text">{{this.currentEditDevice.id}}</span>
+          <span class="text">{{
+            currentEditDevice && currentEditDevice.id
+          }}</span>
         </div>
         <div class="form-item">
           <validate tag="label">
             <span class="label">设备地址：</span>
             <input
-              :style="{width: '120px'}"
+              :style="{ width: '120px' }"
               autocomplete="off"
               type="text"
               class="input"
@@ -30,7 +34,7 @@
           </validate>
           <validate tag="label">
             <input
-              :style="{width: '120px', marginLeft: '17px'}"
+              :style="{ width: '120px', marginLeft: '17px' }"
               placeholder="方位"
               autocomplete="off"
               type="text"
@@ -42,7 +46,7 @@
           </validate>
           <validate tag="label">
             <input
-              :style="{width: '120px', marginLeft: '17px'}"
+              :style="{ width: '120px', marginLeft: '17px' }"
               placeholder="设备号"
               autocomplete="off"
               type="text"
@@ -88,7 +92,7 @@
           <validate tag="label">
             <span class="label">坐标信息：</span>
             <input
-              :style="{width: '120px'}"
+              :style="{ width: '120px' }"
               autocomplete="off"
               type="text"
               class="input"
@@ -99,7 +103,7 @@
           </validate>
           <validate tag="label">
             <input
-              :style="{width: '120px', marginLeft: '17px'}"
+              :style="{ width: '120px', marginLeft: '17px' }"
               autocomplete="off"
               type="text"
               class="input"
@@ -109,13 +113,16 @@
             />
           </validate>
           <span
-            @click="(e) => {
-              choosePosition(this.currentEditDevice)
-              $emit('close')
-              $modal.hide('device-manage')
-            }"
+            @click="
+              (e) => {
+                choosePosition(this.currentEditDevice);
+                $emit('close');
+                $modal.hide('device-manage');
+              }
+            "
             class="position-setting"
-          >地图定位</span>
+            >地图定位</span
+          >
         </div>
         <div class="buttons-row">
           <div @click="save" class="button active" type="submit">确定</div>
