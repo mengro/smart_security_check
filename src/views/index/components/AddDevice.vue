@@ -4,7 +4,7 @@
       <div class="title">
         <div class="point"></div>
         <div class="name">
-          {{ currentEditDevice ? "更新设备" : "添加设备" }}
+          {{ currentEditDevice ? "更新安检点" : "添加安检点" }}
         </div>
       </div>
       <div @click="$emit('close')" class="close">
@@ -12,40 +12,44 @@
       </div>
     </div>
     <div class="form-container">
-      <el-form :model="formModel" label-width="120px">
-        <el-form-item class="form-item" label="场馆">
+      <el-form
+        ref="formRef"
+        :rules="rules"
+        :model="formModel"
+        label-width="120px"
+      >
+        <el-form-item class="form-item" prop="orientation" label="场馆">
           <el-input
             class="input"
-            v-model="model.coordinate"
-            name="coordinate"
+            placeholder="请输入内容"
+            v-model="formModel.orientation"
           />
         </el-form-item>
-        <el-form-item class="form-item" label="安检口">
+        <el-form-item class="form-item" prop="coordinate" label="安检口">
           <el-input
             class="input"
-            v-model="model.coordinate"
-            name="coordinate"
+            placeholder="请输入内容"
+            v-model="formModel.coordinate"
           />
         </el-form-item>
-        <el-form-item class="form-item" label="序号">
+        <el-form-item class="form-item" prop="code" label="序号">
           <el-input
+            placeholder="请输入数字"
             class="input"
-            v-model="model.coordinate"
-            name="coordinate"
+            v-model="formModel.code"
           />
         </el-form-item>
-        <el-form-item class="form-item" label="地图定位">
+        <el-form-item class="form-item" prop="longitude" label="地图定位">
           <el-input
-            :style="{ width: '160px' }"
-            class="input"
-            v-model="model.longitude"
-            name="name"
+            placeholder="经度"
+            class="input half"
+            v-model="formModel.longitude"
           />
           <el-input
-            :style="{ width: '160px', marginLeft: '20px' }"
-            class="input"
-            v-model="model.longitude"
-            name="name"
+            placeholder="纬度"
+            :style="{ marginLeft: '20px' }"
+            class="input half"
+            v-model="formModel.latitude"
           />
           <span
             @click="
@@ -59,41 +63,41 @@
             >地图定位</span
           >
         </el-form-item>
-        <el-form-item class="form-item" label="X光机AI编号">
-          <div class="mulInput">
-            <el-input
-              class="input"
-              v-model="model.deviceAddressA"
-              name="name"
-            />
-          </div>
+        <el-form-item class="form-item" prop="xRayCode" label="X光机AI编号">
+          <el-input
+            placeholder="请输入内容"
+            class="input"
+            v-model="formModel.xRayCode"
+          />
         </el-form-item>
-        <el-form-item class="form-item" label="EC200">
-          <div class="mulInput">
-            <el-input
-              class="input"
-              v-model="model.deviceAddressA"
-              name="name"
-            />
-          </div>
+        <el-form-item class="form-item" prop="cameraCoreId" label="EC200">
+          <el-input
+            placeholder="请选择"
+            class="input"
+            v-model="formModel.cameraCoreId"
+          />
         </el-form-item>
-        <el-form-item class="form-item" label="前摄像头RTSP">
-          <div class="mulInput">
-            <el-input
-              class="input"
-              v-model="model.deviceAddressA"
-              name="name"
-            />
-          </div>
+        <el-form-item
+          class="form-item"
+          prop="frontCameraRTSP"
+          label="前摄像头RTSP"
+        >
+          <el-input
+            placeholder="请输入拉流地址：rtsp://"
+            class="input"
+            v-model="formModel.frontCameraRTSP"
+          />
         </el-form-item>
-        <el-form-item class="form-item" label="EC200">
-          <div class="mulInput">
-            <el-input
-              class="input"
-              v-model="model.deviceAddressA"
-              name="name"
-            />
-          </div>
+        <el-form-item
+          class="form-item"
+          prop="backCameraRTSP"
+          label="后摄像头RTSP"
+        >
+          <el-input
+            placeholder="请输入拉流地址：rtsp://"
+            class="input"
+            v-model="formModel.backCameraRTSP"
+          />
         </el-form-item>
         <div class="buttons-row">
           <div @click="save" class="button active" type="submit">确定</div>
@@ -105,13 +109,32 @@
 </template>
 
 <script>
+  import { deviceGroupAdd } from "@/services/device.js";
   import axios from "axios";
   export default {
     data() {
       return {
         deviceList: [],
-        formModel: {},
-        model: {},
+        formModel: {
+          orientation: "",
+          coordinate: "",
+          code: "",
+          latitude: "",
+          xRayCode: "",
+          cameraCoreId: "",
+          frontCameraRTSP: "",
+          backCameraRTSP: "",
+        },
+        rules: {
+          orientation: [{ required: true, message: "请输入场馆" }],
+          coordinate: [{ required: true, message: "请输入安检口" }],
+          code: [{ required: true, message: "请输入序号" }],
+          latitude: [{ required: true, message: "请输入地图定位" }],
+          xRayCode: [{ required: true, message: "请输入X光机AI编号" }],
+          cameraCoreId: [{ required: true, message: "请输入EC200" }],
+          frontCameraRTSP: [{ required: true, message: "请输入前摄像头RTSP" }],
+          backCameraRTSP: [{ required: true, message: "请输入后摄像头RTSP" }],
+        },
       };
     },
     props: ["currentEditDevice", "choosePosition", "initDeviceList"],
@@ -120,42 +143,21 @@
         axios.get(`/api/device/${id}`).then((res) => {
           const { data } = res.data || {};
           if (data) {
-            this.model = data;
+            this.formModel = data;
           }
         });
       },
       save() {
-        const {
-          id,
-          coordinate,
-          orientation,
-          code,
-          deviceAddressA,
-          deviceAddressB,
-          deviceAddressC,
-          nodeId,
-          version,
-          longitude,
-          latitude,
-        } = this.model;
-        axios
-          .put("/api/device", {
-            id,
-            coordinate,
-            orientation,
-            code,
-            deviceAddressA,
-            deviceAddressB,
-            deviceAddressC,
-            nodeId,
-            version,
-            longitude,
-            latitude,
-          })
-          .then((res) => {
-            this.$emit("close");
-            this.initDeviceList();
-          });
+        this.$refs["formRef"].validate((valid) => {
+          if (valid) {
+            deviceGroupAdd(this.formModel).then((res) => {
+              this.$emit("close");
+              this.initDeviceList();
+            });
+          } else {
+            return false;
+          }
+        });
       },
     },
     mounted() {
@@ -172,6 +174,25 @@
     background: rgba(9, 18, 54, 0.95);
     border: 1px solid #6076ad;
     text-align: left;
+    .title {
+      padding-left: 20px;
+      .point {
+        display: inline-block;
+        vertical-align: middle;
+        width: 8px;
+        height: 8px;
+        background: rgba(76, 251, 244, 1);
+      }
+      .name {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 16px;
+        font-size: 24px;
+        font-family: Source Han Sans SC;
+        font-weight: bold;
+        color: rgba(76, 251, 244, 1);
+      }
+    }
     .close {
       position: absolute;
       right: 0;
@@ -183,6 +204,13 @@
     .form-container {
       width: 80%;
       margin-left: 6%;
+      margin-top: 24px;
+      .form-item {
+        width: 100%;
+        .input.half {
+          width: 33%;
+        }
+      }
       .position-setting {
         font-size: 18px;
         font-family: Adobe Heiti Std;
@@ -195,6 +223,12 @@
         margin-left: 24px;
         background-size: 20px auto;
         cursor: pointer;
+      }
+    }
+    .buttons-row {
+      text-align: right;
+      .active {
+        margin-right: 12px;
       }
     }
   }

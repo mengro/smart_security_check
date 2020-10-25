@@ -10,17 +10,35 @@
       </div>
     </div>
     <div class="button-row">
-      <div :style="{'margin-right': '16px'}" @click="(e) => addHandle()" class="button active">新增</div>
+      <div
+        :style="{ 'margin-right': '16px' }"
+        @click="(e) => addHandle()"
+        class="button active"
+      >
+        新增
+      </div>
       <div
         v-if="!editing"
-        @click="(e) => {
-        editing = true  
-      }"
+        @click="
+          (e) => {
+            editing = true;
+          }
+        "
         class="button active"
-      >编辑</div>
-      <div v-else @click="(e) => {
-        editing = false  
-      }" class="button active">完成</div>
+      >
+        编辑
+      </div>
+      <div
+        v-else
+        @click="
+          (e) => {
+            editing = false;
+          }
+        "
+        class="button active"
+      >
+        完成
+      </div>
     </div>
     <div class="table-container">
       <div class="list-header">
@@ -36,20 +54,33 @@
           <div class="name">{{ item.deviceName }}</div>
           <div class="time">
             <ul>
-              <li
-                v-for="time in item.staffWorkTimeList"
-                :key="time.id"
-              >{{ `${time.workDate.slice(5)} ${time.workTimeStart.slice(0, 5)}~${time.workTimeEnd.slice(0, 5)};` }}</li>
+              <li v-for="time in item.staffWorkTimeList" :key="time.id">
+                {{
+                  `${time.workDate.slice(5)} ${time.workTimeStart.slice(
+                    0,
+                    5
+                  )}~${time.workTimeEnd.slice(0, 5)};`
+                }}
+              </li>
             </ul>
           </div>
           <div class="status">
-            <div class="point" :style="{background: statusColorMap[String(item.workStatus)]}"></div>
+            <div
+              class="point"
+              :style="{ background: statusColorMap[String(item.workStatus)] }"
+            ></div>
           </div>
           <!-- <div class="remark">{{ item.remark }}</div> -->
           <div v-if="editing" class="action">
-            <span @click="(e) => addHandle(item)" class="text-button edit">编辑</span>
+            <span @click="(e) => addHandle(item)" class="text-button edit"
+              >编辑</span
+            >
             <span class="line">|</span>
-            <span @click="e => deleteHandle(item.id)" class="text-button delete">删除</span>
+            <span
+              @click="(e) => deleteHandle(item.id)"
+              class="text-button delete"
+              >删除</span
+            >
           </div>
         </div>
       </div>
@@ -70,52 +101,53 @@
 </template>
 
 <script>
-import axios from 'axios';
-import PersonAdd from './PersonAdd'
-const statusColorMap = {
-  '0': '#ccc',
-  '1': 'rgba(52, 239, 253, 1)'
-}
-export default {
-  data() {
-    return {
-      staffList: [],
-      statusColorMap,
-      editing: false,
-      currentEditStaff: null,
-    };
-  },
-  props: [],
-  methods: {
-    addHandle(staff) {
-      this.currentEditStaff = staff
-      this.$modal.show('person-add');
+  import axios from "axios";
+  import PersonAdd from "./PersonAdd";
+  const statusColorMap = {
+    "0": "#ccc",
+    "1": "rgba(52, 239, 253, 1)",
+  };
+  export default {
+    data() {
+      return {
+        staffList: [],
+        statusColorMap,
+        editing: false,
+        currentEditStaff: null,
+      };
     },
-    initList() {
-      axios.post('/api/staff/search', {
-        page: 0,
-        pageSize: 100,
-        type: 2
-      }).then(res => {
-        if (Array.isArray(res.data.data.list)) {
-          this.staffList = res.data.data.list
-        }
-      })
+    props: [],
+    methods: {
+      addHandle(staff) {
+        this.currentEditStaff = staff;
+        this.$modal.show("person-add");
+      },
+      initList() {
+        axios
+          .post("/api/staff/search", {
+            page: 0,
+            pageSize: 100,
+            type: 2,
+          })
+          .then((res) => {
+            if (Array.isArray(res.data.list)) {
+              this.staffList = res.data.list;
+            }
+          });
+      },
+      deleteHandle(id) {
+        axios.delete(`/api/staff/${id}`).then((res) => {
+          this.initList();
+        });
+      },
     },
-    deleteHandle(id) {
-      axios.delete(`/api/staff/${id}`)
-        .then(res => {
-          this.initList()
-        })
+    components: {
+      PersonAdd,
     },
-  },
-  components: {
-    PersonAdd
-  },
-  mounted(){
-    this.initList()
-  }
-};
+    mounted() {
+      this.initList();
+    },
+  };
 </script>
 <style lang="less" scoped>
   .staff-manage {

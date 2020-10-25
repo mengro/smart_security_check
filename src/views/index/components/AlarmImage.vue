@@ -91,8 +91,8 @@
       },
       initView() {
         axios.post(`/api/securityCheck/${this.activeAlarmObj.id}`).then((res) => {
-          if (Array.isArray(res.data.data.securityCheckDetailList)) {
-            this.alarmList = res.data.data.securityCheckDetailList;
+          if (Array.isArray(res.data.securityCheckDetailList)) {
+            this.alarmList = res.data.securityCheckDetailList;
           }
         });
       },

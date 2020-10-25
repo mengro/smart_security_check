@@ -28,23 +28,13 @@ export const statusMap = {
     text: '告警',
     color: '#FF2E51'
   },
-}
-export const alarmStatusMap = {
-  1: {
-    text: '无异常',
-    color: '#47F939'
-  },
-  2: {
-    text: '已处理',
-    color: '#47F939'
-  },
-  3: {
-    text: '错拿包',
-    color: '#FF3652'
-  },
   4: {
-    text: '遗留包',
-    color: '#FF3652'
+    text: '告警',
+    color: '#FF2E51'
+  },
+  5: {
+    text: '告警',
+    color: '#FF2E51'
   },
 }
 export const workStatusMap = {
@@ -57,10 +47,6 @@ export const workStatusIconMap = {
   2: waiting,
 }
 export const parseStatus = (item) => {
-  const { alarmStatus, status } = item;
-  if (alarmStatus > 2) {
-    return alarmStatusMap[alarmStatus];
-  } else {
-    return statusMap[status];
-  }
+  const { status } = item;
+  return statusMap[status]
 }

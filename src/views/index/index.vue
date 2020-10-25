@@ -8,7 +8,7 @@
         <div
           class="console"
           v-if="!currentMovingMaker"
-          @click="$modal.show('console')"
+          @click="consoleVisible = true"
         >
           控制台
         </div>
@@ -107,7 +107,9 @@
                   alt
                 />
                 <span>{{
-                  `${activeDevice.coordinate}-${activeDevice.orientation}-${activeDevice.code}`
+                  activeDevice.coordinate
+                    ? `${activeDevice.coordinate}-${activeDevice.orientation}-${activeDevice.code}`
+                    : "暂无设备"
                 }}</span>
               </div>
               <ul class="camera-list">
@@ -218,14 +220,19 @@
         @close="$modal.hide('device-manage')"
       ></device-manage>
     </modal>
-    <modal :clickToClose="false" height="740" width="1283" name="console">
+    <el-dialog
+      custom-class="dialog_noContainer"
+      @close="consoleVisible = false"
+      :visible="consoleVisible"
+      height="740"
+      width="90%"
+    >
       <console
         ref="deviceListModal"
         :choosePosition="choosePosition"
         :openAddDeviceModal="openAddDeviceModal"
-        @close="$modal.hide('console')"
       ></console>
-    </modal>
+    </el-dialog>
     <modal :clickToClose="false" height="880" width="782" name="add-device">
       <add-device
         @close="
@@ -324,6 +331,7 @@
             num: 0,
           },
         },
+        consoleVisible: false,
         deviceCountView: {
           webFrontDisable: 0,
           webFrontEnable: 0,
@@ -361,16 +369,20 @@
               tabKey: 1,
             },
             {
-              name: "归档中",
+              name: "正常通行",
               tabKey: 2,
             },
             {
-              name: "已归档",
+              name: "异常包",
               tabKey: 3,
             },
             {
-              name: "告警",
+              name: "违禁品",
               tabKey: 4,
+            },
+            {
+              name: "未匹配",
+              tabKey: 5,
             },
           ],
         },
@@ -509,13 +521,9 @@
           const active = this.activeDevice.id === device.id;
           marker.setLabel({
             offset: new AMap.Pixel(20, 20), //设置文本标注偏移量
-            content: `<div class=${active ? "active" : "normal"}>
-                                                                                                <h3>检测人数</h3>
-                                                                                                <span>${
-                                                                                                  device.securityCheckNum ||
-                                                                                                  0
-                                                                                                }</span>
-                                                                                              </div>`, //设置文本标注内容
+            content: `<div class=${
+              active ? "active" : "normal"
+            }>                                                                                                  </div>`, //设置文本标注内容
             direction: "top", //设置文本标注方位
           });
         };
@@ -677,11 +685,11 @@
         });
       },
       initPage() {
-        axios.get("/init").then((res) => {
-          if (res.data) {
-            this.renderView(res.data);
+        axios.get("/init").then((data) => {
+          if (data) {
+            this.renderView(data);
             const { deviceList, securityCheckTotal, securityCheckList } =
-              res.data || {};
+              data || {};
             // deviceList
             if (Array.isArray(deviceList)) {
               this.deviceViewsList = deviceList;

@@ -202,9 +202,11 @@
             pageSize: 50,
           })
           .then((res) => {
-            if (Array.isArray(res.data.data.list)) {
-              this.deviceList = res.data.data.list;
-              this.activeDeivcce = String(this.deviceList[0].id);
+            if (Array.isArray(res.data.list)) {
+              this.deviceList = res.data.list;
+              if (this.deviceList[0]) {
+                this.activeDeivcce = String(this.deviceList[0].id);
+              }
             }
           });
       },
@@ -215,7 +217,7 @@
             pageSize: 50,
           })
           .then((res) => {
-            const list = res.data.data.list;
+            const list = res.data.list;
             if (Array.isArray(list)) {
               this.choosedDates = list
                 .map((item) => {
@@ -242,8 +244,8 @@
             deviceId: this.activeDeivcce,
           })
           .then((res) => {
-            if (Array.isArray(res.data.data.list)) {
-              this.tableData = res.data.data.list;
+            if (Array.isArray(res.data.list)) {
+              this.tableData = res.data.list;
             }
           });
       },

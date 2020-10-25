@@ -10,7 +10,8 @@ import "vue-select/dist/vue-select.css";
 
 import '@/utils/axios.config'
 import 'video.js/dist/video-js.css'
-import './theme.scss'
+import '@/assets/style/theme.scss'
+import '@/assets/style/el-theme.less'
 
 Vue.component("v-select", vSelect);
 Vue.prototype.$video = window.videojs || videojs;

@@ -3,7 +3,7 @@
     <div class="header">
       <div class="title">
         <div class="point"></div>
-        <div class="name">{{currentEditStaff ? '编辑人员' : '新增人员'}}</div>
+        <div class="name">{{ currentEditStaff ? "编辑人员" : "新增人员" }}</div>
       </div>
       <div @click="$emit('close')" class="close">
         <img src="../../../assets/images/close.png" />
@@ -45,7 +45,11 @@
           <validate tag="label">
             <span class="label">执勤时间：</span>
             <div class="input dateTimeGroup">
-              <div v-for="(item, index) in dateTimeList" :key="index" class="dateTimeGroup-item">
+              <div
+                v-for="(item, index) in dateTimeList"
+                :key="index"
+                class="dateTimeGroup-item"
+              >
                 <date-time-group
                   :defaultDates="item.defaultDates"
                   :defaultRange="item.defaultRange"
@@ -69,144 +73,145 @@
 </template>
 
 <script>
-import axios from "axios";
-import moment from 'moment'
-import DateTimeGroup from "./DateTimeGroup";
-export default {
-  data() {
-    return {
-      deviceList: [],
-      formstate: {},
-      forms: {
-        type: 2,
-        staffWorkTimeList: [],
-      },
-      dateTimeList: [
-        {
-          defaultDates: "",
+  import axios from "axios";
+  import moment from "moment";
+  import DateTimeGroup from "./DateTimeGroup";
+  export default {
+    data() {
+      return {
+        deviceList: [],
+        formstate: {},
+        forms: {
+          type: 2,
+          staffWorkTimeList: [],
         },
-      ],
-    };
-  },
-  computed: {
-    deviceListSelect() {
-      return this.deviceList.map(item => {
-        return {
-          code: item.id,
-          label: `${item.coordinate}-${item.orientation}-${item.code}`
-        }
-      })
-    }
-  },
-  props: ["currentEditStaff", "refreshList"],
-  components: { DateTimeGroup },
-  methods: {
-    addDateTime() {
-      this.dateTimeList.push({
-        date: "",
-        time: [],
-      });
+        dateTimeList: [
+          {
+            defaultDates: "",
+          },
+        ],
+      };
     },
-    initList() {
-      axios.post('/api/device/search', {
-        page: 0,
-        pageSize: 100
-      }).then(res => {
-        if (Array.isArray(res.data.data.list)) {
-          this.deviceList = res.data.data.list
-        }
-      })
+    computed: {
+      deviceListSelect() {
+        return this.deviceList.map((item) => {
+          return {
+            code: item.id,
+            label: `${item.coordinate}-${item.orientation}-${item.code}`,
+          };
+        });
+      },
     },
-    save() {
-      const staffWorkTimeList = []
-      this.$refs.dateValues.forEach(comp => {
-        const {dates, timeRange} = comp
-        if (Array.isArray(dates) && dates.length > 0 && timeRange.length === 2) {
-          dates.forEach(date => {
-            const time = {
-              workDate: moment(date).format('YYYY-MM-DD'),
-              workTimeStart: moment(timeRange[0]).format('HH:mm:ss'),
-              workTimeEnd: moment(timeRange[1]).format('HH:mm:ss'),
-            }
-            staffWorkTimeList.push(time)
+    props: ["currentEditStaff", "refreshList"],
+    components: { DateTimeGroup },
+    methods: {
+      addDateTime() {
+        this.dateTimeList.push({
+          date: "",
+          time: [],
+        });
+      },
+      initList() {
+        axios
+          .post("/api/device/search", {
+            page: 0,
+            pageSize: 100,
           })
+          .then((res) => {
+            if (Array.isArray(res.data.list)) {
+              this.deviceList = res.data.list;
+            }
+          });
+      },
+      save() {
+        const staffWorkTimeList = [];
+        this.$refs.dateValues.forEach((comp) => {
+          const { dates, timeRange } = comp;
+          if (
+            Array.isArray(dates) &&
+            dates.length > 0 &&
+            timeRange.length === 2
+          ) {
+            dates.forEach((date) => {
+              const time = {
+                workDate: moment(date).format("YYYY-MM-DD"),
+                workTimeStart: moment(timeRange[0]).format("HH:mm:ss"),
+                workTimeEnd: moment(timeRange[1]).format("HH:mm:ss"),
+              };
+              staffWorkTimeList.push(time);
+            });
+          }
+        });
+
+        const { id, deviceId, type, name, version } = this.forms;
+        if (!name) {
+          return this.$message({
+            message: "请填写人员名称",
+            type: "error",
+          });
         }
-      })
-      
-      const {
-        id,
-        deviceId,
-        type,
-        name,
-        version,
-      } = this.forms;
-      if (!name) {
-        return this.$message({
-          message: '请填写人员名称',
-          type: 'error',
-        });
-      }
-      if (!deviceId) {
-        return this.$message({
-          message: '请选择安检区域',
-          type: 'error',
-        });
-      }
-      if (staffWorkTimeList.length <= 0) {
-        return this.$message({
-          message: '请添加排期',
-          type: 'error',
-        });
-      }
-      let method
-      if (id) {
-        method = 'put'
-      } else {
-        method = 'post'
-      }
-      axios
-        [method]("/api/staff", {
+        if (!deviceId) {
+          return this.$message({
+            message: "请选择安检区域",
+            type: "error",
+          });
+        }
+        if (staffWorkTimeList.length <= 0) {
+          return this.$message({
+            message: "请添加排期",
+            type: "error",
+          });
+        }
+        let method;
+        if (id) {
+          method = "put";
+        } else {
+          method = "post";
+        }
+        axios[method]("/api/staff", {
           id,
           deviceId,
           name,
           type,
           version,
           staffWorkTimeList,
-        })
-        .then((res) => {
-          this.refreshList()
-          this.currentEditStaff = null
+        }).then((res) => {
+          this.refreshList();
+          this.currentEditStaff = null;
           this.$emit("close");
         });
+      },
     },
-  },
-  mounted() {
-    if (this.currentEditStaff) {
-      const staffWorkTimeList = []
-      const someMap = {}
-      if (Array.isArray(this.currentEditStaff.staffWorkTimeList)) {
-        this.currentEditStaff.staffWorkTimeList.forEach(time => {
-          const key = time.workTimeStart + ',' + time.workTimeEnd
-          if (someMap[key]) {
-            someMap[key].push(moment(time.workDate).toDate())
-          } else {
-            someMap[key] = [moment(time.workDate).toDate()]
-          }
-        })
-        Object.keys(someMap).forEach(key => {
-          const [start, end] = key.split(',')
-          staffWorkTimeList.push({
-            defaultDates: someMap[key],
-            defaultRange: [moment('2020-01-01 ' + start).toDate(), moment('2020-01-01 ' + end).toDate()]
-          })
-        })
-        this.dateTimeList = staffWorkTimeList
+    mounted() {
+      if (this.currentEditStaff) {
+        const staffWorkTimeList = [];
+        const someMap = {};
+        if (Array.isArray(this.currentEditStaff.staffWorkTimeList)) {
+          this.currentEditStaff.staffWorkTimeList.forEach((time) => {
+            const key = time.workTimeStart + "," + time.workTimeEnd;
+            if (someMap[key]) {
+              someMap[key].push(moment(time.workDate).toDate());
+            } else {
+              someMap[key] = [moment(time.workDate).toDate()];
+            }
+          });
+          Object.keys(someMap).forEach((key) => {
+            const [start, end] = key.split(",");
+            staffWorkTimeList.push({
+              defaultDates: someMap[key],
+              defaultRange: [
+                moment("2020-01-01 " + start).toDate(),
+                moment("2020-01-01 " + end).toDate(),
+              ],
+            });
+          });
+          this.dateTimeList = staffWorkTimeList;
+        }
+        this.forms = this.currentEditStaff;
       }
-      this.forms = this.currentEditStaff
-    }
-    this.initList()
-  },
-};
+      this.initList();
+    },
+  };
 </script>
 <style lang="less" scoped>
   .add-device {

@@ -18,12 +18,9 @@
         <h3 class="subTitle">
           历史记录
         </h3>
-        <record-list :data="ecData"></record-list>
+        <record-list :data="recordData"></record-list>
       </el-tab-pane>
     </el-tabs>
-    <div @click="$emit('close')" class="close">
-      <img src="../../../../assets/images/close.png" />
-    </div>
     <div class="console-pagination">
       <el-pagination
         @size-change="handleSizeChange"
@@ -32,7 +29,7 @@
         :page-sizes="[10, 20, 30, 40]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="total"
       >
       </el-pagination>
     </div>
@@ -43,14 +40,20 @@
   import EcList from "./EcList";
   import SiteList from "./SiteList";
   import RecordList from "./RecordList";
-  import { deviceGroupSearch, ec200Search } from "@/services/console.js";
+  import {
+    deviceGroupSearch,
+    ec200Search,
+    securityCheckSearch,
+  } from "@/services/console.js";
   export default {
     data() {
       return {
         activeName: "",
-        ecData: [{}],
+        ecData: [],
+        recordData: [],
         currentPage: 1,
         pageSize: 20,
+        total: 0,
       };
     },
     props: ["openAddDeviceModal"],
@@ -70,6 +73,16 @@
           ...pagination,
         }).then((res) => {
           console.log(res);
+        });
+      },
+      securityCheckSearch(pagination) {
+        securityCheckSearch({
+          ...pagination,
+        }).then((res) => {
+          if (res.data && res.data.list instanceof Array) {
+            this.recordData = res.data.list;
+            this.total = res.data.total;
+          }
         });
       },
       handleSizeChange(val) {
@@ -95,7 +108,8 @@
             this.ec200Search(pagination);
             return;
           case "record":
-            break;
+            this.securityCheckSearch(pagination);
+            return;
           default:
             break;
         }
@@ -129,20 +143,8 @@
 
 <style lang="less" scoped>
   .console-container {
-    min-height: 520px;
-    padding: 24px;
     position: relative;
-    background: rgba(9, 18, 54, 0.95);
-    border: 1px solid #6076ad;
     text-align: left;
-    .close {
-      position: absolute;
-      right: 0;
-      top: 0;
-      padding: 12px 24px;
-      font-size: 24px;
-      cursor: pointer;
-    }
     .subTitle {
       height: 36px;
       line-height: 36px;

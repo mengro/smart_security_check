@@ -24,33 +24,43 @@
       <div class="table-body">
         <div class="list-row" :key="item.id" v-for="item in deviceList">
           <div class="num">{{ item.id }}</div>
-          <div class="name">{{ `${item.coordinate}-${item.orientation}-${item.code}` }}</div>
+          <div class="name">
+            {{ `${item.coordinate}-${item.orientation}-${item.code}` }}
+          </div>
           <div class="count">
-            经度：{{item.longitude}}
-            纬度：{{item.latitude}}
+            经度：{{ item.longitude }} 纬度：{{ item.latitude }}
           </div>
           <div class="status">
-            <img :style="{height: '32px'}" :src="workStatusIconMap[item.status]" alt="." />
+            <img
+              :style="{ height: '32px' }"
+              :src="workStatusIconMap[item.status]"
+              alt="."
+            />
           </div>
           <!-- <div class="remark">{{ item.remark }}</div> -->
           <div class="action">
             <span
               v-if="!item.latitude && !item.longitude"
-              @click="(e) => {
-              choosePosition(item)
-              $emit('close')
-            }"
+              @click="
+                (e) => {
+                  choosePosition(item);
+                  $emit('close');
+                }
+              "
               class="text-button edit"
-            >选择位置</span>
-            <span @click="(e) => addHandle(item)" class="text-button edit">编辑</span>
+              >选择位置</span
+            >
+            <span @click="(e) => addHandle(item)" class="text-button edit"
+              >编辑</span
+            >
             <span
               v-if="item.status === 1"
-              @click="e => offHandle(item.id)"
+              @click="(e) => offHandle(item.id)"
               class="text-button stop"
             ></span>
             <span
               v-if="item.status === 2"
-              @click="e => onHandle(item.id)"
+              @click="(e) => onHandle(item.id)"
               class="text-button start"
             ></span>
           </div>
@@ -83,8 +93,8 @@
             pageSize: 50,
           })
           .then((res) => {
-            if (Array.isArray(res.data.data.list)) {
-              this.deviceList = res.data.data.list;
+            if (Array.isArray(res.data.list)) {
+              this.deviceList = res.data.list;
             }
           });
       },
