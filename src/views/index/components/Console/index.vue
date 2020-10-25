@@ -43,7 +43,7 @@
   import EcList from "./EcList";
   import SiteList from "./SiteList";
   import RecordList from "./RecordList";
-  import { deviceGroup } from "@/services/console.js";
+  import { deviceGroupSearch, ec200Search } from "@/services/console.js";
   export default {
     data() {
       return {
@@ -58,8 +58,15 @@
       handleClick(tab) {
         this.activeName = tab.name;
       },
-      deviceGroup(pagination) {
-        deviceGroup({
+      deviceGroupSearch(pagination) {
+        deviceGroupSearch({
+          ...pagination,
+        }).then((res) => {
+          console.log(res);
+        });
+      },
+      ec200Search(pagination) {
+        ec200Search({
           ...pagination,
         }).then((res) => {
           console.log(res);
@@ -82,10 +89,11 @@
         };
         switch (this.activeName) {
           case "ec200":
-            this.deviceGroup(pagination);
+            this.deviceGroupSearch(pagination);
             return;
           case "site":
-            break;
+            this.ec200Search(pagination);
+            return;
           case "record":
             break;
           default:
