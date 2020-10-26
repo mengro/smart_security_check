@@ -7,6 +7,8 @@ if (process.env.NODE_ENV === 'development') {
   axios.defaults.baseURL = 'http://' + url + ':8000'
 }
 
+export const api_entry = axios.defaults.baseURL
+
 // Add a request interceptor
 axios.interceptors.request.use(function (config) {
   // Do something before request is sent

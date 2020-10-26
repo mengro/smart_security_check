@@ -8,18 +8,24 @@
       <info-row name="IPC设备名"> </info-row>
       <info-row name="人体抓拍时间"> </info-row>
       <info-row name="包款式、颜色"> </info-row>
-      <info-row name="人体图片"> </info-row>
-      <info-row name="人脸图片"> </info-row>
+      <info-row name="人体图片">
+        <image-preview :src="data.bodyImage"> </image-preview>
+      </info-row>
+      <info-row name="人脸图片">
+        <image-preview :src="data.faceImage"> </image-preview>
+      </info-row>
     </div>
   </div>
 </template>
 
 <script>
   import InfoRow from "@/components/InfoRow";
+  import ImagePreview from "@/components/ImagePreview.vue";
   export default {
-    props: ["title"],
+    props: ["title", "data"],
     components: {
       InfoRow,
+      ImagePreview,
     },
   };
 </script>

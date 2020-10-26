@@ -2,7 +2,7 @@
   <div>
     <el-table :style="tableStyle" :data="data">
       <el-table-column prop="gmtCreate" label="时间"> </el-table-column>
-      <el-table-column prop="status" label="告警状态"> </el-table-column>
+      <el-table-column prop="statusDesc" label="告警状态"> </el-table-column>
       <el-table-column prop="action" label="操作">
         <template slot-scope="scope">
           <el-button @click="handleClick(scope.row)" type="text" size="small"
@@ -18,7 +18,7 @@
       @close="activeRow = null"
       :visible="!!activeRow"
     >
-      <detail></detail>
+      <detail :data="detailData"></detail>
     </el-dialog>
   </div>
 </template>
@@ -33,6 +33,7 @@
         tableStyle: {
           width: "100%",
         },
+        detailData: null,
       };
     },
     props: ["data"],
@@ -47,7 +48,7 @@
         }
         securityCheckDetail(this.activeRow.id).then((res) => {
           if (res.data) {
-            const { securityCheckDetailList, gmtCreate } = res.data;
+            this.detailData = res.data;
           }
         });
       },

@@ -1,13 +1,13 @@
 <template>
   <div class="detail-container">
     <div class="side">
-      <ipc-view title="前摄像头" :data="[]"></ipc-view>
+      <ipc-view title="前摄像头" :data="data ? data.frontInfo : {}"></ipc-view>
     </div>
     <div class="center">
-      <x-view></x-view>
+      <x-view :data="data ? data.xrayInfo : {}"></x-view>
     </div>
     <div class="side">
-      <ipc-view title="后摄像头" :data="[]"></ipc-view>
+      <ipc-view title="后摄像头" :data="data ? data.backInfo : {}"></ipc-view>
     </div>
   </div>
 </template>
@@ -16,6 +16,7 @@
   import IpcView from "./IpcView";
   import XView from "./XView";
   export default {
+    props: ["data"],
     components: {
       IpcView,
       XView,

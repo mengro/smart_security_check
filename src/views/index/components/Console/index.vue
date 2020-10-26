@@ -50,6 +50,7 @@
       return {
         activeName: "",
         ecData: [],
+        siteData: [],
         recordData: [],
         currentPage: 1,
         pageSize: 20,
@@ -65,14 +66,18 @@
         deviceGroupSearch({
           ...pagination,
         }).then((res) => {
-          console.log(res);
+          if (res.data && res.data.list) {
+            this.siteData = res.data.list;
+          }
         });
       },
       ec200Search(pagination) {
         ec200Search({
           ...pagination,
         }).then((res) => {
-          console.log(res);
+          if (res.data && res.data.list) {
+            this.ecData = res.data.list;
+          }
         });
       },
       securityCheckSearch(pagination) {
@@ -102,10 +107,10 @@
         };
         switch (this.activeName) {
           case "ec200":
-            this.deviceGroupSearch(pagination);
+            this.ec200Search(pagination);
             return;
           case "site":
-            this.ec200Search(pagination);
+            this.deviceGroupSearch(pagination);
             return;
           case "record":
             this.securityCheckSearch(pagination);
@@ -156,6 +161,7 @@
       justify-content: space-between;
       align-items: center;
     }
+    padding-bottom: 72px;
   }
   .console-pagination {
     position: absolute;

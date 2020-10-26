@@ -1,9 +1,10 @@
 <template>
   <div class="info-row">
-    <span class="name"> {{ `${name}${name ? ":" : ""}` }} </span>
-    <span class="value">
+    <div class="name">{{ `${name}${name ? ":" : ""}` }}</div>
+    <div v-if="value" class="value">
       {{ value }}
-    </span>
+    </div>
+    <div class="value" v-else><slot></slot></div>
   </div>
 </template>
 
@@ -23,6 +24,9 @@
       width: 130px;
       text-align: right;
       color: #81b8e3;
+    }
+    .value {
+      flex: 1;
     }
   }
 </style>

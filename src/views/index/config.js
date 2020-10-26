@@ -37,6 +37,12 @@ export const statusMap = {
     color: '#FF2E51'
   },
 }
+export const colorMap = {
+  1: 'FF9E2A', // 安全
+  2: 'FF9F2D', // 警告
+  3: 'FF2E51', // 异常
+  4: 'FF2E51', // 危险
+}
 export const workStatusMap = {
   1: '工作中',
   2: '待机',
