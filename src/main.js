@@ -5,7 +5,7 @@ import store from "./store";
 import VModal from "vue-js-modal";
 import "moment/locale/zh-cn";
 import vSelect from "vue-select";
-import { DatePicker, TimePicker, Input, Dialog, MessageBox, Message, Pagination, Tabs, TabPane, Radio, RadioButton, RadioGroup, Table, TableColumn, Button, Form, FormItem } from 'element-ui'
+import { DatePicker, Select, Option, TimePicker, Input, Dialog, MessageBox, Message, Pagination, Tabs, TabPane, Radio, RadioButton, RadioGroup, Table, TableColumn, Button, Form, FormItem } from 'element-ui'
 import "vue-select/dist/vue-select.css";
 
 import '@/utils/axios.config'
@@ -21,6 +21,8 @@ Vue.config.productionTip = false;
 
 Vue.use(Form);
 Vue.use(FormItem);
+Vue.use(Select);
+Vue.use(Option);
 Vue.use(VModal);
 Vue.use(Dialog);
 Vue.use(DatePicker)
