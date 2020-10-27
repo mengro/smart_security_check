@@ -32,7 +32,9 @@
   .image-preview-container {
     height: 100%;
     width: 100%;
+    font-size: 0;
     .img-primary {
+      width: 100%;
     }
   }
 </style>

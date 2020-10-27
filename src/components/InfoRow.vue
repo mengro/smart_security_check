@@ -27,6 +27,8 @@
     }
     .value {
       flex: 1;
+      padding: 0 8px;
+      box-sizing: border-box;
     }
   }
 </style>
