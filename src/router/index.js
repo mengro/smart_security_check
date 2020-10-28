@@ -4,11 +4,16 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
-{
-  path: '/',
-  name: 'index',
-  component: () => import('../views/index/index.vue')
-}, ]
+  {
+    path: '/',
+    name: 'index',
+    component: () => import('../views/index/index.vue')
+  },{
+    path: '/console',
+    name: 'console',
+    component: () => import('../views/console/index.vue')
+  }
+]
 
 const router = new VueRouter({
   mode: 'hash',

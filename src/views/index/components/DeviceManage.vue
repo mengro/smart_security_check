@@ -72,7 +72,7 @@
 
 <script>
   import axios from "axios";
-  import { workStatusMap, workStatusIconMap } from "../config";
+  import { workStatusMap, workStatusIconMap } from "@/config";
   export default {
     data() {
       return {

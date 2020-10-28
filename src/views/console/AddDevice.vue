@@ -219,7 +219,7 @@ export default {
       font-family: Adobe Heiti Std;
       font-weight: normal;
       color: rgba(118, 233, 254, 1);
-      background: url("../../../../assets/images/marker_icon_small.png") 0 center no-repeat;
+      background: url("../../assets/images/marker_icon_small.png") 0 center no-repeat;
       height: 42px;
       padding-left: 24px;
       margin-left: 24px;

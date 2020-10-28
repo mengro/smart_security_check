@@ -11,7 +11,6 @@
       </div>
       <div class="result-title">分析结果</div>
       <div :style="{color: colorMap[data && data.alarmLevel ? data.alarmLevel : 1]}" class="result-value">
-        23423
         {{data ? data.statusDesc : ''}}
       </div>
       <div class="result-title">生成时间</div>
@@ -32,7 +31,7 @@ import IpcView from "./IpcView";
 import XView from "./XView";
 import {
   colorMap
-} from '../../config'
+} from '@/config'
 export default {
   data() {
     return {

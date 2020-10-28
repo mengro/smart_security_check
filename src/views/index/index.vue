@@ -5,7 +5,7 @@
       <div class="time-text">
         <timer></timer>
       </div>
-      <div class="console" v-if="!currentMovingMaker" @click="consoleVisible = true">
+      <div class="console" @click="routeToConsolePage">
         控制台
       </div>
     </div>
@@ -16,36 +16,6 @@
           <p class="sectionTitle">设备统计</p>
           <device-count :deviceCountView="deviceCountView"></device-count>
         </div>
-        <!-- 设备统计 -->
-        <!-- <div class="deviceStatistics">
-            <p class="sectionTitle">设备统计</p>
-            <ul class="deviceList flex_start_v">
-              <li>
-                <p class="text">智能前端</p>
-                <p class="num">{{ deviceCountView.webFrontTotalNum }}</p>
-                <p class="proportion">
-                  <span>{{ deviceCountView.webFrontEnableNum }}</span> /
-                  <span>{{ deviceCountView.webFrontDisableNum }}</span>
-                </p>
-              </li>
-              <li>
-                <p class="text">安检机</p>
-                <p class="num">{{ deviceCountView.machineTotalNum }}</p>
-                <p class="proportion">
-                  <span>{{ deviceCountView.machineEnableNum }}</span> /
-                  <span>{{ deviceCountView.machineDisableNum }}</span>
-                </p>
-              </li>
-              <li>
-                <p class="text">摄像头</p>
-                <p class="num">{{ deviceCountView.cameraTotalNum }}</p>
-                <p class="proportion">
-                  <span>{{ deviceCountView.cameraEnableNum }}</span> /
-                  <span>{{ deviceCountView.cameraDisableNum }}</span>
-                </p>
-              </li>
-            </ul>
-          </div>-->
         <!-- 数据统计 -->
         <div class="alarmStatistics">
           <p class="sectionTitle">数据统计</p>
@@ -152,19 +122,12 @@
   <modal :clickToClose="false" height="740" width="1283" name="device-manage">
     <device-manage ref="deviceListModal" :choosePosition="choosePosition" :openAddDeviceModal="openAddDeviceModal" @close="$modal.hide('device-manage')"></device-manage>
   </modal>
-  <el-dialog custom-class="dialog_noContainer" @close="consoleVisible = false" :visible="consoleVisible" height="740" width="90%">
-    <console ref="deviceListModal" :choosePosition="choosePosition" :openAddDeviceModal="openAddDeviceModal"></console>
-  </el-dialog>
-  <!-- <button
-      @click="e => activeDevice.deviceAddressA = 'rtmp://58.200.131.2:1935/livetv/hunantv'"
-    >aaaa</button>-->
 </div>
 </template>
 
 <script>
 import AlarmImage from "./components/AlarmImage";
 import DeviceManage from "./components/DeviceManage";
-import Console from "./components/Console/index";
 import Process from "./components/Process";
 import MyChart from "./components/MyChart";
 import DeviceCount from "./components/DeviceCount";
@@ -179,11 +142,10 @@ import {
 } from "@/constant.js";
 import {
   deviceStatusMap,
-  alarmStatusMap,
   statusMap,
   parseStatus,
   colorMap,
-} from "./config";
+} from "@/config";
 import markerActivePng from "@/assets/images/device_dot_active.png";
 import markerPng from "@/assets/images/device_dot.png";
 import markerMoving from "@/assets/images/maker_moving.png";
@@ -215,13 +177,12 @@ export default {
     return {
       deviceStatusMap,
       colorMap,
-      alarmStatusMap,
       statusMap,
       pageHeight: window.innerHeight,
       taskView: {
-        dataNum: 0,
-        picNum: 0,
-        videoNum: 0,
+        cameraCoreNum: 0,
+        cameraNum: 0,
+        xrayNum: 0,
       },
       alarmMap: {
         securityCheck: {
@@ -352,6 +313,11 @@ export default {
           );
         }
       });
+    },
+    routeToConsolePage() {
+      this.$router.push({
+        path: '/console'
+      })
     },
     updateDevicePoint(e) {
       if (this.chooseingDevice) {
@@ -512,13 +478,6 @@ export default {
       this.chooseingDevice = device;
     },
     setActiveAlarm(item, e) {
-      if (
-        item.alarmStatus !== 3 &&
-        item.alarmStatus !== 4 &&
-        item.status === 1
-      ) {
-        return;
-      }
       this.activeAlarmObj = item;
     },
     addDeviceListToMap(deviceList) {
@@ -722,7 +681,6 @@ export default {
     DeviceCount,
     MyVideo,
     Timer,
-    Console,
   },
 };
 </script>

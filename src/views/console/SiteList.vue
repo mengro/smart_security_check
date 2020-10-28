@@ -18,6 +18,7 @@
     <el-table-column prop="action" label="操作">
       <template slot-scope="scope">
         <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
+        <el-button @click="handleDelete(scope.row)" type="danger" size="small">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -25,6 +26,9 @@
 </template>
 
 <script>
+import {
+  deviceDelete
+} from '@/services/console.js'
 export default {
   data() {
     return {
@@ -34,7 +38,18 @@ export default {
       },
     };
   },
-  props: ["data", 'handleEdit'],
+  methods: {
+    handleDelete(row) {
+      this.$confirm('确定要删除吗')
+        .then(() => {
+          deviceDelete(row.id)
+            .then(res => {
+              this.updateList()
+            })
+        })
+    }
+  },
+  props: ["data", 'handleEdit', 'updateList'],
 };
 </script>
 

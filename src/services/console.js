@@ -4,6 +4,10 @@ export function deviceGroupSearch(data) {
   return axios.post('/api/deviceGroup/search', data)
 }
 
+export function deviceDelete(id) {
+  return axios.delete(`/api/deviceGroup/${id}`)
+}
+
 export function deviceGroupSave(data) {
   return axios.post('/api/deviceGroup', data)
 }
