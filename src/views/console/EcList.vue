@@ -11,11 +11,6 @@
       {{getDetailInfo(scope.row).channelNum}}
     </template>
   </el-table-column>
-  <el-table-column prop="detailInfo" label="激活状态">
-    <template slot-scope="scope">
-      {{statusMap[getDetailInfo(scope.row).activeStatus || 2]}}
-    </template>
-  </el-table-column>
   <el-table-column prop="detailInfo" label="已绑定的IPC">
     <template slot-scope="scope">
       {{String(getDetailInfo(scope.row).bindIPCList)}}
