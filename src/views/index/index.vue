@@ -132,7 +132,7 @@
                         >{{ item.statusDesc }}</span
                       >
                       <img
-                        v-show="activeAlarmObj.id === item.id"
+                        v-show="activeAlarmObj && activeAlarmObj.id === item.id"
                         class="activeTag"
                         src="../../assets/images/alarmModalActiveTag.png"
                         alt
@@ -145,17 +145,15 @@
           </div>
         </div>
       </div>
-      <alarm-image
-        v-if="!!activeAlarmObj.id"
-        @close="
-          () => {
-            $modal.hide('alarm-image');
-            activeAlarmObj = {};
-          }
-        "
-        :activeAlarmObj="activeAlarmObj"
-        :name="`${activeDevice.coordinate}-${activeDevice.orientation}-${activeDevice.code}`"
-      ></alarm-image>
+      <el-dialog
+        title="历史记录详情"
+        :append-to-body="true"
+        width="90%"
+        @close="activeAlarmObj = null"
+        :visible="!!activeAlarmObj"
+      >
+        <detail :data="activeAlarmObj"></detail>
+      </el-dialog>
     </div>
     <modal :clickToClose="false" height="740" width="1283" name="device-manage">
       <device-manage
@@ -177,6 +175,7 @@
   import PersonCount from "./components/PersonCount";
   import Timer from "./components/Timer";
   import MyVideo from "@/components/Video";
+  import Detail from "../console/Detail";
   import SockJS from "sockjs-client";
   import Stomp from "webstomp-client";
   import axios from "axios";
@@ -282,7 +281,7 @@
           ],
         },
         videoList: [],
-        activeAlarmObj: {},
+        activeAlarmObj: null,
         markers: [],
         currentMovingMaker: null,
       };
@@ -698,6 +697,7 @@
       MyChart,
       TaskCount,
       MyVideo,
+      Detail,
       Timer,
     },
   };

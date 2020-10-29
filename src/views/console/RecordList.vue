@@ -18,7 +18,7 @@
       @close="activeRow = null"
       :visible="!!activeRow"
     >
-      <detail :data="detailData"></detail>
+      <detail :id="detailData ? detailData.id : null"></detail>
     </el-dialog>
   </div>
 </template>

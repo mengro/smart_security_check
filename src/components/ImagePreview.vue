@@ -34,7 +34,8 @@
     width: 100%;
     font-size: 0;
     .img-primary {
-      width: 100%;
+      max-width: 100%;
+      max-height: 240px;
     }
   }
 </style>
